@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dto.ClientListDto;
 import ruben.springboot.service_management.models.dto.ClientRequestDto;
@@ -26,7 +27,7 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public ClientResponseDto get(Long id) {
-        Client c = repository.findById(id).orElseThrow(() -> new RuntimeException("Client not found"));
+        Client c = repository.findById(id).orElseThrow(() -> new NotFoundException("Client not found"));
         return ClientMapper.toResponse(c);
     }
 

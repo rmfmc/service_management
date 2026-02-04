@@ -31,29 +31,55 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Map<String, Object> handleBadJson(HttpMessageNotReadableException ex) {
 
+        // Dato fuera del ENUM
         String msg = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage();
 
         String field = "body";
         String message = "invalid request body";
-
-        // 1) Caso típico: enum inválido (por ejemplo applianceType o role)
-        // Jackson suele decir: "Cannot deserialize value of type ... from String
-        // \"XXX\""
         if (msg != null && msg.contains("Cannot deserialize value of type")) {
-            // intenta sacar el campo que falló si aparece
-            // muchas veces aparece algo como: "through reference chain:
-            // ...[\"applianceType\"]"
-            int idx = msg.lastIndexOf("[\"");
-            if (idx != -1) {
-                int end = msg.indexOf("\"]", idx);
-                if (end != -1)
-                    field = msg.substring(idx + 2, end);
+            // 1) sacar el nombre del enum: ...enums.WorkOrderStatus`
+            String enumName = null;
+            int t1 = msg.indexOf("`");
+            int t2 = (t1 != -1) ? msg.indexOf("`", t1 + 1) : -1;
+            if (t1 != -1 && t2 != -1) {
+                String fullType = msg.substring(t1 + 1, t2); // ruben...WorkOrderStatus
+                int lastDot = fullType.lastIndexOf(".");
+                enumName = (lastDot != -1) ? fullType.substring(lastDot + 1) : fullType;
+                // campo aproximado (si quieres): workOrderStatus
+                field = Character.toLowerCase(enumName.charAt(0)) + enumName.substring(1);
             }
 
-            message = "invalid value for '" + field + "' (check allowed enum values)";
+            // 2) valor inválido: from String "OPEL"
+            String invalidValue = null;
+            String from = "from String \"";
+            int v1 = msg.indexOf(from);
+            if (v1 != -1) {
+                int v2 = msg.indexOf("\"", v1 + from.length());
+                if (v2 != -1)
+                    invalidValue = msg.substring(v1 + from.length(), v2);
+            }
+
+            // 3) valores permitidos: Enum class: [OPEN, CLOSED, ...]
+            String allowed = null;
+            String marker = "Enum class: [";
+            int a1 = msg.indexOf(marker);
+            if (a1 != -1) {
+                int a2 = msg.indexOf("]", a1 + marker.length());
+                if (a2 != -1)
+                    allowed = msg.substring(a1 + marker.length(), a2);
+            }
+
+            // 4) construir mensaje final
+            if (invalidValue != null && allowed != null) {
+                message = "invalid value for '" + field + "': '" + invalidValue + "'. Allowed: [" + allowed + "]";
+            } else if (allowed != null) {
+                message = "invalid value for '" + field + "'. Allowed: [" + allowed + "]";
+            } else {
+                message = "invalid value for '" + field + "'";
+            }
         }
 
-        // 2) Caso: JSON vacío / mal formado
+        // JSON vacío / mal formado
         if (msg != null && (msg.contains("Unexpected end-of-input") || msg.contains("Unexpected character"))) {
             field = "body";
             message = "malformed JSON";
@@ -64,6 +90,7 @@ public class GlobalExceptionHandler {
 
         Map<String, String> errors = new LinkedHashMap<>();
         errors.put(field, message);
+
         body.put("errors", errors);
 
         return body;
@@ -82,6 +109,24 @@ public class GlobalExceptionHandler {
         body.put("errors", errors);
 
         return body;
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleNotFound(NotFoundException ex) {
+        return Map.of(
+                "status", 404,
+                "error", "NOT_FOUND",
+                "message", ex.getMessage());
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object> handleBadRequest(BadRequestException ex) {
+        return Map.of(
+                "status", 400,
+                "error", "BAD_REQUEST",
+                "message", ex.getMessage());
     }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ruben.springboot.service_management.authentication.SecurityUtils;
+import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.User;
@@ -39,28 +40,28 @@ public class WorkOrderService {
         Long currentUserId = SecurityUtils.currentUserId();
 
         Client client = clientRepository.findById(req.clientId)
-                .orElseThrow(() -> new RuntimeException("client not found"));
+                .orElseThrow(() -> new NotFoundException("client not found"));
 
         Client owner = null;
         if (req.ownerId != null) {
             owner = clientRepository.findById(req.ownerId)
-                    .orElseThrow(() -> new RuntimeException("owner not found"));
+                    .orElseThrow(() -> new NotFoundException("owner not found"));
         }
 
         Appliance appliance = null;
         if (req.applianceId != null) {
             appliance = applianceRepository.findById(req.applianceId)
-                    .orElseThrow(() -> new RuntimeException("appliance not found"));
+                    .orElseThrow(() -> new NotFoundException("appliance not found"));
         }
 
         User assigned = null;
         if (req.assignedUserId != null) {
             assigned = userRepository.findById(req.assignedUserId)
-                    .orElseThrow(() -> new RuntimeException("assigned user not found"));
+                    .orElseThrow(() -> new NotFoundException("assigned user not found"));
         }
 
         User createdUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new RuntimeException("created user not found"));
+                .orElseThrow(() -> new NotFoundException("created user not found"));
 
         // al crear, lastUpdated = created
         User lastUpdatedUser = createdUser;
@@ -90,7 +91,7 @@ public class WorkOrderService {
     @Transactional(readOnly = true)
     public WorkOrderResponseDto getById(Long id) {
         WorkOrder w = workOrderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("work order not found"));
+                .orElseThrow(() -> new NotFoundException("work order not found"));
         return WorkOrderMapper.toResponse(w);
     }
 
@@ -99,31 +100,31 @@ public class WorkOrderService {
         Long currentUserId = SecurityUtils.currentUserId();
 
         WorkOrder w = workOrderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("work order not found"));
+                .orElseThrow(() -> new NotFoundException("work order not found"));
 
         Client client = clientRepository.findById(req.clientId)
-                .orElseThrow(() -> new RuntimeException("client not found"));
+                .orElseThrow(() -> new NotFoundException("client not found"));
 
         Client owner = null;
         if (req.ownerId != null) {
             owner = clientRepository.findById(req.ownerId)
-                    .orElseThrow(() -> new RuntimeException("owner not found"));
+                    .orElseThrow(() -> new NotFoundException("owner not found"));
         }
 
         Appliance appliance = null;
         if (req.applianceId != null) {
             appliance = applianceRepository.findById(req.applianceId)
-                    .orElseThrow(() -> new RuntimeException("appliance not found"));
+                    .orElseThrow(() -> new NotFoundException("appliance not found"));
         }
 
         User assigned = null;
         if (req.assignedUserId != null) {
             assigned = userRepository.findById(req.assignedUserId)
-                    .orElseThrow(() -> new RuntimeException("assigned user not found"));
+                    .orElseThrow(() -> new NotFoundException("assigned user not found"));
         }
 
         User lastUpdatedUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new RuntimeException("last updated user not found"));
+                .orElseThrow(() -> new NotFoundException("last updated user not found"));
 
         WorkOrderMapper.updateEntity(w, req, client, owner, appliance, assigned, lastUpdatedUser);
         w = workOrderRepository.save(w);

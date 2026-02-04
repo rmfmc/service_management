@@ -27,8 +27,8 @@ public class WorkOrderMapper {
         w.setLastUpdatedUser(lastUpdatedUser);
 
         w.setIssueDescription(req.issueDescription);
-        w.setStatus(req.status.name());
-        w.setPriority(req.priority.getValue());
+        w.setStatus(req.status);
+        w.setPriority(req.priority);
         w.setNotes(req.notes);
         w.setWorkPerformed(req.workPerformed);
         w.setPrice(req.price);
@@ -57,8 +57,8 @@ public class WorkOrderMapper {
         w.setLastUpdatedUser(lastUpdatedUser);
 
         w.setIssueDescription(req.issueDescription);
-        w.setStatus(req.status.name());
-        w.setPriority(req.priority.getValue());
+        w.setStatus(req.status);
+        w.setPriority(req.priority);
         w.setNotes(req.notes);
         w.setWorkPerformed(req.workPerformed);
         w.setPrice(req.price);
@@ -103,9 +103,8 @@ public class WorkOrderMapper {
 
         dto.issueDescription = w.getIssueDescription();
 
-        dto.status = WorkOrderStatus.valueOf(w.getStatus());
+        dto.status = w.getStatus();
         dto.priority = w.getPriority();
-        dto.priorityLabel = priorityLabel(w.getPriority());
 
         dto.notes = w.getNotes();
         dto.workPerformed = w.getWorkPerformed();
@@ -118,13 +117,4 @@ public class WorkOrderMapper {
         return dto;
     }
 
-    private static String priorityLabel(int p) {
-        return switch (p) {
-            case 1 -> "LOW";
-            case 2 -> "MEDIUM";
-            case 3 -> "HIGH";
-            case 4 -> "URGENT";
-            default -> "UNKNOWN";
-        };
-    }
 }

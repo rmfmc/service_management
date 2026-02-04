@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,6 +16,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import ruben.springboot.service_management.models.enums.WorkOrderPriority;
+import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 @Entity
 @Table(name = "work_orders")
@@ -21,7 +25,7 @@ public class WorkOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "work_orders_id")
+    @Column(name = "work_order_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -47,9 +51,11 @@ public class WorkOrder {
     @Column(name = "issue_description")
     private String issueDescription;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private WorkOrderStatus status;
 
-    private int priority;
+    @Enumerated(EnumType.STRING)
+    private WorkOrderPriority priority;
 
     private String notes;
 
@@ -138,19 +144,19 @@ public class WorkOrder {
         this.issueDescription = issueDescription;
     }
 
-    public String getStatus() {
+    public WorkOrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(WorkOrderStatus status) {
         this.status = status;
     }
 
-    public int getPriority() {
+    public WorkOrderPriority getPriority() {
         return priority;
     }
 
-    public void setPriority(int priority) {
+    public void setPriority(WorkOrderPriority priority) {
         this.priority = priority;
     }
 
