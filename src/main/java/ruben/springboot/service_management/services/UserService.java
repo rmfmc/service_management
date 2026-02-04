@@ -1,0 +1,42 @@
+package ruben.springboot.service_management.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import ruben.springboot.service_management.models.User;
+import ruben.springboot.service_management.models.dto.UserMapper;
+import ruben.springboot.service_management.models.dto.UserRequestDto;
+import ruben.springboot.service_management.models.dto.UserResponseDto;
+import ruben.springboot.service_management.repositories.UserRepository;
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository repository;
+
+    @Autowired
+    private PasswordEncoder encoder;
+
+    @Transactional
+    public UserResponseDto create(UserRequestDto req) {
+
+        if (repository.existsByUsernameIgnoreCase(req.username)) {
+            throw new RuntimeException("username already exists");
+        }
+
+        User u = new User();
+        u.setName(req.name.trim());
+        u.setPhone(req.phone.trim());
+        u.setUsername(req.username.trim().toLowerCase());
+        u.setRole(req.role);
+        u.setActive(true);
+        u.setPasswordHash(encoder.encode(req.password));
+        u = repository.save(u);
+
+        return UserMapper.toResponse(u);
+    }
+
+}
