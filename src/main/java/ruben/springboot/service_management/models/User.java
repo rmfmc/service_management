@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import ruben.springboot.service_management.models.enums.UserRoles;
 
 @Entity
 @Table(name = "users")

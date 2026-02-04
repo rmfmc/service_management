@@ -44,16 +44,22 @@ public class SecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler) // 403
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // AUTH sin token
+
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        // USERS solo ADMIN
+
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
 
-                        // CLIENTS: ADMIN y TECH
                         .requestMatchers("/api/clients/**").hasAnyRole("ADMIN", "TECH")
 
-                        // WORK_ORDERS: ADMIN y TECH (luego afinamos)
-                        .requestMatchers("/api/work-orders/**").hasAnyRole("ADMIN", "TECH")
+                        .requestMatchers(HttpMethod.GET, "/api/appliances/**").hasAnyRole("ADMIN", "TECH")
+                        .requestMatchers(HttpMethod.POST, "/api/appliances").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/appliances/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/appliances/**").hasRole("ADMIN")
+                        
+                        .requestMatchers(HttpMethod.GET, "/api/work-orders/**").hasAnyRole("ADMIN", "TECH")
+                        .requestMatchers(HttpMethod.POST, "/api/work-orders").hasAnyRole("ADMIN", "TECH")
+                        .requestMatchers(HttpMethod.PUT, "/api/work-orders/**").hasAnyRole("ADMIN", "TECH")
+                        .requestMatchers(HttpMethod.DELETE, "/api/work-orders/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

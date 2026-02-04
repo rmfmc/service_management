@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dto.ClientListDto;
-import ruben.springboot.service_management.models.dto.ClientMapper;
 import ruben.springboot.service_management.models.dto.ClientRequestDto;
 import ruben.springboot.service_management.models.dto.ClientResponseDto;
+import ruben.springboot.service_management.models.mappers.ClientMapper;
 import ruben.springboot.service_management.repositories.ClientRepository;
 
 @Service

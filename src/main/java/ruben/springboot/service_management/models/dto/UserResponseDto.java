@@ -2,7 +2,7 @@ package ruben.springboot.service_management.models.dto;
 
 import java.time.LocalDateTime;
 
-import ruben.springboot.service_management.models.UserRoles;
+import ruben.springboot.service_management.models.enums.UserRoles;
 
 public class UserResponseDto {
 

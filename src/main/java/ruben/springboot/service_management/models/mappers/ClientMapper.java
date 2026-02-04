@@ -1,6 +1,9 @@
-package ruben.springboot.service_management.models.dto;
+package ruben.springboot.service_management.models.mappers;
 
 import ruben.springboot.service_management.models.Client;
+import ruben.springboot.service_management.models.dto.ClientListDto;
+import ruben.springboot.service_management.models.dto.ClientRequestDto;
+import ruben.springboot.service_management.models.dto.ClientResponseDto;
 
 public class ClientMapper {
 

@@ -3,7 +3,7 @@ package ruben.springboot.service_management.models.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import ruben.springboot.service_management.models.UserRoles;
+import ruben.springboot.service_management.models.enums.UserRoles;
 
 public class UserRequestDto {
 
