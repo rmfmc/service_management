@@ -1,5 +1,7 @@
 package ruben.springboot.service_management.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,11 @@ public class UserService {
         u = repository.save(u);
 
         return UserMapper.toResponse(u);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponseDto> list(){
+        return repository.findAll().stream().map(u -> UserMapper.toResponse(u)).toList();
     }
 
 }

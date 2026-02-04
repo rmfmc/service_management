@@ -11,7 +11,7 @@ public class UserMapper {
         dto.name = u.getName();
         dto.phone = u.getPhone();
         dto.username = u.getUsername();
-        dto.role = u.getRole();
+        dto.role = u.getRole().getLabelEs();
         dto.active = u.isActive();
         dto.createdAt = u.getCreatedAt();
         dto.lastUpdatedAt = u.getLastUpdatedAt();

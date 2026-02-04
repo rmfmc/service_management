@@ -11,7 +11,7 @@ public enum ApplianceType {
     OVEN("Horno"),
     COOKTOP_CERAMIC("Vitrocerámica"),
     COOKTOP_INDUCTION("Placa de inducción"),
-    GAS_COOKTOP("Cocina/placa de gas"),
+    GAS_COOKTOP("Cocina de gas"),
 
     WATER_HEATER("Calentador"),
     ELECTRIC_WATER_HEATER("Termo eléctrico"),

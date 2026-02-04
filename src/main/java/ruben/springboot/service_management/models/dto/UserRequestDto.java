@@ -3,7 +3,7 @@ package ruben.springboot.service_management.models.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import ruben.springboot.service_management.models.enums.UserRoles;
+import ruben.springboot.service_management.models.enums.UserRole;
 
 public class UserRequestDto {
 
@@ -24,7 +24,7 @@ public class UserRequestDto {
     public String password;
 
     @NotNull(message = "role is required")
-    public UserRoles role;
+    public UserRole role;
 
     public String getName() {
         return name;
@@ -58,11 +58,11 @@ public class UserRequestDto {
         this.password = password;
     }
 
-    public UserRoles getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(UserRoles role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
     

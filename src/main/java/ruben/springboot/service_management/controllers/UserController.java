@@ -1,6 +1,6 @@
 package ruben.springboot.service_management.controllers;
 
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +14,8 @@ import jakarta.validation.Valid;
 import ruben.springboot.service_management.models.dto.UserRequestDto;
 import ruben.springboot.service_management.models.dto.UserResponseDto;
 import ruben.springboot.service_management.services.UserService;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,5 +29,11 @@ public class UserController {
     public UserResponseDto create(@Valid @RequestBody UserRequestDto req) {
         return service.create(req);
     }
+
+    @GetMapping
+    public List<UserResponseDto> list() {
+        return service.list();
+    }
+    
 
 }

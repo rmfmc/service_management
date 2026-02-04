@@ -1,6 +1,5 @@
 package ruben.springboot.service_management.models.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import ruben.springboot.service_management.models.enums.ApplianceType;
 import jakarta.validation.constraints.NotNull;

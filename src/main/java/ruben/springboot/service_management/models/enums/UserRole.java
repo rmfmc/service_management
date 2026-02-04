@@ -1,20 +1,18 @@
 package ruben.springboot.service_management.models.enums;
 
-public enum WorkOrderPriority {
-
-    LOW("Baja"),
-    MEDIUM("Media"),
-    HIGH("Alta"),
-    URGENT("Urgente");
+public enum UserRole {
+    
+    ADMIN("Administrador"),
+    TECH("Técnico");
 
     private final String labelEs;
 
-    WorkOrderPriority(String labelEs) {
+    UserRole(String labelEs) {
         this.labelEs = labelEs;
     }
 
     public String getLabelEs() {
         return labelEs;
     }
-
+    
 }

@@ -86,6 +86,7 @@ public class WorkOrderMapper {
 
         if (w.getAppliance() != null) {
             dto.applianceId = w.getAppliance().getId();
+            dto.applianceType = w.getAppliance().getApplianceType().getLabelEs();
             dto.applianceBrand = w.getAppliance().getBrand();
             dto.applianceModel = w.getAppliance().getModel();
         }
@@ -103,8 +104,8 @@ public class WorkOrderMapper {
 
         dto.issueDescription = w.getIssueDescription();
 
-        dto.status = w.getStatus();
-        dto.priority = w.getPriority();
+        dto.status = w.getStatus().getLabelEs();
+        dto.priority = w.getPriority().getLabelEs();
 
         dto.notes = w.getNotes();
         dto.workPerformed = w.getWorkPerformed();

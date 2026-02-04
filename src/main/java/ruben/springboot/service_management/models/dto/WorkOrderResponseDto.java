@@ -3,9 +3,6 @@ package ruben.springboot.service_management.models.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import ruben.springboot.service_management.models.enums.WorkOrderPriority;
-import ruben.springboot.service_management.models.enums.WorkOrderStatus;
-
 public class WorkOrderResponseDto {
     
     public Long id;
@@ -34,8 +31,8 @@ public class WorkOrderResponseDto {
 
     public String issueDescription;
 
-    public WorkOrderStatus status;
-    public WorkOrderPriority priority;
+    public String status;
+    public String priority;
 
     public String notes;
     public String workPerformed;

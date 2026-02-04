@@ -12,7 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import ruben.springboot.service_management.models.enums.UserRoles;
+import ruben.springboot.service_management.models.enums.UserRole;
 
 @Entity
 @Table(name = "users")
@@ -33,7 +33,7 @@ public class User {
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    private UserRoles role;
+    private UserRole role;
 
     private boolean active = true;
 
@@ -43,7 +43,7 @@ public class User {
     @Column(name = "last_updated_at")
     private LocalDateTime lastUpdatedAt;
 
-    public User(Long id, String name, String phone, String username, String passwordHash, UserRoles role,
+    public User(Long id, String name, String phone, String username, String passwordHash, UserRole role,
             boolean active, LocalDateTime createdAt, LocalDateTime lastUpdatedAt) {
         this.id = id;
         this.name = name;
@@ -111,11 +111,11 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public UserRoles getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(UserRoles role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 
