@@ -1,5 +1,6 @@
 package ruben.springboot.service_management.authentication;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import ruben.springboot.service_management.models.User;
@@ -8,13 +9,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
+
+import javax.crypto.SecretKey;
 
 @Service
 public class JwtService {
 
-    private final Key key;
+    private final SecretKey key;
     private final long expirationMillis;
 
     public JwtService(
@@ -37,6 +40,36 @@ public class JwtService {
                 .signWith(key)
                 .compact();
 
+    }
+
+    public Claims parseClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public boolean isExpired(Claims claims) {
+        Date exp = claims.getExpiration();
+        return exp == null || exp.toInstant().isBefore(Instant.now());
+    }
+
+    public String getUsername(String token) {
+        return parseClaims(token).getSubject();
+    }
+
+    public Long getUserId(String token) {
+        Object v = parseClaims(token).get("userId");
+        if (v instanceof Integer) return ((Integer) v).longValue();
+        if (v instanceof Long) return (Long) v;
+        if (v instanceof String) return Long.parseLong((String) v);
+        throw new RuntimeException("Invalid userId in token");
+    }
+
+    public String getRole(String token) {
+        Object v = parseClaims(token).get("role");
+        return v == null ? null : v.toString();
     }
 
 }

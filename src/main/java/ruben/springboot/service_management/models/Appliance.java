@@ -28,4 +28,5 @@ public class Appliance {
     private String model;
 
     private String brand;
+
 }

@@ -11,7 +11,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import ruben.springboot.service_management.authentication.SecurityUtils;
 
 @Entity
 @Table(name = "work_orders")
@@ -64,5 +67,17 @@ public class WorkOrder {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="owner_id")
     private Client owner;
+
+    @PrePersist
+    public void prePersist(){
+        this.createdAt = LocalDateTime.now();
+        this.lastUpdatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate(){
+        this.lastUpdatedAt = LocalDateTime.now();
+    }
+
 
 }

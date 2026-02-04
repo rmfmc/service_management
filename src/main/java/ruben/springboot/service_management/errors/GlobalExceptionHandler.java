@@ -1,5 +1,6 @@
 package ruben.springboot.service_management.errors;
 
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -35,6 +36,21 @@ public class GlobalExceptionHandler {
 
         Map<String, String> errors = new LinkedHashMap<>();
         errors.put("body", "invalid request body (check enum values like role: ADMIN or TECH)");
+        body.put("errors", errors);
+
+        return body;
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public Map<String, Object> handleUsernameExists(UsernameAlreadyExistsException ex) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", 409);
+
+        Map<String, String> errors = new LinkedHashMap<>();
+        errors.put("username", ex.getMessage());
         body.put("errors", errors);
 
         return body;
