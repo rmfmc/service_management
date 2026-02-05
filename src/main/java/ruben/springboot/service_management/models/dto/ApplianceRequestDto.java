@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 public class ApplianceRequestDto {
 
+    public Long id;
+
     @NotNull(message = "clientId is required")
     public Long clientId;
 

@@ -4,16 +4,18 @@ import java.math.BigDecimal;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import ruben.springboot.service_management.models.User;
 import ruben.springboot.service_management.models.enums.WorkOrderPriority;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 public class WorkOrderRequestDto {
+    
     @NotNull(message = "clientId is required")
-    public Long clientId;
+    public ClientRequestDto clientDto;
 
-    public Long ownerId;
+    public ClientRequestDto ownerDto;
 
-    public Long applianceId;
+    public ApplianceRequestDto applianceDto;
 
     public Long assignedUserId;
 

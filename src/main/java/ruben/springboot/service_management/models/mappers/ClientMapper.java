@@ -9,6 +9,7 @@ public class ClientMapper {
 
     public static Client toEntity(ClientRequestDto dto) {
         Client c = new Client();
+        c.setId(dto.id);
         c.setName(dto.name);
         c.setAddress(dto.address);
         c.setCity(dto.city);
@@ -31,6 +32,7 @@ public class ClientMapper {
         dto.phone2 = c.getPhone2();
         dto.email = c.getEmail();
         dto.notes = c.getNotes();
+        dto.createdAt = c.getCreatedAt();
         return dto;
     }
 

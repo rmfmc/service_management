@@ -109,4 +109,46 @@ public class Appliance {
         this.active = active;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Appliance other = (Appliance) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (client == null) {
+            if (other.client != null)
+                return false;
+        } else if (!client.equals(other.client))
+            return false;
+        if (applianceType != other.applianceType)
+            return false;
+        if (model == null) {
+            if (other.model != null)
+                return false;
+        } else if (!model.equals(other.model))
+            return false;
+        if (brand == null) {
+            if (other.brand != null)
+                return false;
+        } else if (!brand.equals(other.brand))
+            return false;
+        if (serialNumber == null) {
+            if (other.serialNumber != null)
+                return false;
+        } else if (!serialNumber.equals(other.serialNumber))
+            return false;
+        if (active != other.active)
+            return false;
+        return true;
+    }
+    
+
 }

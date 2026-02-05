@@ -43,10 +43,10 @@ public class WorkOrderController {
         return service.getById(id);
     }
 
-    @PutMapping("/{id}")
-    public WorkOrderResponseDto update(@PathVariable Long id, @Valid @RequestBody WorkOrderRequestDto req) {
-        return service.update(id, req);
-    }
+    // @PutMapping("/{id}")
+    // public WorkOrderResponseDto update(@PathVariable Long id, @Valid @RequestBody WorkOrderRequestDto req) {
+    //     return service.update(id, req);
+    // }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

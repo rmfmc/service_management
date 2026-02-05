@@ -9,6 +9,7 @@ public class ApplianceMapper {
 
     public static Appliance toEntity(ApplianceRequestDto req, Client client) {
         Appliance a = new Appliance();
+        a.setId(req.id);
         a.setClient(client);
         a.setApplianceType(req.applianceType);
         a.setBrand(req.brand);
