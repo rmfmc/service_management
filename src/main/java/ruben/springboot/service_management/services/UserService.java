@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import ruben.springboot.service_management.errors.UsernameAlreadyExistsException;
+import ruben.springboot.service_management.errors.AlreadyExistsException;
 import ruben.springboot.service_management.models.User;
 import ruben.springboot.service_management.models.dto.UserRequestDto;
 import ruben.springboot.service_management.models.dto.UserResponseDto;
@@ -27,7 +27,7 @@ public class UserService {
     public UserResponseDto create(UserRequestDto req) {
 
         if (repository.existsByUsernameIgnoreCase(req.username)) {
-            throw new UsernameAlreadyExistsException();
+            throw new AlreadyExistsException("username already exists");
         }
 
         User u = new User();

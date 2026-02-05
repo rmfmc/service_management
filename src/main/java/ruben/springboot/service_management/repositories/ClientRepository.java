@@ -6,4 +6,5 @@ import ruben.springboot.service_management.models.Client;
 
 public interface ClientRepository extends JpaRepository<Client, Long>{
 
+    public boolean existsByPhone(String phone);
 }

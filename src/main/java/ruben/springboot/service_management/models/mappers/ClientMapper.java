@@ -13,7 +13,7 @@ public class ClientMapper {
         c.setAddress(dto.address);
         c.setCity(dto.city);
         c.setHasStairs(dto.hasStairs);
-        c.setPhone(dto.phone);
+        c.setPhone(dto.phone.trim());
         c.setPhone2(dto.phone2);
         c.setEmail(dto.email);
         c.setNotes(dto.notes);

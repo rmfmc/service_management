@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ruben.springboot.service_management.errors.NotFoundException;
+import ruben.springboot.service_management.errors.AlreadyExistsException;
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dto.ClientListDto;
 import ruben.springboot.service_management.models.dto.ClientRequestDto;
@@ -33,7 +34,13 @@ public class ClientService {
 
     @Transactional
     public ClientResponseDto create(ClientRequestDto req) {
+        
+        if (repository.existsByPhone(req.phone.trim())) {
+           throw new AlreadyExistsException("phone already exists");
+        }
+
         Client c = ClientMapper.toEntity(req);
+
         c = repository.save(c);
         return ClientMapper.toResponse(c);
     }

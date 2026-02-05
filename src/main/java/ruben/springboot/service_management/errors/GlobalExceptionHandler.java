@@ -98,15 +98,15 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(UsernameAlreadyExistsException.class)
-    public Map<String, Object> handleUsernameExists(UsernameAlreadyExistsException ex) {
+    @ExceptionHandler(AlreadyExistsException.class)
+    public Map<String, Object> handleUsernameExists(AlreadyExistsException ex) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", Instant.now().toString());
         body.put("status", 409);
 
         Map<String, String> errors = new LinkedHashMap<>();
-        errors.put("username", ex.getMessage());
+        errors.put("message", ex.getMessage());
         body.put("errors", errors);
 
         return body;
@@ -121,8 +121,8 @@ public class GlobalExceptionHandler {
                 "message", ex.getMessage());
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UnauthorizedException.class)
     public Map<String, Object> handleBadRequest(UnauthorizedException ex) {
         return Map.of(
                 "status", 401,
