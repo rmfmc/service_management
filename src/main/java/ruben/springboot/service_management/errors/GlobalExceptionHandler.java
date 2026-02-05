@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -111,8 +112,8 @@ public class GlobalExceptionHandler {
         return body;
     }
 
-    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
     public Map<String, Object> handleNotFound(NotFoundException ex) {
         return Map.of(
                 "status", 404,
@@ -120,12 +121,12 @@ public class GlobalExceptionHandler {
                 "message", ex.getMessage());
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> handleBadRequest(BadRequestException ex) {
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, Object> handleBadRequest(UnauthorizedException ex) {
         return Map.of(
-                "status", 400,
-                "error", "BAD_REQUEST",
+                "status", 401,
+                "error", "UNAUTHORIZED",
                 "message", ex.getMessage());
     }
 

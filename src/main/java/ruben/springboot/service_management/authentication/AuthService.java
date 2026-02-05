@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import ruben.springboot.service_management.errors.BadRequestException;
+import ruben.springboot.service_management.errors.UnauthorizedException;
 import ruben.springboot.service_management.models.User;
 import ruben.springboot.service_management.repositories.UserRepository;
 
@@ -22,14 +22,14 @@ public class AuthService {
 
     public String loginAndGetToken(String username, String rawPassword) {
         User user = userRepository.findByUsernameIgnoreCase(username)
-                .orElseThrow(() -> new BadRequestException("Invalid credentials"));
+                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
         if (!user.isActive()) {
-            throw new BadRequestException("User is disabled");
+            throw new UnauthorizedException("User is disabled");
         }
 
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
-            throw new BadRequestException("Invalid credentials");
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         return jwtService.generateToken(user);
@@ -37,7 +37,7 @@ public class AuthService {
 
     public User findByUsernameIgnoreCase(String username) {
         return userRepository.findByUsernameIgnoreCase(username)
-                .orElseThrow(() -> new BadRequestException("Invalid credentials"));
+                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
     }
 
 }
