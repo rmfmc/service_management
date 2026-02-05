@@ -1,6 +1,7 @@
 package ruben.springboot.service_management.models.mappers;
 
 import ruben.springboot.service_management.models.*;
+import ruben.springboot.service_management.models.dto.WorkOrderListDto;
 import ruben.springboot.service_management.models.dto.WorkOrderRequestDto;
 import ruben.springboot.service_management.models.dto.WorkOrderResponseDto;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
@@ -114,6 +115,35 @@ public class WorkOrderMapper {
         dto.createdAt = w.getCreatedAt();
         dto.closedAt = w.getClosedAt();
         dto.lastUpdatedAt = w.getLastUpdatedAt();
+
+        return dto;
+    }
+
+    public static WorkOrderListDto toList(WorkOrder w) {
+        WorkOrderListDto dto = new WorkOrderListDto();
+
+        dto.id = w.getId();
+
+        dto.clientName = w.getClient().getName();
+        dto.clientPhone = w.getClient().getPhone();
+        dto.clientAddress = w.getClient().getAddress();
+        dto.clientCity = w.getClient().getCity();
+
+        if (w.getAppliance() != null) {
+            dto.applianceType = w.getAppliance().getApplianceType().getLabelEs();
+            dto.applianceBrand = w.getAppliance().getBrand();
+        }
+
+        if (w.getAssignedUser() != null) {
+            dto.assignedUserName = w.getAssignedUser().getName();
+        }
+
+        dto.issueDescription = w.getIssueDescription();
+        dto.status = w.getStatus().getLabelEs();
+        dto.priority = w.getPriority().getLabelEs();
+        dto.priorityInt = w.getPriority().getPriorityInt();
+
+        dto.createdAt = w.getCreatedAt();
 
         return dto;
     }

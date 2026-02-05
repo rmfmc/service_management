@@ -3,6 +3,8 @@ package ruben.springboot.service_management.controllers;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import ruben.springboot.service_management.models.dto.WorkOrderListDto;
 import ruben.springboot.service_management.models.dto.WorkOrderRequestDto;
 import ruben.springboot.service_management.models.dto.WorkOrderResponseDto;
 import ruben.springboot.service_management.services.WorkOrderService;
@@ -30,7 +32,7 @@ public class WorkOrderController {
     // /api/work-orders?assignedUserId=2
     // /api/work-orders?status=OPEN
     @GetMapping
-    public List<WorkOrderResponseDto> list(@RequestParam(required = false) Long clientId,
+    public List<WorkOrderListDto> list(@RequestParam(required = false) Long clientId,
                                           @RequestParam(required = false) Long assignedUserId,
                                           @RequestParam(required = false) String status) {
         return service.list(clientId, assignedUserId, status);

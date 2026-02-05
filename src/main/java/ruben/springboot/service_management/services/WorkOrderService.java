@@ -12,6 +12,7 @@ import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.User;
 import ruben.springboot.service_management.models.WorkOrder;
+import ruben.springboot.service_management.models.dto.WorkOrderListDto;
 import ruben.springboot.service_management.models.dto.WorkOrderRequestDto;
 import ruben.springboot.service_management.models.dto.WorkOrderResponseDto;
 import ruben.springboot.service_management.models.mappers.WorkOrderMapper;
@@ -72,20 +73,21 @@ public class WorkOrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<WorkOrderResponseDto> list(Long clientId, Long assignedUserId, String status) {
+    public List<WorkOrderListDto> list(Long clientId, Long assignedUserId, String status) {
 
-        List<WorkOrder> list;
+        List<WorkOrderListDto> list;
 
         if (clientId != null)
-            list = workOrderRepository.findByClientIdOrderByCreatedAtDesc(clientId);
+            list = workOrderRepository.findByClientIdOrderByCreatedAtDesc(clientId).stream().map(w -> WorkOrderMapper.toList(w)).toList();
         else if (assignedUserId != null)
-            list = workOrderRepository.findByAssignedUserIdOrderByCreatedAtDesc(assignedUserId);
+            list = workOrderRepository.findByAssignedUserIdOrderByCreatedAtDesc(assignedUserId).stream().map(w -> WorkOrderMapper.toList(w)).toList();
         else if (status != null)
-            list = workOrderRepository.findByStatusOrderByCreatedAtDesc(status);
+            list = workOrderRepository.findByStatusOrderByCreatedAtDesc(status).stream().map(w -> WorkOrderMapper.toList(w)).toList();
         else
-            list = workOrderRepository.findAllByOrderByCreatedAtDesc();
+            //list = workOrderRepository.findAllByOrderByCreatedAtDesc();
+            list = workOrderRepository.findAllForList();
 
-        return list.stream().map(WorkOrderMapper::toResponse).toList();
+        return list;
     }
 
     @Transactional(readOnly = true)
