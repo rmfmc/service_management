@@ -42,7 +42,7 @@ public class ClientRequestDto {
         this.address = address;
         this.city = city;
         this.hasStairs = hasStairs;
-        this.phone = phone;
+        this.phone = phone.trim();
         this.phone2 = phone2;
         this.email = email;
         this.notes = notes;
@@ -53,7 +53,7 @@ public class ClientRequestDto {
         this.address = address;
         this.city = city;
         this.hasStairs = hasStairs;
-        this.phone = phone;
+        this.phone = phone.trim();
         this.phone2 = phone2;
         this.email = email;
         this.notes = notes;

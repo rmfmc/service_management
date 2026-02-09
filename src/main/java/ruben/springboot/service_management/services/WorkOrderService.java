@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ruben.springboot.service_management.authentication.SecurityUtils;
+import ruben.springboot.service_management.errors.AlreadyExistsException;
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.Client;
@@ -45,33 +46,60 @@ public class WorkOrderService {
     public WorkOrderResponseDto create(WorkOrderRequestDto req) {
 
         Client client = null;
-        if (req.clientDto.id == null) {
-            client = clientRepository.save(ClientMapper.toEntity(req.clientDto));
-        } else if (clientRepository.existsById(req.clientDto.id)) {
 
+        if (req.clientDto.id == null && !clientRepository.existsByPhone(req.clientDto.phone)) {
+            // Client es nuevo y no el num de teléfono no existe: lo crea
+            client = clientRepository.save(ClientMapper.toEntity(req.clientDto));
+        } else if (req.clientDto.id == null && clientRepository.existsByPhone(req.clientDto.phone)) {
+            // Client es nuevo y no el num de teléfono ya existe: da error y da nombre de
+            // cliente con ese teléfono
+            String alreadyUsedPhoneName = clientRepository.findByPhone(req.clientDto.phone).get().getName();
+            throw new AlreadyExistsException("teléfono de cliente ya utilizado por cliente: " + alreadyUsedPhoneName);
+        } else if (clientRepository.existsById(req.clientDto.id)) {
+            // Client id existe
             Client clientDb = clientRepository.findById(req.clientDto.id).get();
 
-            if (!clientDb.equals(ClientMapper.toEntity(req.clientDto))) {
+            // Cliente es diferente al que viene de la BD y el numero de teléfono no existe:
+            // actualiza y guarda
+            if (!clientDb.equals(ClientMapper.toEntity(req.clientDto))
+                    && !clientRepository.existsByPhone(req.clientDto.phone)) {
                 patchClient(clientDb, req.clientDto);
                 client = clientRepository.save(clientDb);
+            } else if (!clientDb.equals(ClientMapper.toEntity(req.clientDto))
+                    && clientRepository.existsByPhone(req.clientDto.phone)) {
+                // Cliente es diferente al que viene de la BD y el numero de teléfono existe: da
+                // error y da nombre de cliente con ese teléfono
+                String alreadyUsedPhoneName = clientRepository.findByPhone(req.clientDto.phone).get().getName();
+                throw new AlreadyExistsException(
+                        "teléfono de cliente ya utilizado por cliente: " + alreadyUsedPhoneName);
             } else {
+                // Cliente es igual que el de la BD: referencia al de la BD
                 client = clientDb;
             }
-        }else{
+        } else {
             throw new NotFoundException("client not found");
         }
 
         Client owner = null;
         if (req.ownerDto != null) {
-            if (req.ownerDto.id == null) {
+            if (req.ownerDto.id == null && !clientRepository.existsByPhone(req.ownerDto.phone)) {
                 owner = clientRepository.save(ClientMapper.toEntity(req.ownerDto));
+            } else if (req.ownerDto.id == null && clientRepository.existsByPhone(req.ownerDto.phone)) {
+                String alreadyUsedPhoneName = clientRepository.findByPhone(req.ownerDto.phone).get().getName();
+                throw new AlreadyExistsException("teléfono de dueño ya utilizado por cliente: " + alreadyUsedPhoneName);
             } else if (clientRepository.existsById(req.ownerDto.id)) {
 
                 Client ownerDb = clientRepository.findById(req.ownerDto.id).get();
 
-                if (!ownerDb.equals(ClientMapper.toEntity(req.ownerDto))) {
+                if (!ownerDb.equals(ClientMapper.toEntity(req.ownerDto))
+                        && !clientRepository.existsByPhone(req.ownerDto.phone)) {
                     patchClient(ownerDb, req.ownerDto);
                     owner = clientRepository.save(ownerDb);
+                } else if (!ownerDb.equals(ClientMapper.toEntity(req.ownerDto))
+                        && clientRepository.existsByPhone(req.ownerDto.phone)) {
+                    String alreadyUsedPhoneName = clientRepository.findByPhone(req.ownerDto.phone).get().getName();
+                    throw new AlreadyExistsException(
+                            "teléfono de dueño ya utilizado por cliente: " + alreadyUsedPhoneName);
                 } else {
                     owner = ownerDb;
                 }
@@ -215,6 +243,6 @@ public class WorkOrderService {
             a.setSerialNumber(dto.serialNumber);
         if (dto.active != null)
             a.setActive(dto.active);
-        
+
     }
 }
