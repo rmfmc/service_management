@@ -23,7 +23,7 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
 
     @Query("""
             select new ruben.springboot.service_management.models.dto.WorkOrderListDto(
-              wo.id, wo.issueDescription,  wo.status, wo.priority, wo.createdAt,
+              wo.id, wo.issueDescription,  wo.status, wo.priority, wo.scheduledAt, wo.createdAt,
               c.name, c.address, c.city, c.phone,
               a.applianceType, a.brand,
               u.username

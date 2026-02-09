@@ -33,6 +33,7 @@ public class WorkOrderMapper {
         w.setNotes(req.notes);
         w.setWorkPerformed(req.workPerformed);
         w.setPrice(req.price);
+        w.setScheduledAt(req.sheduledAt);
 
         // Si entra ya como CLOSED, cerramos fecha
         if (req.status == WorkOrderStatus.CLOSED) {
@@ -63,6 +64,7 @@ public class WorkOrderMapper {
         w.setNotes(req.notes);
         w.setWorkPerformed(req.workPerformed);
         w.setPrice(req.price);
+        w.setScheduledAt(req.sheduledAt);
 
         if (req.status == WorkOrderStatus.CLOSED && w.getClosedAt() == null) {
             w.setClosedAt(LocalDateTime.now());
@@ -111,6 +113,7 @@ public class WorkOrderMapper {
         dto.notes = w.getNotes();
         dto.workPerformed = w.getWorkPerformed();
         dto.price = w.getPrice();
+        dto.scheduledAt = w.getScheduledAt();
 
         dto.createdAt = w.getCreatedAt();
         dto.closedAt = w.getClosedAt();
@@ -143,6 +146,7 @@ public class WorkOrderMapper {
         dto.priority = w.getPriority().getLabelEs();
         dto.priorityInt = w.getPriority().getPriorityInt();
 
+        dto.scheduledAt = w.getScheduledAt();
         dto.createdAt = w.getCreatedAt();
 
         return dto;

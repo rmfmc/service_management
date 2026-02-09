@@ -1,5 +1,6 @@
 package ruben.springboot.service_management.models.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import ruben.springboot.service_management.models.enums.ApplianceType;
@@ -13,6 +14,7 @@ public class WorkOrderListDto {
     public String status;
     public String priority;
     public int priorityInt;
+    public LocalDate scheduledAt;
     public LocalDateTime createdAt;
 
     public String clientName;
@@ -26,13 +28,14 @@ public class WorkOrderListDto {
     public String assignedUserName;
 
     public WorkOrderListDto(Long id, String issueDescription, WorkOrderStatus status, WorkOrderPriority priority,
-            LocalDateTime createdAt, String clientName, String clientAddress, String clientCity, String clientPhone,
+            LocalDate scheduledAt, LocalDateTime createdAt, String clientName, String clientAddress, String clientCity, String clientPhone,
             ApplianceType applianceType, String applianceBrand, String assignedUserName) {
         this.id = id;
         this.issueDescription = issueDescription;
         this.status = status.getLabelEs();
         this.priority = priority.getLabelEs();
         this.priorityInt = priority.getPriorityInt();
+        this.scheduledAt = scheduledAt;
         this.createdAt = createdAt;
         this.clientName = clientName;
         this.clientAddress = clientAddress;

@@ -1,6 +1,7 @@
 package ruben.springboot.service_management.models.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -35,5 +36,7 @@ public class WorkOrderRequestDto {
     public String workPerformed;
 
     public BigDecimal price;
+
+    public LocalDate sheduledAt;
 
 }

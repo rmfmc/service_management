@@ -1,6 +1,7 @@
 package ruben.springboot.service_management.models;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -63,6 +64,9 @@ public class WorkOrder {
     private String workPerformed;
 
     private BigDecimal price;
+
+    @Column(name = "scheduled_at")
+    private LocalDate scheduledAt;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -182,6 +186,14 @@ public class WorkOrder {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public LocalDate getScheduledAt() {
+        return scheduledAt;
+    }
+
+    public void setScheduledAt(LocalDate scheduledAt) {
+        this.scheduledAt = scheduledAt;
     }
 
     public LocalDateTime getCreatedAt() {

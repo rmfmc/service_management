@@ -1,5 +1,6 @@
 package ruben.springboot.service_management.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -135,6 +136,11 @@ public class WorkOrderService {
                 .orElseThrow(() -> new NotFoundException("created user not found"));
 
         User lastUpdatedUser = createdUser;
+
+        if (req.sheduledAt == null) {
+            req.sheduledAt = LocalDate.now();
+            req.sheduledAt.plusDays(1);
+        }
 
         WorkOrder w = WorkOrderMapper.toEntity(req, client, owner, appliance, assigned, createdUser,
                 lastUpdatedUser);

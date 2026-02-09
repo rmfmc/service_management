@@ -1,6 +1,7 @@
 package ruben.springboot.service_management.models.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class WorkOrderResponseDto {
@@ -37,6 +38,7 @@ public class WorkOrderResponseDto {
     public String notes;
     public String workPerformed;
     public BigDecimal price;
+    public LocalDate scheduledAt;
 
     public LocalDateTime createdAt;
     public LocalDateTime closedAt;
