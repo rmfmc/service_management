@@ -12,14 +12,20 @@ import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dto.ClientListDto;
 import ruben.springboot.service_management.models.dto.ClientRequestDto;
 import ruben.springboot.service_management.models.dto.ClientResponseDto;
+import ruben.springboot.service_management.models.dto.WorkOrderListDto;
 import ruben.springboot.service_management.models.mappers.ClientMapper;
+import ruben.springboot.service_management.models.mappers.WorkOrderMapper;
 import ruben.springboot.service_management.repositories.ClientRepository;
+import ruben.springboot.service_management.repositories.WorkOrderRepository;
 
 @Service
 public class ClientService {
 
     @Autowired
     private ClientRepository repository;
+
+    @Autowired
+    private WorkOrderRepository workOrderRepository;
 
     @Transactional(readOnly = true)
     public List<ClientListDto> list() {
@@ -35,7 +41,7 @@ public class ClientService {
     @Transactional
     public ClientResponseDto create(ClientRequestDto req) {
         
-        if (repository.existsByPhone(req.phone.trim())) {
+        if (repository.existsByPhone(req.phone)) {
            throw new AlreadyExistsException("phone already exists");
         }
 
@@ -43,6 +49,23 @@ public class ClientService {
 
         c = repository.save(c);
         return ClientMapper.toResponse(c);
+    }
+
+    @Transactional(readOnly = true)
+    public List<WorkOrderListDto> findWorkOrdersByClientId(Long id){
+        if(!repository.existsById(id)){
+            throw new NotFoundException("client not found");
+        }
+        
+        Client client = new Client();
+        client.setId(id);
+        return workOrderRepository.findByClient(client).stream().map(WorkOrderMapper::toList).toList();
+
+    }
+
+    @Transactional
+    public List<ClientListDto> search(String q){
+        return repository.search(q).stream().map(ClientMapper::toListDto).toList();
     }
 
 }

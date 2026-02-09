@@ -6,14 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import ruben.springboot.service_management.models.dto.ApplianceListDto;
 import ruben.springboot.service_management.models.dto.ClientListDto;
 import ruben.springboot.service_management.models.dto.ClientRequestDto;
 import ruben.springboot.service_management.models.dto.ClientResponseDto;
+import ruben.springboot.service_management.models.dto.WorkOrderListDto;
 import ruben.springboot.service_management.services.ClientService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
@@ -32,5 +36,20 @@ public class ClientController {
     public ClientResponseDto create(@Valid @RequestBody ClientRequestDto request) {
         return service.create(request);
     }
+
+    @GetMapping("/search")
+    public List<ClientListDto> search(@RequestParam(name = "q", required = false) String q) {
+        return service.search(q);
+    }
+
+    @GetMapping("/{id}/work_orders")
+    public List<WorkOrderListDto> workOrders(@PathVariable Long id) {
+        return service.findWorkOrdersByClientId(id);
+    }
+
+    // @GetMapping("/{id}/appliances")
+    // public List<ApplianceListDto> appliances(@PathVariable Long id) {
+    //     return composeService.listAppliancesByClient(id);
+    // }
 
 }

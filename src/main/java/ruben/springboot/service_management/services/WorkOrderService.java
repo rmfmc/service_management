@@ -218,31 +218,21 @@ public class WorkOrderService {
             c.setName(dto.name);
         if (dto.address != null)
             c.setAddress(dto.address);
-        if (dto.city != null)
-            c.setCity(dto.city);
+        c.setCity(dto.city);
         if (dto.hasStairs != null)
             c.setHasStairs(dto.hasStairs);
         if (dto.phone != null)
             c.setPhone(dto.phone);
-        if (dto.phone2 != null)
-            c.setPhone2(dto.phone2);
-        if (dto.email != null)
-            c.setEmail(dto.email);
-        if (dto.notes != null)
-            c.setNotes(dto.notes);
+        c.setPhone2(dto.phone2);
+        c.setEmail(dto.email);
+        c.setNotes(dto.notes);
     }
 
     private void patchAppliance(Appliance a, ApplianceRequestDto dto) {
-        if (dto.applianceType != null)
-            a.setApplianceType(dto.applianceType);
-        if (dto.model != null)
-            a.setModel(dto.model);
-        if (dto.brand != null)
-            a.setBrand(dto.brand);
-        if (dto.serialNumber != null)
-            a.setSerialNumber(dto.serialNumber);
-        if (dto.active != null)
-            a.setActive(dto.active);
-
+        a.setApplianceType(dto.applianceType);
+        a.setModel(dto.model);
+        a.setBrand(dto.brand);
+        a.setSerialNumber(dto.serialNumber);
+        a.setActive(dto.active);
     }
 }

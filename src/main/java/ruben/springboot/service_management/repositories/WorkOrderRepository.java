@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.WorkOrder;
 import ruben.springboot.service_management.models.dto.WorkOrderListDto;
 
@@ -17,6 +18,8 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
     List<WorkOrder> findByAssignedUserIdOrderByCreatedAtDesc(Long userId);
 
     List<WorkOrder> findByStatusOrderByCreatedAtDesc(String status);
+
+    List<WorkOrder> findByClient(Client client);
 
     @Query("""
             select new ruben.springboot.service_management.models.dto.WorkOrderListDto(
