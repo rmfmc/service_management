@@ -1,9 +1,9 @@
 package ruben.springboot.service_management.models.mappers;
 
 import ruben.springboot.service_management.models.*;
-import ruben.springboot.service_management.models.dto.WorkOrderListDto;
-import ruben.springboot.service_management.models.dto.WorkOrderRequestDto;
-import ruben.springboot.service_management.models.dto.WorkOrderResponseDto;
+import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
+import ruben.springboot.service_management.models.dtos.requests.WorkOrderRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 import java.time.LocalDateTime;
@@ -19,6 +19,7 @@ public class WorkOrderMapper {
                                      User lastUpdatedUser) {
 
         WorkOrder w = new WorkOrder();
+        w.setId(req.id);
         w.setClient(client);
         w.setOwner(owner);
         w.setAppliance(appliance);
@@ -35,42 +36,13 @@ public class WorkOrderMapper {
         w.setPrice(req.price);
         w.setScheduledAt(req.sheduledAt);
 
-        // Si entra ya como CLOSED, cerramos fecha
-        if (req.status == WorkOrderStatus.CLOSED) {
+        if ((req.status == WorkOrderStatus.CLOSED || req.status == WorkOrderStatus.APPLIANCE_INSTALLED) && w.getClosedAt() == null) {
             w.setClosedAt(LocalDateTime.now());
         }
 
         return w;
     }
 
-    public static void updateEntity(WorkOrder w,
-                                   WorkOrderRequestDto req,
-                                   Client client,
-                                   Client owner,
-                                   Appliance appliance,
-                                   User assignedUser,
-                                   User lastUpdatedUser) {
-
-        w.setClient(client);
-        w.setOwner(owner);
-        w.setAppliance(appliance);
-        w.setAssignedUser(assignedUser);
-
-        w.setLastUpdatedUser(lastUpdatedUser);
-
-        w.setIssueDescription(req.issueDescription);
-        w.setStatus(req.status);
-        w.setPriority(req.priority);
-        w.setNotes(req.notes);
-        w.setWorkPerformed(req.workPerformed);
-        w.setPrice(req.price);
-        w.setScheduledAt(req.sheduledAt);
-
-        if (req.status == WorkOrderStatus.CLOSED && w.getClosedAt() == null) {
-            w.setClosedAt(LocalDateTime.now());
-        }
-
-    }
 
     public static WorkOrderResponseDto toResponse(WorkOrder w) {
         WorkOrderResponseDto dto = new WorkOrderResponseDto();

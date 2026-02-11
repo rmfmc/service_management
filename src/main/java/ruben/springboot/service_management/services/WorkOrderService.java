@@ -15,11 +15,11 @@ import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.User;
 import ruben.springboot.service_management.models.WorkOrder;
-import ruben.springboot.service_management.models.dto.ApplianceRequestDto;
-import ruben.springboot.service_management.models.dto.ClientRequestDto;
-import ruben.springboot.service_management.models.dto.WorkOrderListDto;
-import ruben.springboot.service_management.models.dto.WorkOrderRequestDto;
-import ruben.springboot.service_management.models.dto.WorkOrderResponseDto;
+import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
+import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
+import ruben.springboot.service_management.models.dtos.requests.ClientRequestDto;
+import ruben.springboot.service_management.models.dtos.requests.WorkOrderRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
 import ruben.springboot.service_management.models.mappers.ApplianceMapper;
 import ruben.springboot.service_management.models.mappers.ClientMapper;
 import ruben.springboot.service_management.models.mappers.WorkOrderMapper;
@@ -177,42 +177,115 @@ public class WorkOrderService {
         return WorkOrderMapper.toResponse(w);
     }
 
-    // @Transactional
-    // public WorkOrderResponseDto update(Long id, WorkOrderRequestDto req) {
-    // Long currentUserId = SecurityUtils.currentUserId();
+    @Transactional
+    public WorkOrderResponseDto update(Long id, WorkOrderRequestDto req) {
+        
+        if (id == null || id == 0 || !workOrderRepository.existsById(id)) {
+            throw new NotFoundException("work order not found");
+        }
 
-    // WorkOrder w = workOrderRepository.findById(id)
-    // .orElseThrow(() -> new NotFoundException("work order not found"));
+        req.id = id;
+        
+        Client client = null;
+        if (req.clientDto.id == null && !clientRepository.existsByPhone(req.clientDto.phone)) {
+            // Client es nuevo y no el num de teléfono no existe: lo crea
+            client = clientRepository.save(ClientMapper.toEntity(req.clientDto));
+        } else if (req.clientDto.id == null && clientRepository.existsByPhone(req.clientDto.phone)) {
+            // Client es nuevo y no el num de teléfono ya existe: da error y da nombre de
+            // cliente con ese teléfono
+            String alreadyUsedPhoneName = clientRepository.findByPhone(req.clientDto.phone).get().getName();
+            throw new AlreadyExistsException("teléfono de cliente ya utilizado por cliente: " + alreadyUsedPhoneName);
+        } else if (clientRepository.existsById(req.clientDto.id)) {
+            // Client id existe
+            Client clientDb = clientRepository.findById(req.clientDto.id).get();
 
-    // Client client = clientRepository.findById(req.clientId)
-    // .orElseThrow(() -> new NotFoundException("client not found"));
+            // Cliente es diferente al que viene de la BD y el numero de teléfono no existe:
+            // actualiza y guarda
+            if (!clientDb.equals(ClientMapper.toEntity(req.clientDto))
+                    && !clientRepository.existsByPhone(req.clientDto.phone)) {
+                patchClient(clientDb, req.clientDto);
+                client = clientRepository.save(clientDb);
+            } else if (!clientDb.equals(ClientMapper.toEntity(req.clientDto))
+                    && clientRepository.existsByPhone(req.clientDto.phone)) {
+                // Cliente es diferente al que viene de la BD y el numero de teléfono existe: da
+                // error y da nombre de cliente con ese teléfono
+                String alreadyUsedPhoneName = clientRepository.findByPhone(req.clientDto.phone).get().getName();
+                throw new AlreadyExistsException(
+                        "teléfono de cliente ya utilizado por cliente: " + alreadyUsedPhoneName);
+            } else {
+                // Cliente es igual que el de la BD: referencia al de la BD
+                client = clientDb;
+            }
+        } else {
+            throw new NotFoundException("client not found");
+        }
 
-    // Client owner = null;
-    // if (req.ownerId != null) {
-    // owner = clientRepository.findById(req.ownerId)
-    // .orElseThrow(() -> new NotFoundException("owner not found"));
-    // }
+        Client owner = null;
+        if (req.ownerDto != null) {
+            if (req.ownerDto.id == null && !clientRepository.existsByPhone(req.ownerDto.phone)) {
+                owner = clientRepository.save(ClientMapper.toEntity(req.ownerDto));
+            } else if (req.ownerDto.id == null && clientRepository.existsByPhone(req.ownerDto.phone)) {
+                String alreadyUsedPhoneName = clientRepository.findByPhone(req.ownerDto.phone).get().getName();
+                throw new AlreadyExistsException("teléfono de dueño ya utilizado por cliente1: " + alreadyUsedPhoneName);
+            } else if (clientRepository.existsById(req.ownerDto.id)) {
 
-    // Appliance appliance = null;
-    // if (req.applianceId != null) {
-    // appliance = applianceRepository.findById(req.applianceId)
-    // .orElseThrow(() -> new NotFoundException("appliance not found"));
-    // }
+                Client ownerDb = clientRepository.findById(req.ownerDto.id).get();
 
-    // User assigned = null;
-    // if (req.assignedUserId != null) {
-    // assigned = userRepository.findById(req.assignedUserId)
-    // .orElseThrow(() -> new NotFoundException("assigned user not found"));
-    // }
+                if (!ownerDb.equals(ClientMapper.toEntity(req.ownerDto))
+                        && !clientRepository.existsByPhone(req.ownerDto.phone)) {
+                    patchClient(ownerDb, req.ownerDto);
+                    owner = clientRepository.save(ownerDb);
+                } else if (!ownerDb.equals(ClientMapper.toEntity(req.ownerDto))
+                        && clientRepository.existsByPhone(req.ownerDto.phone)) {
+                    String alreadyUsedPhoneName = clientRepository.findByPhone(req.ownerDto.phone).get().getName();
+                    throw new AlreadyExistsException(
+                            "teléfono de dueño ya utilizado por cliente2: " + alreadyUsedPhoneName);
+                } else {
+                    owner = ownerDb;
+                }
+            }
+        }
 
-    // User lastUpdatedUser = userRepository.findById(currentUserId)
-    // .orElseThrow(() -> new NotFoundException("last updated user not found"));
+        Appliance appliance = null;
+        System.out.println(req.applianceDto.toString());
+        if (req.applianceDto != null) {
+            if (req.applianceDto.id == null) {
+                appliance = applianceRepository.save(ApplianceMapper.toEntity(req.applianceDto, client));
+            } else if (applianceRepository.existsById(req.applianceDto.id)) {
 
-    // WorkOrderMapper.updateEntity(w, req, client, owner, appliance, assigned,
-    // lastUpdatedUser);
-    // w = workOrderRepository.save(w);
-    // return WorkOrderMapper.toResponse(w);
-    // }
+                Appliance applianceDb = applianceRepository.findById(req.applianceDto.id).get();
+
+                if (!applianceDb.equals(ApplianceMapper.toEntity(req.applianceDto, client))) {
+                    patchAppliance(applianceDb, req.applianceDto);
+                    appliance = applianceRepository.save(applianceDb);
+                } else {
+                    appliance = applianceDb;
+                }
+            }
+        }
+
+        User assigned = null;
+        if (req.assignedUserId != null) {
+            assigned = userRepository.findById(req.assignedUserId)
+                    .orElseThrow(() -> new NotFoundException("assigned user not found"));
+        }
+
+        Long currentUserId = SecurityUtils.currentUserId();
+        User createdUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new NotFoundException("created user not found"));
+
+        User lastUpdatedUser = createdUser;
+
+        if (req.sheduledAt == null) {
+            req.sheduledAt = LocalDate.now();
+            req.sheduledAt.plusDays(1);
+        }
+
+        WorkOrder w = WorkOrderMapper.toEntity(req, client, owner, appliance, assigned, createdUser,
+                lastUpdatedUser);
+        w = workOrderRepository.save(w);
+        return WorkOrderMapper.toResponse(w);
+    }
 
     @Transactional
     public void delete(Long id) {

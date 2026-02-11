@@ -166,11 +166,13 @@ public class Client {
                 return false;
         } else if (!city.equals(other.city))
             return false;
+            
         if (hasStairs == null) {
             if (other.hasStairs != null)
                 return false;
         } else if (!hasStairs.equals(other.hasStairs))
             return false;
+            
         if (phone == null) {
             if (other.phone != null)
                 return false;

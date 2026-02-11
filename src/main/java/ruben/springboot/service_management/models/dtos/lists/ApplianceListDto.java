@@ -1,4 +1,4 @@
-package ruben.springboot.service_management.models.dto;
+package ruben.springboot.service_management.models.dtos.lists;
 
 import ruben.springboot.service_management.models.enums.ApplianceType;
 

@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import ruben.springboot.service_management.models.dto.ApplianceRequestDto;
-import ruben.springboot.service_management.models.dto.ApplianceResponseDto;
+import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
 import ruben.springboot.service_management.services.ApplianceService;
 
 @RestController

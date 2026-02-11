@@ -2,8 +2,8 @@ package ruben.springboot.service_management.models.mappers;
 
 import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.Client;
-import ruben.springboot.service_management.models.dto.ApplianceRequestDto;
-import ruben.springboot.service_management.models.dto.ApplianceResponseDto;
+import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
 
 public class ApplianceMapper {
 

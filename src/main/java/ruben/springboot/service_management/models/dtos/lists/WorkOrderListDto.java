@@ -1,4 +1,4 @@
-package ruben.springboot.service_management.models.dto;
+package ruben.springboot.service_management.models.dtos.lists;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

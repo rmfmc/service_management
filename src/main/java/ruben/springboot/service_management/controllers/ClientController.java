@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import ruben.springboot.service_management.models.dto.ApplianceListDto;
-import ruben.springboot.service_management.models.dto.ClientListDto;
-import ruben.springboot.service_management.models.dto.ClientRequestDto;
-import ruben.springboot.service_management.models.dto.ClientResponseDto;
-import ruben.springboot.service_management.models.dto.WorkOrderListDto;
+import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
+import ruben.springboot.service_management.models.dtos.lists.ClientListDto;
+import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
+import ruben.springboot.service_management.models.dtos.requests.ClientRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.ClientResponseDto;
 import ruben.springboot.service_management.services.ClientService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

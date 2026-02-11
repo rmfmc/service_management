@@ -1,7 +1,7 @@
 package ruben.springboot.service_management.models.mappers;
 
 import ruben.springboot.service_management.models.User;
-import ruben.springboot.service_management.models.dto.UserResponseDto;
+import ruben.springboot.service_management.models.dtos.responses.UserResponseDto;
 
 public class UserMapper {
     

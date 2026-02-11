@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.WorkOrder;
-import ruben.springboot.service_management.models.dto.WorkOrderListDto;
+import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 
 public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
 

@@ -28,4 +28,6 @@ public enum ApplianceType {
     public String getLabelEs() {
         return labelEs;
     }
+
+    
 }

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import ruben.springboot.service_management.models.dto.UserRequestDto;
-import ruben.springboot.service_management.models.dto.UserResponseDto;
+import ruben.springboot.service_management.models.dtos.requests.UserRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.UserResponseDto;
 import ruben.springboot.service_management.services.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 

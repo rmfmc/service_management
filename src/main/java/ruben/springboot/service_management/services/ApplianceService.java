@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
-import ruben.springboot.service_management.models.dto.ApplianceRequestDto;
-import ruben.springboot.service_management.models.dto.ApplianceResponseDto;
+
+import ruben.springboot.service_management.models.enums.ApplianceType;
 import ruben.springboot.service_management.models.mappers.ApplianceMapper;
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.Client;
+import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
 import ruben.springboot.service_management.repositories.ApplianceRepository;
 import ruben.springboot.service_management.repositories.ClientRepository;
 
@@ -74,5 +76,10 @@ public class ApplianceService {
         a.setActive(false);
         applianceRepository.save(a);
     }
+
+    // @Transactional
+    // public void addApplianceType(String name){
+    //     ApplianceType(name);
+    // }
 
 }

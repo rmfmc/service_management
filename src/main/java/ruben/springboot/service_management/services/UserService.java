@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ruben.springboot.service_management.errors.AlreadyExistsException;
 import ruben.springboot.service_management.models.User;
-import ruben.springboot.service_management.models.dto.UserRequestDto;
-import ruben.springboot.service_management.models.dto.UserResponseDto;
+import ruben.springboot.service_management.models.dtos.requests.UserRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.UserResponseDto;
 import ruben.springboot.service_management.models.mappers.UserMapper;
 import ruben.springboot.service_management.repositories.UserRepository;
 

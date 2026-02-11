@@ -4,9 +4,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import ruben.springboot.service_management.models.dto.WorkOrderListDto;
-import ruben.springboot.service_management.models.dto.WorkOrderRequestDto;
-import ruben.springboot.service_management.models.dto.WorkOrderResponseDto;
+import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
+import ruben.springboot.service_management.models.dtos.requests.WorkOrderRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
 import ruben.springboot.service_management.services.WorkOrderService;
 
 import java.util.List;
@@ -43,10 +43,10 @@ public class WorkOrderController {
         return service.getById(id);
     }
 
-    // @PutMapping("/{id}")
-    // public WorkOrderResponseDto update(@PathVariable Long id, @Valid @RequestBody WorkOrderRequestDto req) {
-    //     return service.update(id, req);
-    // }
+    @PutMapping("/{id}")
+    public WorkOrderResponseDto update(@PathVariable Long id, @Valid @RequestBody WorkOrderRequestDto req) {
+        return service.update(id, req);
+    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

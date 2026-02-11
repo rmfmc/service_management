@@ -1,16 +1,17 @@
-package ruben.springboot.service_management.models.dto;
+package ruben.springboot.service_management.models.dtos.requests;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import ruben.springboot.service_management.models.User;
 import ruben.springboot.service_management.models.enums.WorkOrderPriority;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 public class WorkOrderRequestDto {
     
+    public Long id;
+
     @NotNull(message = "clientId is required")
     public ClientRequestDto clientDto;
 
