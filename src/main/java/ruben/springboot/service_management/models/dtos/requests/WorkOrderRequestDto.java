@@ -2,32 +2,36 @@ package ruben.springboot.service_management.models.dtos.requests;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import ruben.springboot.service_management.models.enums.WorkOrderPriority;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 public class WorkOrderRequestDto {
-    
-    public Long id;
+
+    public Long workOrderId;
 
     @NotNull(message = "clientId is required")
-    public ClientRequestDto clientDto;
+    public Long clientId;
 
-    public ClientRequestDto ownerDto;
+    @NotNull(message = "addressId is required")
+    public Long addressId;
 
-    public ApplianceRequestDto applianceDto;
+    public Set<Long> applianceIds;
 
+    public Long createdUserId;
+    public Long lastUpdateUserId;
     public Long assignedUserId;
 
     @Size(max = 100, message = "issueDescription must be at most 100 characters")
     public String issueDescription;
 
-    @NotNull(message = "status is required")
     public WorkOrderStatus status;
 
-    @NotNull(message = "priority is required")
     public WorkOrderPriority priority;
 
     @Size(max = 250, message = "notes must be at most 250 characters")
@@ -36,8 +40,19 @@ public class WorkOrderRequestDto {
     @Size(max = 100, message = "workPerformed must be at most 100 characters")
     public String workPerformed;
 
-    public BigDecimal price;
+    public Boolean discountVisit;
 
+    public BigDecimal totalPrice;
+
+    @Size(max = 45)
+    public String billTo;
+
+    @Valid
+    public List<WorkOrderChargeRequestDto> charges;
+
+    public Long tenantId;
+
+    @NotNull
     public LocalDate sheduledAt;
 
 }

@@ -1,7 +1,7 @@
 package ruben.springboot.service_management.models.enums;
 
 public enum WorkOrderStatus {
-    OPEN("Nuevo"),
+    NEW("Nuevo"),
     IN_PROGRESS("En progreso"),
     PENDING_PART("Pendiente de pieza"),
     PENDING_CUSTOMER("Pendiente del cliente"),

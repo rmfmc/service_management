@@ -1,52 +1,71 @@
 package ruben.springboot.service_management.models.mappers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
+import ruben.springboot.service_management.repositories.AddressRepository;
+import ruben.springboot.service_management.repositories.ApplianceTypeRepository;
+import ruben.springboot.service_management.repositories.BrandRepository;
 
+@Component
 public class ApplianceMapper {
 
-    public static Appliance toEntity(ApplianceRequestDto req, Client client) {
-        Appliance a = new Appliance();
-        a.setId(req.id);
-        a.setClient(client);
-        a.setApplianceType(req.applianceType);
-        a.setBrand(req.brand);
-        a.setModel(req.model);
-        a.setSerialNumber(req.serialNumber);
+    @Autowired
+    private AddressRepository addressRepository;
+    
+    @Autowired
+    private ApplianceTypeRepository applianceTypeRepository;
+    
+    @Autowired
+    private BrandRepository brandRepository;
 
-        if (req.active != null)
-            a.setActive(req.active);
+    public Appliance toEntity(ApplianceRequestDto dto) {
+        Appliance a = new Appliance();
+
+        a.setAddress(addressRepository.findById(dto.addressId)
+                .orElseThrow(() -> new NotFoundException("Address not found")));
+
+        a.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
+                .orElseThrow(() -> new NotFoundException("ApplianceType not found")));
+
+        if (dto.brandId != null) {
+            a.setBrand(brandRepository.findById(dto.brandId)
+                    .orElseThrow(() -> new NotFoundException("Brand not found")));
+        } else {
+            a.setBrand(null);
+        }
+
+        a.setModel(dto.model);
+        a.setSerialNumber(dto.serialNumber);
+
+        if (dto.active == null) {
+            dto.active = true;
+        }
+        a.setActive(dto.active);
 
         return a;
     }
 
-    public static void updateEntity(Appliance a, ApplianceRequestDto req, Client client) {
-        a.setClient(client);
-        a.setApplianceType(req.applianceType);
-        a.setBrand(req.brand);
-        a.setModel(req.model);
-        a.setSerialNumber(req.serialNumber);
 
-        if (req.active != null)
-            a.setActive(req.active);
-    }
+    // public static ApplianceResponseDto toResponse(Appliance a) {
+    //     ApplianceResponseDto dto = new ApplianceResponseDto();
+    //     dto.id = a.getId();
 
-    public static ApplianceResponseDto toResponse(Appliance a) {
-        ApplianceResponseDto dto = new ApplianceResponseDto();
-        dto.id = a.getId();
+    //     dto.clientId = a.getClient().getId();
+    //     dto.clientName = a.getClient().getName();
+    //     dto.clientPhone = a.getClient().getPhone();
 
-        dto.clientId = a.getClient().getId();
-        dto.clientName = a.getClient().getName();
-        dto.clientPhone = a.getClient().getPhone();
-
-        dto.applianceType = a.getApplianceType();
-        dto.brand = a.getBrand();
-        dto.model = a.getModel();
-        dto.serialNumber = a.getSerialNumber();
-        dto.active = a.isActive();
-        return dto;
-    }
+    //     dto.applianceType = a.getApplianceType();
+    //     dto.brand = a.getBrand();
+    //     dto.model = a.getModel();
+    //     dto.serialNumber = a.getSerialNumber();
+    //     dto.active = a.isActive();
+    //     return dto;
+    // }
 
 }

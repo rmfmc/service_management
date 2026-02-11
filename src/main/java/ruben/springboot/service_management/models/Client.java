@@ -1,12 +1,16 @@
 package ruben.springboot.service_management.models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -24,7 +28,7 @@ public class Client {
     private String address;
 
     private String city;
-    
+
     @Column(name = "has_stairs")
     private Boolean hasStairs;
 
@@ -33,9 +37,19 @@ public class Client {
     @Column(name = "phone_2")
     private String phone2;
 
+    @Column(name = "phone_3")
+    private String phone3;
+
+    @Column(name = "phone_4")
+    private String phone4;
+
     private String email;
 
     private String notes;
+
+    @OneToMany(mappedBy = "client")
+    @OrderBy("id ASC")
+    private List<Address> addresses = new ArrayList<>();
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -54,11 +68,15 @@ public class Client {
         this.createdAt = createdAt;
     }
 
+    public Client(Long id) {
+        this.id = id;
+    }
+
     public Client() {
     }
 
     @PrePersist
-    public void PrePersist(){
+    public void PrePersist() {
         this.createdAt = LocalDateTime.now();
     }
 
@@ -118,6 +136,22 @@ public class Client {
         this.phone2 = phone2;
     }
 
+    public String getPhone3() {
+        return phone3;
+    }
+
+    public void setPhone3(String phone3) {
+        this.phone3 = phone3;
+    }
+
+    public String getPhone4() {
+        return phone4;
+    }
+
+    public void setPhone4(String phone4) {
+        this.phone4 = phone4;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -132,6 +166,14 @@ public class Client {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -166,13 +208,13 @@ public class Client {
                 return false;
         } else if (!city.equals(other.city))
             return false;
-            
+
         if (hasStairs == null) {
             if (other.hasStairs != null)
                 return false;
         } else if (!hasStairs.equals(other.hasStairs))
             return false;
-            
+
         if (phone == null) {
             if (other.phone != null)
                 return false;
@@ -195,5 +237,5 @@ public class Client {
             return false;
         return true;
     }
-    
+
 }

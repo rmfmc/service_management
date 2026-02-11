@@ -1,26 +1,24 @@
 package ruben.springboot.service_management.models.dtos.requests;
 
 import jakarta.validation.constraints.Size;
-import ruben.springboot.service_management.models.enums.ApplianceType;
 import jakarta.validation.constraints.NotNull;
 
 public class ApplianceRequestDto {
 
     public Long id;
 
-    @NotNull(message = "clientId is required")
-    public Long clientId;
+    @NotNull(message = "addressId is required")
+    public Long addressId;
 
-    @NotNull(message = "applianceType is required")
-    public ApplianceType applianceType;
+    @NotNull(message = "applianceTypeId is required")
+    public Long applianceTypeId;
 
-    @Size(max = 60, message = "brand must be at most 60 characters")
-    public String brand;
+    public Long brandId;
 
-    @Size(max = 80, message = "model must be at most 80 characters")
+    @Size(max = 20, message = "model must be at most 80 characters")
     public String model;
 
-    @Size(max = 80, message = "serialNumber must be at most 80 characters")
+    @Size(max = 45, message = "serialNumber must be at most 80 characters")
     public String serialNumber;
 
     public Boolean active;

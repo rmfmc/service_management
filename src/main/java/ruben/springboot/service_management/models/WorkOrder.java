@@ -3,7 +3,12 @@ package ruben.springboot.service_management.models;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,7 +18,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -29,10 +38,6 @@ public class WorkOrder {
     @Column(name = "work_order_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_user_id")
     private User assignedUser;
@@ -46,8 +51,20 @@ public class WorkOrder {
     private User lastUpdatedUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appliance_id")
-    private Appliance appliance;
+    @JoinColumn(name = "closed_by_user_id")
+    private User closedUser;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address address;
+
+    @ManyToMany
+    @JoinTable(name = "work_orders_appliances", joinColumns = @JoinColumn(name = "work_order_id"), inverseJoinColumns = @JoinColumn(name = "appliance_id"))
+    private Set<Appliance> appliances = new HashSet<>();
 
     @Column(name = "issue_description")
     private String issueDescription;
@@ -63,7 +80,18 @@ public class WorkOrder {
     @Column(name = "work_performed")
     private String workPerformed;
 
-    private BigDecimal price;
+    @OneToMany(mappedBy = "workOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt ASC")
+    private List<WorkOrderCharge> charges = new ArrayList<>();
+
+    @Column(name = "discount_visit")
+    private Boolean discountVisit;
+
+    @Column(name = "total_price", precision = 8, scale = 2)
+    private BigDecimal totalPrice;
+
+    @Column(name = "bill_to")
+    private String billTo;
 
     @Column(name = "scheduled_at")
     private LocalDate scheduledAt;
@@ -78,17 +106,17 @@ public class WorkOrder {
     private LocalDateTime lastUpdatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="owner_id")
-    private Client owner;
+    @JoinColumn(name = "tenant_id")
+    private Client tenant;
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.lastUpdatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
-    public void preUpdate(){
+    public void preUpdate() {
         this.lastUpdatedAt = LocalDateTime.now();
     }
 
@@ -98,14 +126,6 @@ public class WorkOrder {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
     }
 
     public User getAssignedUser() {
@@ -132,12 +152,36 @@ public class WorkOrder {
         this.lastUpdatedUser = lastUpdatedUser;
     }
 
-    public Appliance getAppliance() {
-        return appliance;
+    public User getClosedUser() {
+        return closedUser;
     }
 
-    public void setAppliance(Appliance appliance) {
-        this.appliance = appliance;
+    public void setClosedUser(User closedUser) {
+        this.closedUser = closedUser;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public Set<Appliance> getAppliances() {
+        return appliances;
+    }
+
+    public void setAppliances(Set<Appliance> appliances) {
+        this.appliances = appliances;
     }
 
     public String getIssueDescription() {
@@ -180,12 +224,28 @@ public class WorkOrder {
         this.workPerformed = workPerformed;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public Boolean getDiscountVisit() {
+        return discountVisit;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setDiscountVisit(Boolean discountVisit) {
+        this.discountVisit = discountVisit;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public String getBillTo() {
+        return billTo;
+    }
+
+    public void setBillTo(String billTo) {
+        this.billTo = billTo;
     }
 
     public LocalDate getScheduledAt() {
@@ -220,15 +280,30 @@ public class WorkOrder {
         this.lastUpdatedAt = lastUpdatedAt;
     }
 
-    public Client getOwner() {
-        return owner;
+    public Client getTenant() {
+        return tenant;
     }
 
-    public void setOwner(Client owner) {
-        this.owner = owner;
+    public void setTenant(Client tenant) {
+        this.tenant = tenant;
     }
 
-    
+    public List<WorkOrderCharge> getCharges() {
+        return charges;
+    }
 
+    public void setCharges(List<WorkOrderCharge> charges) {
+        this.charges = charges;
+    }
+
+    public void addCharge(WorkOrderCharge charge) {
+        this.charges.add(charge);
+        charge.setWorkOrder(this);
+    }
+
+    public void removeCharge(WorkOrderCharge charge) {
+        this.charges.remove(charge);
+        charge.setWorkOrder(null);
+    }
 
 }

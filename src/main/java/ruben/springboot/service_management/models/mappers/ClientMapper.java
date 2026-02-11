@@ -11,11 +11,10 @@ public class ClientMapper {
         Client c = new Client();
         c.setId(dto.id);
         c.setName(dto.name);
-        c.setAddress(dto.address);
-        c.setCity(dto.city);
-        c.setHasStairs(dto.hasStairs);
         c.setPhone(dto.phone.trim());
         c.setPhone2(dto.phone2);
+        c.setPhone3(dto.phone3);
+        c.setPhone4(dto.phone4);
         c.setEmail(dto.email);
         c.setNotes(dto.notes);
         return c;

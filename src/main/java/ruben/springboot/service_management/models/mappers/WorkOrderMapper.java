@@ -1,48 +1,117 @@
 package ruben.springboot.service_management.models.mappers;
 
+import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.*;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
+import ruben.springboot.service_management.models.dtos.requests.WorkOrderChargeRequestDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
+import ruben.springboot.service_management.models.enums.ChargeType;
+import ruben.springboot.service_management.models.enums.WorkOrderPriority;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
+import ruben.springboot.service_management.repositories.AddressRepository;
+import ruben.springboot.service_management.repositories.ApplianceRepository;
+import ruben.springboot.service_management.repositories.ClientRepository;
+import ruben.springboot.service_management.repositories.UserRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class WorkOrderMapper {
 
-    public static WorkOrder toEntity(WorkOrderRequestDto req,
-                                     Client client,
-                                     Client owner,
-                                     Appliance appliance,
-                                     User assignedUser,
-                                     User createdUser,
-                                     User lastUpdatedUser) {
+    @Autowired
+    private ClientRepository clientRepository;
+    @Autowired
+    private AddressRepository addressRepository;
+    @Autowired
+    private ApplianceRepository applianceRepository;
+    @Autowired
+    private WorkOrderChargeMapper chargeMapper;
+    @Autowired
+    private UserRepository userRepository;
+
+    public WorkOrder toEntity(WorkOrderRequestDto dto, Long currentUserId) {
 
         WorkOrder w = new WorkOrder();
-        w.setId(req.id);
-        w.setClient(client);
-        w.setOwner(owner);
-        w.setAppliance(appliance);
-        w.setAssignedUser(assignedUser);
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new NotFoundException("Current user not found: " + currentUserId));
 
-        w.setCreatedUser(createdUser);
-        w.setLastUpdatedUser(lastUpdatedUser);
+        w.setClient(clientRepository.findById(dto.clientId)
+                .orElseThrow(() -> new NotFoundException("Client not found: " + dto.clientId)));
 
-        w.setIssueDescription(req.issueDescription);
-        w.setStatus(req.status);
-        w.setPriority(req.priority);
-        w.setNotes(req.notes);
-        w.setWorkPerformed(req.workPerformed);
-        w.setPrice(req.price);
-        w.setScheduledAt(req.sheduledAt);
+        w.setAddress(addressRepository.findById(dto.addressId)
+                .orElseThrow(() -> new NotFoundException("Address not found: " + dto.addressId)));
 
-        if ((req.status == WorkOrderStatus.CLOSED || req.status == WorkOrderStatus.APPLIANCE_INSTALLED) && w.getClosedAt() == null) {
+        w.setAssignedUser(dto.assignedUserId == null ? null
+                : userRepository.findById(dto.assignedUserId)
+                        .orElseThrow(() -> new NotFoundException("AssignedUser not found: " + dto.assignedUserId)));
+
+        w.setCreatedUser(currentUser);
+        w.setLastUpdatedUser(currentUser);
+
+        w.setIssueDescription(dto.issueDescription);
+        w.setStatus(dto.status == null ? WorkOrderStatus.NEW : dto.status);
+        w.setPriority(dto.priority == null ? WorkOrderPriority.MEDIUM : dto.priority);
+        w.setNotes(dto.notes);
+        w.setWorkPerformed(dto.workPerformed);
+
+        if ((dto.status == WorkOrderStatus.CLOSED || dto.status == WorkOrderStatus.APPLIANCE_INSTALLED)
+                && w.getClosedAt() == null)
+
+        {
             w.setClosedAt(LocalDateTime.now());
+        }
+
+        boolean visitChargedAndPaid = false;
+        BigDecimal visitPrice = new BigDecimal(0);
+        BigDecimal acumulativePrice = new BigDecimal(0);
+        if (dto.charges != null) {
+            for (WorkOrderChargeRequestDto woc : dto.charges) {
+                WorkOrderCharge charge = chargeMapper.toEntity(woc, currentUserId);
+                w.addCharge(charge);
+
+                acumulativePrice.add(charge.getPrice());
+
+                if (charge.getChargeType() == ChargeType.VISIT && charge.getPaid() == true
+                        && charge.getPrice().compareTo(BigDecimal.ZERO) > 0) {
+                    visitChargedAndPaid = true;
+                    visitPrice.add(charge.getPrice());
+                }
+            }
+        }
+
+        w.setDiscountVisit(dto.discountVisit == null ? false : dto.discountVisit);
+        w.setBillTo(dto.billTo);
+
+        if (dto.discountVisit == true && visitChargedAndPaid == true) {
+            w.setTotalPrice(acumulativePrice.subtract(visitPrice));
+        } else {
+            w.setTotalPrice(acumulativePrice);
+        }
+
+        w.setScheduledAt(dto.sheduledAt);
+        w.setTenant(dto.tenantId == null ? null
+                : clientRepository.findById(dto.tenantId)
+                        .orElseThrow(() -> new NotFoundException("Tenant not found: " + dto.tenantId)));
+
+        if (dto.applianceIds != null && !dto.applianceIds.isEmpty()) {
+
+            List<Appliance> appliances = applianceRepository.findAllById(dto.applianceIds);
+            w.getAppliances().clear();
+            w.getAppliances().addAll(appliances);
+
+            if (appliances.size() != dto.applianceIds.size()) {
+                throw new NotFoundException("Some applianceIds not found");
+            }
         }
 
         return w;
     }
-
 
     public static WorkOrderResponseDto toResponse(WorkOrder w) {
         WorkOrderResponseDto dto = new WorkOrderResponseDto();

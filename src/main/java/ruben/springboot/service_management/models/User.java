@@ -56,6 +56,10 @@ public class User {
         this.lastUpdatedAt = lastUpdatedAt;
     }
 
+    public User(Long id) {
+        this.id = id;
+    }
+
     public User() {
     }
 
