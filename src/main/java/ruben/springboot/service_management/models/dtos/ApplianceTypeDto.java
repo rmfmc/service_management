@@ -1,9 +1,11 @@
-package ruben.springboot.service_management.models.dtos.requests;
+package ruben.springboot.service_management.models.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class BrandRequestDto {
+public class ApplianceTypeDto {
+
+    public Long id;
 
     @NotBlank
     @Size(max = 45)

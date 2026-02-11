@@ -5,10 +5,10 @@ import jakarta.validation.constraints.Size;
 
 public class AddressRequestDto {
 
-    @NotNull
+    @NotNull(message = "clientId is required")
     public Long clientId;
 
-    @NotNull
+    @NotNull(message = "address is required")
     @Size(max = 100)
     public String address;
 

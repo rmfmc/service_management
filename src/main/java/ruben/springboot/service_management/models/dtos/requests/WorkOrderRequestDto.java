@@ -44,7 +44,7 @@ public class WorkOrderRequestDto {
 
     public BigDecimal totalPrice;
 
-    @Size(max = 45)
+    @Size(max = 45, message = "issueDescription must be at most 45 characters")
     public String billTo;
 
     @Valid
@@ -52,7 +52,7 @@ public class WorkOrderRequestDto {
 
     public Long tenantId;
 
-    @NotNull
-    public LocalDate sheduledAt;
+    @NotNull(message = "shceduledAt is required")
+    public LocalDate scheduledAt;
 
 }

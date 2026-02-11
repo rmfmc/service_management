@@ -17,7 +17,7 @@ public class WorkOrderChargeRequestDto {
     @Size(max = 45)
     public String description;
 
-    @NotNull
+    @NotNull(message = "price is required")
     @PositiveOrZero
     public BigDecimal price;
 

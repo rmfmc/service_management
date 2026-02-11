@@ -3,45 +3,58 @@ package ruben.springboot.service_management.models.dtos.responses;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class WorkOrderResponseDto {
-    
-    public Long id;
 
+    public Long workOrderId;
+
+    // Cliente
     public Long clientId;
     public String clientName;
     public String clientPhone;
 
-    public Long ownerId;
-    public String ownerName;
-    public String ownerPhone;
+    // Dirección (real)
+    public Long addressId;
+    public String address;
+    public String city;
+    public String province;
+    public String postalCode;
 
-    public Long applianceId;
-    public String applianceType;
-    public String applianceBrand;
-    public String applianceModel;
+    // Inquilino (si lo usas como Client)
+    public Long tenantId;
+    public String tenantName;
+    public String tenantPhone;
 
-    public Long assignedUserId;
-    public String assignedUserName;
+    // Users (resumen)
+    public String assignedUser;
+    public String createdUser;
+    public String lastUpdatedUser;
 
-    public Long createdUserId;
-    public String createdUserName;
-
-    public Long lastUpdatedUserId;
-    public String lastUpdatedUserName;
-
+    // Datos del aviso
     public String issueDescription;
 
+    // Si en tu response quieres label en español:
     public String status;
     public String priority;
-
     public String notes;
     public String workPerformed;
-    public BigDecimal price;
+
+    public Boolean discountVisit;
+    public String billTo;
+
+    public BigDecimal totalPrice;
+
     public LocalDate scheduledAt;
 
     public LocalDateTime createdAt;
     public LocalDateTime closedAt;
     public LocalDateTime lastUpdatedAt;
 
+    // Relación con aparatos
+    public List<ApplianceResponseDto> appliances;
+
+    // Charges ordenados por createdAt ASC
+    public List<WorkOrderChargeResponseDto> charges;
 }
+

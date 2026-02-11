@@ -92,4 +92,38 @@ public class Address {
         this.postalCode = postalCode;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Address other = (Address) obj;
+        if (address == null) {
+            if (other.address != null)
+                return false;
+        } else if (!address.equals(other.address))
+            return false;
+        if (city == null) {
+            if (other.city != null)
+                return false;
+        } else if (!city.equals(other.city))
+            return false;
+        if (province == null) {
+            if (other.province != null)
+                return false;
+        } else if (!province.equals(other.province))
+            return false;
+        if (postalCode == null) {
+            if (other.postalCode != null)
+                return false;
+        } else if (!postalCode.equals(other.postalCode))
+            return false;
+        return true;
+    }
+
+    
+
 }

@@ -25,13 +25,6 @@ public class Client {
 
     private String name;
 
-    private String address;
-
-    private String city;
-
-    @Column(name = "has_stairs")
-    private Boolean hasStairs;
-
     private String phone;
 
     @Column(name = "phone_2")
@@ -54,17 +47,17 @@ public class Client {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public Client(Long id, String name, String address, String city, Boolean hasStairs, String phone, String phone2,
-            String email, String notes, LocalDateTime createdAt) {
+    public Client(Long id, String name, String phone, String phone2, String phone3, String phone4, String email,
+            String notes, List<Address> addresses, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
-        this.address = address;
-        this.city = city;
-        this.hasStairs = hasStairs;
         this.phone = phone;
         this.phone2 = phone2;
+        this.phone3 = phone3;
+        this.phone4 = phone4;
         this.email = email;
         this.notes = notes;
+        this.addresses = addresses;
         this.createdAt = createdAt;
     }
 
@@ -94,30 +87,6 @@ public class Client {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public Boolean getHasStairs() {
-        return hasStairs;
-    }
-
-    public void setHasStairs(Boolean hasStairs) {
-        this.hasStairs = hasStairs;
     }
 
     public String getPhone() {
@@ -198,23 +167,6 @@ public class Client {
                 return false;
         } else if (!name.equals(other.name))
             return false;
-        if (address == null) {
-            if (other.address != null)
-                return false;
-        } else if (!address.equals(other.address))
-            return false;
-        if (city == null) {
-            if (other.city != null)
-                return false;
-        } else if (!city.equals(other.city))
-            return false;
-
-        if (hasStairs == null) {
-            if (other.hasStairs != null)
-                return false;
-        } else if (!hasStairs.equals(other.hasStairs))
-            return false;
-
         if (phone == null) {
             if (other.phone != null)
                 return false;
@@ -224,6 +176,16 @@ public class Client {
             if (other.phone2 != null)
                 return false;
         } else if (!phone2.equals(other.phone2))
+            return false;
+        if (phone3 == null) {
+            if (other.phone3 != null)
+                return false;
+        } else if (!phone3.equals(other.phone3))
+            return false;
+        if (phone4 == null) {
+            if (other.phone4 != null)
+                return false;
+        } else if (!phone4.equals(other.phone4))
             return false;
         if (email == null) {
             if (other.email != null)
