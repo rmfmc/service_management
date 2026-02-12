@@ -13,8 +13,6 @@ import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 public class WorkOrderRequestDto {
 
-    public Long workOrderId;
-
     @NotNull(message = "clientId is required")
     public Long clientId;
 

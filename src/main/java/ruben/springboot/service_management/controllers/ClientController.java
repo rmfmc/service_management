@@ -42,10 +42,10 @@ public class ClientController {
         return service.search(q);
     }
 
-    @GetMapping("/{id}/work_orders")
-    public List<WorkOrderListDto> workOrders(@PathVariable Long id) {
-        return service.findWorkOrdersByClientId(id);
-    }
+    // @GetMapping("/{id}/work_orders")
+    // public List<WorkOrderListDto> workOrders(@PathVariable Long id) {
+    //     return service.findWorkOrdersByClientId(id);
+    // }
 
     // @GetMapping("/{id}/appliances")
     // public List<ApplianceListDto> appliances(@PathVariable Long id) {

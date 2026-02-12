@@ -27,37 +27,33 @@ public class ApplianceController {
     @Autowired
     private ApplianceService service;
 
-    public ApplianceController(ApplianceService service) {
-        this.service = service;
-    }
+    // @PostMapping
+    // @ResponseStatus(HttpStatus.CREATED)
+    // public ApplianceResponseDto create(@Valid @RequestBody ApplianceRequestDto req) {
+    //     return service.create(req);
+    // }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ApplianceResponseDto create(@Valid @RequestBody ApplianceRequestDto req) {
-        return service.create(req);
-    }
+    // // /api/appliances?clientId=123  -> lista por cliente
+    // @GetMapping
+    // public List<ApplianceResponseDto> list(@RequestParam(required = false) Long clientId) {
+    //     if (clientId != null) return service.listActiveByClient(clientId);
+    //     return service.listActive();
+    // }
 
-    // /api/appliances?clientId=123  -> lista por cliente
-    @GetMapping
-    public List<ApplianceResponseDto> list(@RequestParam(required = false) Long clientId) {
-        if (clientId != null) return service.listActiveByClient(clientId);
-        return service.listActive();
-    }
+    // @GetMapping("/{id}")
+    // public ApplianceResponseDto get(@PathVariable Long id) {
+    //     return service.getById(id);
+    // }
 
-    @GetMapping("/{id}")
-    public ApplianceResponseDto get(@PathVariable Long id) {
-        return service.getById(id);
-    }
+    // @PutMapping("/{id}")
+    // public ApplianceResponseDto update(@PathVariable Long id, @Valid @RequestBody ApplianceRequestDto req) {
+    //     return service.update(id, req);
+    // }
 
-    @PutMapping("/{id}")
-    public ApplianceResponseDto update(@PathVariable Long id, @Valid @RequestBody ApplianceRequestDto req) {
-        return service.update(id, req);
-    }
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable Long id) {
-        service.setNotActive(id);
-    }
+    // @DeleteMapping("/{id}")
+    // @ResponseStatus(HttpStatus.OK)
+    // public void delete(@PathVariable Long id) {
+    //     service.setNotActive(id);
+    // }
 
 }

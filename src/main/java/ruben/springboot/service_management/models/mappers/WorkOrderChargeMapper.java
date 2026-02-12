@@ -1,14 +1,17 @@
 package ruben.springboot.service_management.models.mappers;
 
+import ruben.springboot.service_management.authentication.SecurityUtils;
 import ruben.springboot.service_management.models.WorkOrderCharge;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderChargeRequestDto;
 
 public class WorkOrderChargeMapper {
 
-    public static WorkOrderCharge toEntity(WorkOrderChargeRequestDto dto, Long createdUserId) {
+    public static WorkOrderCharge toEntity(WorkOrderChargeRequestDto dto) {
+
+        Long currentUserId = SecurityUtils.currentUserId();
 
         WorkOrderCharge woc = new WorkOrderCharge();
-        woc.setCreatedUserId(createdUserId);
+        woc.setCreatedUserId(currentUserId);
         woc.setChargeType(dto.chargeType);
         woc.setPaymentMethod(dto.paymentMethod);
         woc.setDescription(dto.description);

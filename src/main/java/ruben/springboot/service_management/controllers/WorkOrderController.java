@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
-import ruben.springboot.service_management.models.dtos.requests.WorkOrderRequestDto;
+import ruben.springboot.service_management.models.dtos.requests.WorkOrderFullRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
 import ruben.springboot.service_management.services.WorkOrderService;
 
@@ -23,8 +23,8 @@ public class WorkOrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public WorkOrderResponseDto create(@Valid @RequestBody WorkOrderRequestDto req) {
-        return service.create(req);
+    public WorkOrderResponseDto create(@Valid @RequestBody WorkOrderFullRequestDto req) {
+        return service.createFull(req);
     }
 
     // filtros opcionales:
@@ -44,8 +44,8 @@ public class WorkOrderController {
     }
 
     @PutMapping("/{id}")
-    public WorkOrderResponseDto update(@PathVariable Long id, @Valid @RequestBody WorkOrderRequestDto req) {
-        return service.update(id, req);
+    public WorkOrderResponseDto update(@PathVariable Long id, @Valid @RequestBody WorkOrderFullRequestDto req) {
+        return service.updateFull(id, req);
     }
 
     @DeleteMapping("/{id}")
