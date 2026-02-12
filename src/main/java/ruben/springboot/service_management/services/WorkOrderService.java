@@ -47,6 +47,7 @@ public class WorkOrderService {
 
     @Autowired
     private ClientRepository clientRepository;
+    
     @Autowired
     private ClientService clientService;
 
@@ -58,6 +59,7 @@ public class WorkOrderService {
 
     @Autowired
     private ApplianceRepository applianceRepository;
+
     @Autowired
     private ApplianceService applianceService;
 
@@ -67,23 +69,19 @@ public class WorkOrderService {
     @Transactional
     public WorkOrderResponseDto createFull(WorkOrderFullRequestDto req, Long currentUserId) {
 
-        if (req == null){
+        if (req == null) {
             throw new IllegalArgumentException("request is required");
         }
 
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new NotFoundException("Current user not found: " + currentUserId));
 
-        // 1) CLIENT (id o create; si viene dto y hay id -> update)
         Client client = clientService.resolve(req.clientId, req.clientDto);
 
-        // 2) ADDRESS (id o create; si viene dto y hay id -> update)
         Address address = addressService.resolve(req.addressId, req.addressDto, client);
 
-        // 3) APPLIANCES (ids y/o crear nuevos)
-        Set<Appliance> appliances = applianceService.resolve(req.appliances, req.appliances, address);
+        Set<Appliance> appliances = applianceService.resolve(req.applianceIds, req.newAppliances, address);
 
-        // 4) WORK ORDER
         WorkOrder w = new WorkOrder();
         w.setClient(client);
         w.setAddress(address);
@@ -92,7 +90,8 @@ public class WorkOrderService {
 
         w.setAssignedUser(req.workOrderDto.assignedUserId == null ? null
                 : userRepository.findById(req.workOrderDto.assignedUserId)
-                        .orElseThrow(() -> new NotFoundException("AssignedUser not found: " + req.workOrderDto.assignedUserId)));
+                        .orElseThrow(() -> new NotFoundException(
+                                "AssignedUser not found: " + req.workOrderDto.assignedUserId)));
 
         w.setCreatedUser(currentUser);
         w.setLastUpdatedUser(currentUser);
@@ -103,23 +102,25 @@ public class WorkOrderService {
         w.setNotes(req.workOrderDto.notes);
         w.setWorkPerformed(req.workOrderDto.workPerformed);
 
-        w.setDiscountVisit(Boolean.TRUE.equals(req.workOrderDto.discountVisit));
+        w.setDiscountVisit(req.workOrderDto.discountVisit == null ? false : req.workOrderDto.discountVisit);
         w.setBillTo(req.workOrderDto.billTo);
 
         w.setScheduledAt(req.workOrderDto.scheduledAt);
 
-        w.setTenant(req.workOrderDto.tenantId == null ? null : clientService.resolve(req.workOrderDto.tenantId, null)); // solo id, sin update
+        if (req.tenantDto == null && req.workOrderDto.tenantId == null) {
+            w.setTenant(null);
+        } else {
+            w.setTenant(clientService.resolve(req.workOrderDto.tenantId, req.tenantDto));
+        }
 
         w.setCreatedAt(LocalDateTime.now());
         w.setLastUpdatedAt(LocalDateTime.now());
 
-        // closedAt si ya entra cerrada
         if ((w.getStatus() == WorkOrderStatus.CLOSED || w.getStatus() == WorkOrderStatus.APPLIANCE_INSTALLED)
                 && w.getClosedAt() == null) {
             w.setClosedAt(LocalDateTime.now());
         }
 
-        // 5) CHARGES + totalPrice
         boolean visitChargedAndPaid = false;
         BigDecimal visitPrice = BigDecimal.ZERO;
         BigDecimal acumulativePrice = BigDecimal.ZERO;
@@ -151,39 +152,134 @@ public class WorkOrderService {
             w.setTotalPrice(acumulativePrice);
         }
 
-        // 6) SAVE
         WorkOrder saved = workOrderRepository.save(w);
 
-        // 7) RESPONSE
+        return workOrderMapper.toResponse(saved);
+    }
+
+    @Transactional
+    public WorkOrderResponseDto updateFull(WorkOrderFullRequestDto req, Long currentUserId) {
+
+        if (req == null) {
+            throw new IllegalArgumentException("request is required");
+        }
+        if (req.workOrderDto == null || req.workOrderId == null) {
+            throw new IllegalArgumentException("workOrderDto.id is required for update");
+        }
+
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new NotFoundException("Current user not found: " + currentUserId));
+
+        WorkOrder w = workOrderRepository.findById(req.workOrderId)
+                .orElseThrow(() -> new NotFoundException("WorkOrder not found: " + req.workOrderId));
+
+        Client client = clientService.resolve(req.clientId, req.clientDto);
+
+        Address address = addressService.resolve(req.addressId, req.addressDto, client);
+
+        Set<Appliance> appliances = applianceService.resolve(req.applianceIds, req.newAppliances, address);
+
+        w.setClient(client);
+        w.setAddress(address);
+
+        w.getAppliances().clear();
+        w.getAppliances().addAll(appliances);
+
+        w.setAssignedUser(req.workOrderDto.assignedUserId == null ? null
+                : userRepository.findById(req.workOrderDto.assignedUserId)
+                        .orElseThrow(() -> new NotFoundException(
+                                "AssignedUser not found: " + req.workOrderDto.assignedUserId)));
+
+        w.setLastUpdatedUser(currentUser);
+
+        w.setIssueDescription(req.workOrderDto.issueDescription);
+        w.setStatus(req.workOrderDto.status == null ? WorkOrderStatus.NEW : req.workOrderDto.status);
+        w.setPriority(req.workOrderDto.priority == null ? WorkOrderPriority.MEDIUM : req.workOrderDto.priority);
+        w.setNotes(req.workOrderDto.notes);
+        w.setWorkPerformed(req.workOrderDto.workPerformed);
+
+        w.setDiscountVisit(req.workOrderDto.discountVisit == null ? false : req.workOrderDto.discountVisit);
+        w.setBillTo(req.workOrderDto.billTo);
+        w.setScheduledAt(req.workOrderDto.scheduledAt);
+
+        if (req.tenantDto == null && req.workOrderDto.tenantId == null) {
+            w.setTenant(null);
+        } else {
+            w.setTenant(clientService.resolve(req.workOrderDto.tenantId, req.tenantDto));
+        }
+
+        if ((w.getStatus() == WorkOrderStatus.CLOSED || w.getStatus() == WorkOrderStatus.APPLIANCE_INSTALLED)
+                && w.getClosedAt() == null) {
+            w.setClosedAt(LocalDateTime.now());
+        }
+
+        w.getCharges().clear();
+
+        boolean visitChargedAndPaid = false;
+        BigDecimal visitPrice = BigDecimal.ZERO;
+        BigDecimal acumulativePrice = BigDecimal.ZERO;
+
+        if (req.charges != null) {
+            for (WorkOrderChargeRequestDto woc : req.charges) {
+
+                WorkOrderCharge charge = WorkOrderChargeMapper.toEntity(woc, currentUserId);
+                w.addCharge(charge);
+
+                if (charge.getPrice() != null) {
+                    acumulativePrice = acumulativePrice.add(charge.getPrice());
+                }
+
+                if (charge.getChargeType() == ChargeType.VISIT
+                        && Boolean.TRUE.equals(charge.getPaid())
+                        && charge.getPrice() != null
+                        && charge.getPrice().compareTo(BigDecimal.ZERO) > 0) {
+
+                    visitChargedAndPaid = true;
+                    visitPrice = visitPrice.add(charge.getPrice());
+                }
+            }
+        }
+
+        if (w.getDiscountVisit() && visitChargedAndPaid) {
+            w.setTotalPrice(acumulativePrice.subtract(visitPrice));
+        } else {
+            w.setTotalPrice(acumulativePrice);
+        }
+
+        WorkOrder saved = workOrderRepository.save(w);
+
         return workOrderMapper.toResponse(saved);
     }
 
     // @Transactional(readOnly = true)
-    // public List<WorkOrderListDto> list(Long clientId, Long assignedUserId, String status) {
+    // public List<WorkOrderListDto> list(Long clientId, Long assignedUserId, String
+    // status) {
 
-    //     List<WorkOrderListDto> list;
+    // List<WorkOrderListDto> list;
 
-    //     if (clientId != null)
-    //         list = workOrderRepository.findByClientIdOrderByCreatedAtDesc(clientId).stream()
-    //                 .map(w -> WorkOrderMapper.toList(w)).toList();
-    //     else if (assignedUserId != null)
-    //         list = workOrderRepository.findByAssignedUserIdOrderByCreatedAtDesc(assignedUserId).stream()
-    //                 .map(w -> WorkOrderMapper.toList(w)).toList();
-    //     else if (status != null)
-    //         list = workOrderRepository.findByStatusOrderByCreatedAtDesc(status).stream()
-    //                 .map(w -> WorkOrderMapper.toList(w)).toList();
-    //     else
-    //         // list = workOrderRepository.findAllByOrderByCreatedAtDesc();
-    //         list = workOrderRepository.findAllForList();
+    // if (clientId != null)
+    // list =
+    // workOrderRepository.findByClientIdOrderByCreatedAtDesc(clientId).stream()
+    // .map(w -> WorkOrderMapper.toList(w)).toList();
+    // else if (assignedUserId != null)
+    // list =
+    // workOrderRepository.findByAssignedUserIdOrderByCreatedAtDesc(assignedUserId).stream()
+    // .map(w -> WorkOrderMapper.toList(w)).toList();
+    // else if (status != null)
+    // list = workOrderRepository.findByStatusOrderByCreatedAtDesc(status).stream()
+    // .map(w -> WorkOrderMapper.toList(w)).toList();
+    // else
+    // // list = workOrderRepository.findAllByOrderByCreatedAtDesc();
+    // list = workOrderRepository.findAllForList();
 
-    //     return list;
+    // return list;
     // }
 
     // @Transactional(readOnly = true)
     // public WorkOrderResponseDto getById(Long id) {
-    //     WorkOrder w = workOrderRepository.findById(id)
-    //             .orElseThrow(() -> new NotFoundException("work order not found"));
-    //     return WorkOrderMapper.toResponse(w);
+    // WorkOrder w = workOrderRepository.findById(id)
+    // .orElseThrow(() -> new NotFoundException("work order not found"));
+    // return WorkOrderMapper.toResponse(w);
     // }
 
     @Transactional

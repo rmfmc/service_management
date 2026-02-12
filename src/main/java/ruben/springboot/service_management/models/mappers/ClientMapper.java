@@ -1,14 +1,21 @@
 package ruben.springboot.service_management.models.mappers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dtos.lists.ClientListDto;
 import ruben.springboot.service_management.models.dtos.requests.ClientRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.AddressResponseDto;
 import ruben.springboot.service_management.models.dtos.responses.ClientResponseDto;
 
+@Service
 public class ClientMapper {
 
-    public static Client toEntity(ClientRequestDto dto) {
+    @Autowired
+    private AddressMapper addressMapper;
+
+    public Client toEntity(ClientRequestDto dto) {
         Client c = new Client();
         c.setName(dto.name);
         c.setPhone(dto.phone.trim());
@@ -20,7 +27,7 @@ public class ClientMapper {
         return c;
     }
 
-    public static Client update(ClientRequestDto dto, Client c) {
+    public Client update(ClientRequestDto dto, Client c) {
         c.setName(dto.name);
         c.setPhone(dto.phone.trim());
         c.setPhone2(dto.phone2);
@@ -31,7 +38,7 @@ public class ClientMapper {
         return c;
     }
 
-    public static ClientResponseDto toResponse(Client c) {
+    public ClientResponseDto toResponse(Client c) {
         ClientResponseDto dto = new ClientResponseDto();
 
         dto.id = c.getId();
@@ -45,19 +52,17 @@ public class ClientMapper {
         dto.createdAt = c.getCreatedAt();
 
         if (c.getAddresses() != null) {
-            dto.addresses = c.getAddresses().stream().map(AddressMapper::toResponse).toList();
+            dto.addresses = c.getAddresses().stream().map(addressMapper::toResponse).toList();
         }
         return dto;
     }
 
-    public static ClientListDto toListDto(Client c) {
+    public ClientListDto toListDto(Client c) {
         ClientListDto dto = new ClientListDto();
         dto.id = c.getId();
         dto.name = c.getName();
         dto.phone = c.getPhone();
         dto.phone2 = c.getPhone2();
-        dto.address = c.getAddress();
-        dto.city = c.getCity();
         return dto;
     }
 

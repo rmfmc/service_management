@@ -1,6 +1,6 @@
 package ruben.springboot.service_management.models.dtos.lists;
 
-import ruben.springboot.service_management.models.enums.ApplianceType;
+import ruben.springboot.service_management.models.ApplianceType;
 
 public class ApplianceListDto {
 
@@ -13,7 +13,7 @@ public class ApplianceListDto {
     
     public ApplianceListDto(Long id, ApplianceType type, String brand, String model, String serialNumber, boolean active) {
         this.id = id;
-        this.type = type.getLabelEs();
+        this.type = type.getName();
         this.brand = brand;
         this.model = model;
         this.serialNumber = serialNumber;

@@ -36,7 +36,7 @@ public class ApplianceService {
     @Autowired
     private ClientRepository clientRepository;
 
-     @Transactional
+    @Transactional
     public Set<Appliance> resolve(Set<Long> applianceIds, List<ApplianceRequestDto> applianceDtos, Address address) {
 
         Set<Appliance> result = new HashSet<>();

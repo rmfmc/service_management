@@ -14,7 +14,6 @@ import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 import ruben.springboot.service_management.models.dtos.requests.ClientRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ClientResponseDto;
 import ruben.springboot.service_management.models.mappers.ClientMapper;
-import ruben.springboot.service_management.models.mappers.WorkOrderMapper;
 import ruben.springboot.service_management.repositories.ClientRepository;
 import ruben.springboot.service_management.repositories.WorkOrderRepository;
 
@@ -27,15 +26,20 @@ public class ClientService {
     @Autowired
     private WorkOrderRepository workOrderRepository;
 
+    @Autowired
+    private ClientMapper clientMapper;
+
+    
+
     @Transactional(readOnly = true)
     public List<ClientListDto> list() {
-        return repository.findAll().stream().map(ClientMapper::toListDto).toList();
+        return repository.findAll().stream().map(clientMapper::toListDto).toList();
     }
 
     @Transactional(readOnly = true)
     public ClientResponseDto get(Long id) {
         Client c = repository.findById(id).orElseThrow(() -> new NotFoundException("Client not found"));
-        return ClientMapper.toResponse(c);
+        return clientMapper.toResponse(c);
     }
 
     @Transactional
@@ -43,10 +47,10 @@ public class ClientService {
 
         checkIfPhoneAlreadyExists(req);
 
-        Client c = ClientMapper.toEntity(req);
+        Client c = clientMapper.toEntity(req);
 
         c = repository.save(c);
-        return ClientMapper.toResponse(c);
+        return clientMapper.toResponse(c);
     }
 
     @Transactional
@@ -54,7 +58,7 @@ public class ClientService {
 
         checkIfPhoneAlreadyExists(req);
 
-        Client c = ClientMapper.toEntity(req);
+        Client c = clientMapper.toEntity(req);
 
         c = repository.save(c);
         return c;
@@ -69,7 +73,7 @@ public class ClientService {
 
             // si además viene dto, actualizo el cliente
             if (clientDto != null) {
-                ClientMapper.update(clientDto, clientDb);
+                clientMapper.update(clientDto, clientDb);
 
                 if (clientDb.getPhone() != null) {
                     String phone = clientDb.getPhone().trim();
@@ -95,7 +99,7 @@ public class ClientService {
             throw new AlreadyExistsException("phone already exists");
         }
 
-        Client created = ClientMapper.toEntity(clientDto);
+        Client created = clientMapper.toEntity(clientDto);
         return repository.save(created);
     }
 
@@ -109,7 +113,7 @@ public class ClientService {
         Client clientDb = repository.findById(dto.id)
                 .orElseThrow(() -> new NotFoundException("Client not found: " + dto.id));
 
-        ClientMapper.update(dto, clientDb);
+        clientMapper.update(dto, clientDb);
 
         if (clientDb.getPhone() != null) {
             repository.findByPhone(clientDb.getPhone())
@@ -138,7 +142,7 @@ public class ClientService {
 
     @Transactional
     public List<ClientListDto> search(String q) {
-        return repository.search(q).stream().map(ClientMapper::toListDto).toList();
+        return repository.search(q).stream().map(clientMapper::toListDto).toList();
     }
 
     @Transactional(readOnly = true)
