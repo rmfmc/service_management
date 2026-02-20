@@ -1,45 +1,21 @@
 package ruben.springboot.service_management.models.mappers;
-
-import ruben.springboot.service_management.authentication.SecurityUtils;
-import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.*;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
-import ruben.springboot.service_management.models.dtos.requests.WorkOrderChargeRequestDto;
-import ruben.springboot.service_management.models.dtos.requests.WorkOrderRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
 import ruben.springboot.service_management.models.dtos.responses.WorkOrderChargeResponseDto;
-import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
-import ruben.springboot.service_management.models.enums.ChargeType;
-import ruben.springboot.service_management.models.enums.WorkOrderPriority;
-import ruben.springboot.service_management.models.enums.WorkOrderStatus;
-import ruben.springboot.service_management.repositories.AddressRepository;
-import ruben.springboot.service_management.repositories.ApplianceRepository;
-import ruben.springboot.service_management.repositories.ClientRepository;
-import ruben.springboot.service_management.repositories.UserRepository;
+import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseAdminDto;
+import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseTechDto;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WorkOrderMapper {
 
-    @Autowired
-    private ClientRepository clientRepository;
-    @Autowired
-    private AddressRepository addressRepository;
-    @Autowired
-    private ApplianceRepository applianceRepository;
-    @Autowired
-    private UserRepository userRepository;
+    public WorkOrderResponseAdminDto toResponseAdmin(WorkOrder w) {
 
-    public WorkOrderResponseDto toResponse(WorkOrder w) {
-
-        WorkOrderResponseDto dto = new WorkOrderResponseDto();
+        WorkOrderResponseAdminDto dto = new WorkOrderResponseAdminDto();
 
         dto.workOrderId = w.getId();
 
@@ -81,7 +57,7 @@ public class WorkOrderMapper {
         dto.issueDescription = w.getIssueDescription();
 
         dto.status = w.getStatus().getLabelEs();
-        dto.priority = w.getPriority().getLabelEs();
+        dto.priority = w.getPriority();
 
         dto.notes = w.getNotes();
         dto.workPerformed = w.getWorkPerformed();
@@ -99,11 +75,17 @@ public class WorkOrderMapper {
         dto.appliances = new ArrayList<>();
         if (w.getAppliances() != null) {
             for (Appliance a : w.getAppliances()) {
+
                 ApplianceResponseDto ad = new ApplianceResponseDto();
                 ad.id = a.getId();
 
+                if (a.getAddress() != null) {
+                    ad.addressId = a.getAddress().getId();
+                    ad.addressName = a.getAddress().getAddress();
+                }
+
                 if (a.getApplianceType() != null) {
-                    ad.id = a.getApplianceType().getId();
+                    ad.applianceTypeId = a.getApplianceType().getId();
                     ad.applianceTypeName = a.getApplianceType().getName();
                 }
 
@@ -121,26 +103,130 @@ public class WorkOrderMapper {
         }
 
         dto.charges = new ArrayList<>();
-        if (w.getCharges() != null) {
-            for (WorkOrderCharge ch : w.getCharges()) {
-                WorkOrderChargeResponseDto cd = new WorkOrderChargeResponseDto();
-                cd.id = ch.getId();
-                cd.workOrderId = w.getId();
+    if (w.getCharges() != null) {
+        for (WorkOrderCharge ch : w.getCharges()) {
 
-                cd.chargeType = ch.getChargeType().getLabelEs();
-                cd.paymentMethod = ch.getPaymentMethod().getLabelEs();
+            WorkOrderChargeResponseDto cd = new WorkOrderChargeResponseDto();
+            cd.id = ch.getId();
+            cd.workOrderId = w.getId();
 
-                cd.description = ch.getDescription();
-                cd.price = ch.getPrice();
-                cd.payer = ch.getPayer();
-                cd.paid = ch.getPaid();
+            cd.chargeType = (ch.getChargeType() != null) ? ch.getChargeType().getLabelEs() : null;
+            cd.paymentMethod = (ch.getPaymentMethod() != null) ? ch.getPaymentMethod().getLabelEs() : null;
 
-                cd.createdUserId = ch.getCreatedUserId();
-                cd.createdAt = ch.getCreatedAt();
+            cd.description = ch.getDescription();
+            cd.price = ch.getPrice();
+            cd.payer = ch.getPayer();
+            cd.paid = ch.getPaid();
 
-                dto.charges.add(cd);
+            cd.createdUserId = ch.getCreatedUserId();
+            cd.createdAt = ch.getCreatedAt();
+
+            dto.charges.add(cd);
+        }
+    }
+
+        return dto;
+    }
+
+    public WorkOrderResponseTechDto toResponseTech(WorkOrder w) {
+
+        WorkOrderResponseTechDto dto = new WorkOrderResponseTechDto();
+
+        dto.workOrderId = w.getId();
+
+        Client client = w.getClient();
+        if (client != null) {
+            dto.clientId = client.getId();
+            dto.clientName = client.getName();
+            dto.clientPhone = client.getPhone();
+        }
+
+        Address address = w.getAddress();
+        if (address != null) {
+            dto.addressId = address.getId();
+            dto.address = address.getAddress();
+            dto.city = address.getCity();
+            dto.province = address.getProvince();
+            dto.postalCode = address.getPostalCode();
+        }
+
+        Client tenant = w.getTenant();
+        if (tenant != null) {
+            dto.tenantId = tenant.getId();
+            dto.tenantName = tenant.getName();
+            dto.tenantPhone = tenant.getPhone();
+        }
+
+        if (w.getAssignedUser() != null) {
+            dto.assignedUser = w.getAssignedUser().getName();
+        }
+
+        dto.issueDescription = w.getIssueDescription();
+
+        dto.status = w.getStatus().getLabelEs();
+        dto.priority = w.getPriority();
+
+        dto.notes = w.getNotes();
+        dto.workPerformed = w.getWorkPerformed();
+
+        dto.discountVisit = w.getDiscountVisit();
+        dto.billTo = w.getBillTo();
+        dto.totalPrice = w.getTotalPrice();
+
+        dto.scheduledAt = w.getScheduledAt();
+
+        dto.appliances = new ArrayList<>();
+        if (w.getAppliances() != null) {
+            for (Appliance a : w.getAppliances()) {
+
+                ApplianceResponseDto ad = new ApplianceResponseDto();
+                ad.id = a.getId();
+
+                if (a.getAddress() != null) {
+                    ad.addressId = a.getAddress().getId();
+                    ad.addressName = a.getAddress().getAddress();
+                }
+
+                if (a.getApplianceType() != null) {
+                    ad.applianceTypeId = a.getApplianceType().getId();
+                    ad.applianceTypeName = a.getApplianceType().getName();
+                }
+
+                if (a.getBrand() != null) {
+                    ad.brandId = a.getBrand().getId();
+                    ad.brandName = a.getBrand().getName();
+                }
+
+                ad.model = a.getModel();
+                ad.serialNumber = a.getSerialNumber();
+                ad.active = a.isActive();
+
+                dto.appliances.add(ad);
             }
         }
+
+        dto.charges = new ArrayList<>();
+    if (w.getCharges() != null) {
+        for (WorkOrderCharge ch : w.getCharges()) {
+
+            WorkOrderChargeResponseDto cd = new WorkOrderChargeResponseDto();
+            cd.id = ch.getId();
+            cd.workOrderId = w.getId();
+
+            cd.chargeType = (ch.getChargeType() != null) ? ch.getChargeType().getLabelEs() : null;
+            cd.paymentMethod = (ch.getPaymentMethod() != null) ? ch.getPaymentMethod().getLabelEs() : null;
+
+            cd.description = ch.getDescription();
+            cd.price = ch.getPrice();
+            cd.payer = ch.getPayer();
+            cd.paid = ch.getPaid();
+
+            cd.createdUserId = ch.getCreatedUserId();
+            cd.createdAt = ch.getCreatedAt();
+
+            dto.charges.add(cd);
+        }
+    }
 
         return dto;
     }
@@ -154,10 +240,8 @@ public class WorkOrderMapper {
 
         if (w.getStatus() != null)
             dto.status = w.getStatus().getLabelEs();
-        if (w.getPriority() != null) {
-            dto.priority = w.getPriority().getLabelEs();
-            dto.priorityInt = w.getPriority().getPriorityInt();
-        }
+        
+        dto.priority = w.getPriority();
 
         dto.scheduledAt = w.getScheduledAt();
         dto.createdAt = w.getCreatedAt();
@@ -170,8 +254,8 @@ public class WorkOrderMapper {
 
         Address a = w.getAddress();
         if (a != null) {
-            dto.clientAddress = a.getAddress();
-            dto.clientCity = a.getCity();
+            dto.address = a.getAddress();
+            dto.addressCity = a.getCity();
         }
 
         if (w.getAppliances() != null && !w.getAppliances().isEmpty()) {

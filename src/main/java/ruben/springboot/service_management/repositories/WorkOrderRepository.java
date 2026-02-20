@@ -1,48 +1,43 @@
 package ruben.springboot.service_management.repositories;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.WorkOrder;
-import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
 
-    List<WorkOrder> findAllByOrderByCreatedAtDesc();
+  List<WorkOrder> findAllByOrderByCreatedAtDesc();
 
-    List<WorkOrder> findByClientIdOrderByCreatedAtDesc(Long clientId);
+  List<WorkOrder> findByClientIdOrderByCreatedAtDesc(Long clientId);
 
-    List<WorkOrder> findByAssignedUserIdOrderByCreatedAtDesc(Long userId);
+  List<WorkOrder> findByAssignedUserIdAndScheduledAt(Long userId, LocalDate date);
 
-    List<WorkOrder> findByStatusOrderByCreatedAtDesc(String status);
+  List<WorkOrder> findByStatusOrderByCreatedAtDesc(String status);
 
-    List<WorkOrder> findByClient(Client client);
+  List<WorkOrder> findByClient(Client client);
 
-    @Query("""
-            select new ruben.springboot.service_management.models.dto.WorkOrderListDto(
-              wo.id, wo.issueDescription,  wo.status, wo.priority, wo.scheduledAt, wo.createdAt,
-              c.name, c.address, c.city, c.phone,
-              a.applianceType, a.brand,
-              u.username
-            )
-            from WorkOrder wo
-            join wo.client c
-            left join wo.appliance a
-            left join wo.assignedUser u
-            order by wo.createdAt desc
-            """)
-    List<WorkOrderListDto> findAllForList();
+  List<WorkOrder> findByClientId(Long clientId);
 
-    List<WorkOrder> findByClientId(Long clientId);
+  List<WorkOrder> findByAddressId(Long addressId);
 
-    List<WorkOrder> findByAddressId(Long addressId);
+  List<WorkOrder> findByStatus(WorkOrderStatus status);
 
-    List<WorkOrder> findByStatus(WorkOrderStatus status);
+  List<WorkOrder> findByAssignedUserId(Long assignedUserId);
 
-    List<WorkOrder> findByAssignedUserId(Long assignedUserId);
+  Page<WorkOrder> findAll(Pageable pageable);
+
+  Page<WorkOrder> findByScheduledAt(LocalDate date, Pageable pageable);
+
+  Page<WorkOrder> findByStatusIn(Collection<WorkOrderStatus> statuses, Pageable pageable);
+
+  Page<WorkOrder> findByAssignedUserIdAndScheduledAt(Long userId, LocalDate date, Pageable pageable);
 
 }

@@ -2,10 +2,9 @@ package ruben.springboot.service_management.models.dtos.responses;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
-public class WorkOrderResponseDto {
+public class WorkOrderResponseTechDto {
 
     public Long workOrderId;
 
@@ -28,15 +27,13 @@ public class WorkOrderResponseDto {
 
     // Users (resumen)
     public String assignedUser;
-    public String createdUser;
-    public String lastUpdatedUser;
 
     // Datos del aviso
     public String issueDescription;
 
     // Si en tu response quieres label en español:
     public String status;
-    public String priority;
+    public int priority;
     public String notes;
     public String workPerformed;
 
@@ -47,14 +44,9 @@ public class WorkOrderResponseDto {
 
     public LocalDate scheduledAt;
 
-    public LocalDateTime createdAt;
-    public LocalDateTime closedAt;
-    public LocalDateTime lastUpdatedAt;
-
     // Relación con aparatos
     public List<ApplianceResponseDto> appliances;
 
     // Charges ordenados por createdAt ASC
     public List<WorkOrderChargeResponseDto> charges;
 }
-

@@ -19,7 +19,6 @@ import ruben.springboot.service_management.models.WorkOrderCharge;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderChargeRequestDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderFullRequestDto;
 import ruben.springboot.service_management.models.enums.ChargeType;
-import ruben.springboot.service_management.models.enums.WorkOrderPriority;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 import ruben.springboot.service_management.models.mappers.WorkOrderChargeMapper;
 import ruben.springboot.service_management.repositories.UserRepository;
@@ -66,7 +65,7 @@ public class WorkOrderFactory {
 
         w.setIssueDescription(req.workOrderDto.issueDescription);
         w.setStatus(req.workOrderDto.status == null ? WorkOrderStatus.NEW : req.workOrderDto.status);
-        w.setPriority(req.workOrderDto.priority == null ? WorkOrderPriority.MEDIUM : req.workOrderDto.priority);
+        w.setPriority(req.workOrderDto.priority);
         w.setNotes(req.workOrderDto.notes);
         w.setWorkPerformed(req.workOrderDto.workPerformed);
         w.setDiscountVisit(req.workOrderDto.discountVisit != null ? req.workOrderDto.discountVisit : false);

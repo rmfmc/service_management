@@ -26,10 +26,13 @@ public class ApplianceService {
 
     @Autowired
     private ApplianceRepository applianceRepository;
+
     @Autowired
     private ApplianceMapper applianceMapper;
+
     @Autowired
     private ApplianceTypeRepository applianceTypeRepository;
+    
     @Autowired
     private BrandRepository brandRepository;
     

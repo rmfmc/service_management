@@ -10,10 +10,6 @@ public interface ApplianceRepository extends JpaRepository<Appliance, Long>{
 
     List<Appliance> findByActiveTrueOrderByBrandAscModelAsc();
 
-    List<Appliance> findByClientIdAndActiveTrueOrderByBrandAscModelAsc(Long clientId);
-
-    List<Appliance> findByClientIdOrderByIdDesc(Long clientId);
-
     List<Appliance> findByAddressId(Long addressId);
 
     List<Appliance> findByApplianceTypeId(Long applianceTypeId);

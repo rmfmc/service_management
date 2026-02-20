@@ -7,6 +7,7 @@ import ruben.springboot.service_management.models.CommonFault;
 import java.util.List;
 
 public interface CommonFaultRepository extends JpaRepository<CommonFault, Long> {
+    
     List<CommonFault> findByApplianceTypeId(Long applianceTypeId);
 
 }

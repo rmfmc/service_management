@@ -26,7 +26,6 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import ruben.springboot.service_management.models.enums.WorkOrderPriority;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 @Entity
@@ -72,8 +71,7 @@ public class WorkOrder {
     @Enumerated(EnumType.STRING)
     private WorkOrderStatus status;
 
-    @Enumerated(EnumType.STRING)
-    private WorkOrderPriority priority;
+    private int priority;
 
     private String notes;
 
@@ -200,11 +198,11 @@ public class WorkOrder {
         this.status = status;
     }
 
-    public WorkOrderPriority getPriority() {
+    public int getPriority() {
         return priority;
     }
 
-    public void setPriority(WorkOrderPriority priority) {
+    public void setPriority(int priority) {
         this.priority = priority;
     }
 

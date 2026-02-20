@@ -7,8 +7,8 @@ import java.util.Set;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import ruben.springboot.service_management.models.enums.WorkOrderPriority;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 public class WorkOrderRequestDto {
@@ -30,7 +30,9 @@ public class WorkOrderRequestDto {
 
     public WorkOrderStatus status;
 
-    public WorkOrderPriority priority;
+    @PositiveOrZero(message = "priority must be between 0 and 3")
+    @NotNull(message = "priority is required")
+    public int priority;
 
     @Size(max = 250, message = "notes must be at most 250 characters")
     public String notes;
