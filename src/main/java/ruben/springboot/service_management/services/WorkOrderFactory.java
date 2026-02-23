@@ -45,7 +45,7 @@ public class WorkOrderFactory {
         User currentUser = userRepository.getReferenceById(currentUserId);
 
         // 1) Client
-        Client client = clientService.resolve(req.clientId, req.clientDto);
+        Client client = clientService.resolveForWorkOrder(req.clientId, req.clientDto);
 
         // 2) Address
         Address address = addressService.resolve(req.addressId, req.addressDto, client);
@@ -75,7 +75,7 @@ public class WorkOrderFactory {
         if (req.tenantDto == null && req.workOrderDto.tenantId == null) {
             w.setTenant(null);
         } else {
-            w.setTenant(clientService.resolve(req.workOrderDto.tenantId, req.tenantDto));
+            w.setTenant(clientService.resolveForWorkOrder(req.workOrderDto.tenantId, req.tenantDto));
         }
 
         if (w.getId() == null) {

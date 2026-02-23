@@ -1,9 +1,13 @@
 package ruben.springboot.service_management.models.mappers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ruben.springboot.service_management.models.Client;
+import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
 import ruben.springboot.service_management.models.dtos.lists.ClientListDto;
 import ruben.springboot.service_management.models.dtos.requests.ClientRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.AddressResponseDto;
@@ -52,8 +56,11 @@ public class ClientMapper {
         dto.createdAt = c.getCreatedAt();
 
         if (c.getAddresses() != null) {
-            dto.addresses = c.getAddresses().stream().map(addressMapper::toResponse).toList();
+            List<AddressListDto> adresses = new ArrayList<>();
+            adresses = c.getAddresses().stream().map(addressMapper::toList).toList();
+            dto.addresses = adresses;
         }
+        
         return dto;
     }
 

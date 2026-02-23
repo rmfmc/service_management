@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Appliance;
-import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
 import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
@@ -71,7 +70,7 @@ public class ApplianceMapper {
         return a;
     }
 
-    public static ApplianceResponseDto toResponse(Appliance a) {
+    public ApplianceResponseDto toResponse(Appliance a) {
         ApplianceResponseDto dto = new ApplianceResponseDto();
         dto.id = a.getId();
 
@@ -91,7 +90,7 @@ public class ApplianceMapper {
 
     }
 
-    public static ApplianceListDto toList(Appliance a) {
+    public ApplianceListDto toList(Appliance a) {
 
         ApplianceListDto dto = new ApplianceListDto();
 

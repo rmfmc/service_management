@@ -28,5 +28,7 @@ public interface ClientRepository extends JpaRepository<Client, Long>{
     """)
     List<Client> search(@Param("q") String q);
 
+    boolean existsByPhoneAndIdNot(String newPhone, Long clientId);
+
 
 }

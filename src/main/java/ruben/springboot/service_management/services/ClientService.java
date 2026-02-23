@@ -10,12 +10,10 @@ import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.errors.AlreadyExistsException;
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dtos.lists.ClientListDto;
-import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 import ruben.springboot.service_management.models.dtos.requests.ClientRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ClientResponseDto;
 import ruben.springboot.service_management.models.mappers.ClientMapper;
 import ruben.springboot.service_management.repositories.ClientRepository;
-import ruben.springboot.service_management.repositories.WorkOrderRepository;
 
 @Service
 public class ClientService {
@@ -24,12 +22,87 @@ public class ClientService {
     private ClientRepository repository;
 
     @Autowired
-    private WorkOrderRepository workOrderRepository;
-
-    @Autowired
     private ClientMapper clientMapper;
 
-    
+    @Transactional
+    public ClientResponseDto create(ClientRequestDto dto) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException("clientDto is required");
+        }
+
+        checkIfPhoneAlreadyExists(dto);
+
+        Client created = clientMapper.toEntity(dto);
+        return clientMapper.toResponse(repository.save(created));
+    }
+
+    @Transactional
+    public ClientResponseDto update(Long clientId, ClientRequestDto dto) {
+
+        if (clientId == null) {
+            throw new IllegalArgumentException("clientId is required");
+        }
+
+        if (dto == null) {
+            throw new IllegalArgumentException("clientDto is required");
+        }
+
+        Client clientDb = repository.findById(clientId)
+                .orElseThrow(() -> new NotFoundException("Client not found: " + clientId));
+
+        dto.phone = dto.phone.trim();
+        String oldPhone = clientDb.getPhone();
+
+        if (!dto.phone.equals(oldPhone)) {
+            if (repository.existsByPhoneAndIdNot(dto.phone, clientId)) {
+                throw new AlreadyExistsException("phone already exists");
+            }
+        }
+
+        clientMapper.update(dto, clientDb);
+        return clientMapper.toResponse(repository.save(clientDb));
+    }
+
+    @Transactional
+    public void deleteById(Long clientId){
+        repository.deleteById(clientId);
+    }
+
+    @Transactional
+    public Client resolveForWorkOrder(Long clientId, ClientRequestDto dto) {
+
+        if (clientId != null) {
+            Client clientDb = repository.findById(clientId)
+                    .orElseThrow(() -> new NotFoundException("Client not found: " + clientId));
+
+            if (dto == null){
+                return clientDb;
+            }
+
+            dto.phone = dto.phone.trim();
+            String oldPhone = clientDb.getPhone();
+
+            if (!dto.phone.equals(oldPhone)) {
+                if (repository.existsByPhoneAndIdNot(dto.phone, clientId)) {
+                    throw new AlreadyExistsException("phone already exists");
+                }
+            }
+
+            clientMapper.update(dto, clientDb);
+            return repository.save(clientDb);
+        }
+
+        if (dto == null) {
+            throw new IllegalArgumentException("clientDto is required when clientId is null");
+        }
+
+        checkIfPhoneAlreadyExists(dto);
+
+        Client created = clientMapper.toEntity(dto);
+        return repository.save(created);
+
+    }
 
     @Transactional(readOnly = true)
     public List<ClientListDto> list() {
@@ -37,119 +110,24 @@ public class ClientService {
     }
 
     @Transactional(readOnly = true)
-    public ClientResponseDto get(Long id) {
+    public ClientResponseDto getById(Long id) {
         Client c = repository.findById(id).orElseThrow(() -> new NotFoundException("Client not found"));
         return clientMapper.toResponse(c);
     }
 
-    @Transactional
-    public ClientResponseDto create(ClientRequestDto req) {
-
-        checkIfPhoneAlreadyExists(req);
-
-        Client c = clientMapper.toEntity(req);
-
-        c = repository.save(c);
-        return clientMapper.toResponse(c);
-    }
-
-    @Transactional
-    public Client createEntity(ClientRequestDto req) {
-
-        checkIfPhoneAlreadyExists(req);
-
-        Client c = clientMapper.toEntity(req);
-
-        c = repository.save(c);
-        return c;
-    }
-
-    @Transactional
-    public Client resolve(Long clientId, ClientRequestDto clientDto) {
-
-        if (clientId != null) {
-            Client clientDb = repository.findById(clientId)
-                    .orElseThrow(() -> new NotFoundException("Client not found: " + clientId));
-
-            // si además viene dto, actualizo el cliente
-            if (clientDto != null) {
-                clientMapper.update(clientDto, clientDb);
-
-                if (clientDb.getPhone() != null) {
-                    String phone = clientDb.getPhone().trim();
-                    repository.findByPhone(phone).ifPresent(other -> {
-                        if (!other.getId().equals(clientDb.getId())) {
-                            throw new AlreadyExistsException("phone already exists");
-                        }
-                    });
-                }
-
-                return repository.save(clientDb);
-            }
-
-            return clientDb;
-        }
-
-        // no viene id -> crear
-        if (clientDto == null) {
-            throw new IllegalArgumentException("clientDto is required when clientId is null");
-        }
-
-        if (clientDto.phone != null && repository.existsByPhone(clientDto.phone.trim())) {
-            throw new AlreadyExistsException("phone already exists");
-        }
-
-        Client created = clientMapper.toEntity(clientDto);
-        return repository.save(created);
-    }
-
-    @Transactional
-    public Client update(ClientRequestDto dto) {
-
-        if (dto == null || dto.id == null) {
-            throw new IllegalArgumentException("Client id is required");
-        }
-
-        Client clientDb = repository.findById(dto.id)
-                .orElseThrow(() -> new NotFoundException("Client not found: " + dto.id));
-
-        clientMapper.update(dto, clientDb);
-
-        if (clientDb.getPhone() != null) {
-            repository.findByPhone(clientDb.getPhone())
-                    .ifPresent(other -> {
-                        if (!other.getId().equals(clientDb.getId())) {
-                            throw new AlreadyExistsException("phone already exists");
-                        }
-                    });
-        }
-
-        return repository.save(clientDb);
-    }
-
-    // @Transactional(readOnly = true)
-    // public List<WorkOrderListDto> findWorkOrdersByClientId(Long id) {
-    // if (!repository.existsById(id)) {
-    // throw new NotFoundException("client not found");
-    // }
-
-    // Client client = new Client();
-    // client.setId(id);
-    // return
-    // workOrderRepository.findByClient(client).stream().map(WorkOrderMapper::toList).toList();
-
-    // }
-
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ClientListDto> search(String q) {
         return repository.search(q).stream().map(clientMapper::toListDto).toList();
     }
 
+    // Helper
     @Transactional(readOnly = true)
     private void checkIfPhoneAlreadyExists(ClientRequestDto dto) {
 
+        dto.phone = dto.phone.trim();
         if (repository.existsByPhone(dto.phone)) {
-            throw new AlreadyExistsException("phone already exists");
+            throw new AlreadyExistsException(
+                    "phone already exists by client: " + repository.findByPhone(dto.phone).get().getName());
         }
 
     }

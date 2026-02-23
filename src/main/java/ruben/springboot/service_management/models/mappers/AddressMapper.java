@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Address;
 import ruben.springboot.service_management.models.Appliance;
+import ruben.springboot.service_management.models.Client;
+import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
 import ruben.springboot.service_management.models.dtos.requests.AddressRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.AddressResponseDto;
 import ruben.springboot.service_management.repositories.ApplianceRepository;
@@ -49,23 +51,38 @@ public class AddressMapper {
     public AddressResponseDto toResponse(Address a) {
         AddressResponseDto dto = new AddressResponseDto();
 
+        Client c = a.getClient();
+
         dto.id = a.getId();
-        dto.clientId = a.getClient().getId();
-        dto.clientName = a.getClient().getName();
+        dto.clientId = c.getId();
+        dto.clientName = c.getName();
+        dto.clientPhone = c.getPhone();
         dto.address = a.getAddress();
         dto.city = a.getCity();
         dto.province = a.getProvince();
         dto.postalCode = a.getPostalCode();
+        dto.appliances = 0;
 
         List<Appliance> appliances = applianceRepository.findByAddressId(a.getId());
 
         if (!appliances.isEmpty()) {
-            for (Appliance appliance : appliances) {
-                dto.appliances.add(ApplianceMapper.toList(appliance));
-            }
+            dto.appliances = appliances.size();
         }
 
         return dto;
+    }
+
+    public AddressListDto toList(Address a){
+        AddressListDto dto = new AddressListDto();
+
+        dto.id = a.getId();
+        dto.address = a.getAddress();
+        dto.city = a.getCity();
+        dto.province = a.getProvince();
+        dto.postal_code = a.getPostalCode();
+
+        return dto;
+
     }
 
 }

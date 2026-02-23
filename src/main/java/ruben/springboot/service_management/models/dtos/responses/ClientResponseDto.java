@@ -3,6 +3,8 @@ package ruben.springboot.service_management.models.dtos.responses;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
+
 public class ClientResponseDto {
     
     public Long id;
@@ -15,6 +17,6 @@ public class ClientResponseDto {
     public String notes;
     public LocalDateTime createdAt;
 
-    public List<AddressResponseDto> addresses;
+    public List<AddressListDto> addresses;
 
 }
