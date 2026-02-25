@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,34 +27,37 @@ public class ApplianceController {
     @Autowired
     private ApplianceService service;
 
-    @PostMapping
+    @PostMapping("/{addressId}")
     @ResponseStatus(HttpStatus.CREATED)
     public ApplianceResponseDto create(@PathVariable Long addressId, @Valid @RequestBody ApplianceRequestDto req) {
         return service.createForAddress(addressId, req);
     }
 
-    @GetMapping
-    public List<ApplianceListDto> list(@PathVariable Long addressId) {
-        return service.listByAddress(addressId);
-    }
-
-    @GetMapping("/{id}")
-    public ApplianceResponseDto get(@PathVariable Long addressId, @PathVariable Long id) {
-        return service.getByAddressAndId(addressId, id);
-    }
-
-    @PutMapping("/{id}")
-    public ApplianceResponseDto update(
-            @PathVariable Long addressId,
-            @PathVariable Long id,
-            @Valid @RequestBody ApplianceRequestDto req) {
+    @PutMapping("/{addressId}/{id}")
+    public ApplianceResponseDto update(@PathVariable Long addressId, @PathVariable Long id, @Valid @RequestBody ApplianceRequestDto req) {
         return service.updateByAddressAndId(addressId, id, req);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable Long addressId, @PathVariable Long id) {
-        service.setNotActiveByAddressAndId(addressId, id);
+    public void delete(@PathVariable Long id) {
+        service.setNotActiveById(id);
     }
+
+    @GetMapping
+    public List<ApplianceListDto> list() {
+        return service.listAll();
+    }
+
+    @GetMapping("/{addressId}")
+    public List<ApplianceListDto> list(@PathVariable Long addressId) {
+        return service.listByAddress(addressId);
+    }
+
+    @GetMapping("/{id}")
+    public ApplianceResponseDto get(@PathVariable Long id) {
+        return service.getById(id);
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package ruben.springboot.service_management.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -17,4 +18,6 @@ public interface ApplianceRepository extends JpaRepository<Appliance, Long>{
     List<Appliance> findByBrandId(Long brandId);
 
     List<Appliance> findByAddressIdOrderByIdAsc(Long addressId);
+
+    Optional<Appliance> findById(Long id);
 }

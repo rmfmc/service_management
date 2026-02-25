@@ -2,6 +2,7 @@ package ruben.springboot.service_management.services;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +14,11 @@ import ruben.springboot.service_management.models.mappers.ApplianceMapper;
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Address;
 import ruben.springboot.service_management.models.Appliance;
-import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
 import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
 import ruben.springboot.service_management.repositories.AddressRepository;
 import ruben.springboot.service_management.repositories.ApplianceRepository;
-import ruben.springboot.service_management.repositories.ApplianceTypeRepository;
-import ruben.springboot.service_management.repositories.BrandRepository;
-import ruben.springboot.service_management.repositories.ClientRepository;
 
 @Service
 public class ApplianceService {
@@ -75,9 +72,8 @@ public class ApplianceService {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new NotFoundException("Address not found: " + addressId));
 
-        Appliance appliance = new Appliance();
+        Appliance appliance = applianceMapper.toEntity(req, addressId);
         appliance.setAddress(address);
-        applianceMapper.toEntity(req, addressId);
 
         return applianceMapper.toResponse(applianceRepository.save(appliance));
     }
@@ -90,8 +86,8 @@ public class ApplianceService {
     }
 
     @Transactional
-    public void setNotActiveByAddressAndId(Long addressId, Long applianceId) {
-        Appliance appliance = findByAddressAndIdOrThrow(addressId, applianceId);
+    public void setNotActiveById(Long id) {
+        Appliance appliance = applianceRepository.findById(id).orElseThrow(() -> new NotFoundException("Appliance not found: " + id));
         appliance.setActive(false);
         applianceRepository.save(appliance);
     }
@@ -104,10 +100,16 @@ public class ApplianceService {
     }
 
     @Transactional(readOnly = true)
-    public ApplianceResponseDto getByAddressAndId(Long addressId, Long applianceId) {
-        Appliance appliance = findByAddressAndIdOrThrow(addressId, applianceId);
-        return applianceMapper.toResponse(appliance);
+    public List<ApplianceListDto> listAll() {
+        return applianceRepository.findAll().stream().map(applianceMapper::toList).toList();
     }
+
+    @Transactional(readOnly = true)
+    public ApplianceResponseDto getById(Long id) {
+        Optional<Appliance> applianceOpt = applianceRepository.findById(id);
+        return applianceMapper.toResponse(applianceOpt.orElseThrow(() -> new NotFoundException("Appliance not found: " + id)));
+    }
+
 
     private void ensureAddressExists(Long addressId) {
         if (!addressRepository.existsById(addressId)) {

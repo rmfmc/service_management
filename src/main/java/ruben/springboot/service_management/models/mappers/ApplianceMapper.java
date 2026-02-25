@@ -77,8 +77,8 @@ public class ApplianceMapper {
 
         dto.applianceTypeId = a.getApplianceType().getId();
         dto.applianceTypeName = a.getApplianceType().getName();
-        dto.brandId = a.getBrand().getId();
-        dto.brandName = a.getBrand().getName();
+        dto.brandId = a.getBrand() != null ? a.getBrand().getId() : null;
+        dto.brandName = a.getBrand() != null ? a.getBrand().getName() : null;
         dto.model = a.getModel();
         dto.serialNumber = a.getSerialNumber();
         dto.active = a.isActive();
