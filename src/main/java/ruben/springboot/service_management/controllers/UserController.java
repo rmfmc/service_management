@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import ruben.springboot.service_management.models.dtos.requests.UserPasswordRequestDto;
+import ruben.springboot.service_management.models.dtos.requests.UserRequestDto;
 import ruben.springboot.service_management.models.dtos.requests.UserWithoutPasswordRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.UserResponseDto;
 import ruben.springboot.service_management.services.UserService;
@@ -30,7 +31,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDto create(@Valid @RequestBody UserPasswordRequestDto req) {
+    public UserResponseDto create(@Valid @RequestBody UserRequestDto req) {
         return service.create(req);
     }
 

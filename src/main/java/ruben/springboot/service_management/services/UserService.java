@@ -12,6 +12,7 @@ import ruben.springboot.service_management.errors.AlreadyExistsException;
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.User;
 import ruben.springboot.service_management.models.dtos.requests.UserPasswordRequestDto;
+import ruben.springboot.service_management.models.dtos.requests.UserRequestDto;
 import ruben.springboot.service_management.models.dtos.requests.UserWithoutPasswordRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.UserResponseDto;
 import ruben.springboot.service_management.models.mappers.UserMapper;
@@ -27,7 +28,7 @@ public class UserService {
     private PasswordEncoder encoder;
 
     @Transactional
-    public UserResponseDto create(UserPasswordRequestDto req) {
+    public UserResponseDto create(UserRequestDto req) {
 
         if (repository.existsByUsernameIgnoreCase(req.username)) {
             throw new AlreadyExistsException("username already exists");
