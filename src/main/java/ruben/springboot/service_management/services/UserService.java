@@ -79,6 +79,11 @@ public class UserService {
         return UserMapper.toResponse(userDB);
     }
 
+    @Transactional()
+    public void delete(Long id){
+        repository.deleteById(id);
+    }
+
     @Transactional(readOnly = true)
     public List<UserResponseDto> list(){
         return repository.findAll().stream().map(u -> UserMapper.toResponse(u)).toList();
