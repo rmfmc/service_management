@@ -15,4 +15,6 @@ public interface ApplianceRepository extends JpaRepository<Appliance, Long>{
     List<Appliance> findByApplianceTypeId(Long applianceTypeId);
     
     List<Appliance> findByBrandId(Long brandId);
+
+    List<Appliance> findByAddressIdOrderByIdAsc(Long addressId);
 }

@@ -9,9 +9,7 @@ import ruben.springboot.service_management.models.enums.ChargeType;
 import ruben.springboot.service_management.models.enums.PaymentMethod;
 
 public class WorkOrderChargeRequestDto {
-
-    public Long workOrderId;
-
+    
     public ChargeType chargeType;
 
     @Size(max = 45)

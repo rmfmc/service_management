@@ -36,7 +36,7 @@ public class AddressService {
             }
 
             if (addressDto != null) {
-                addressDb = repository.save(addressMapper.update(addressDto, addressDb));
+                addressDb = repository.save(addressMapper.update(addressDto, addressDb, client.getId()));
             }
 
             return addressDb;
@@ -47,7 +47,7 @@ public class AddressService {
             throw new IllegalArgumentException("addressDto is required when addressId is null");
         }
 
-        Address a = addressMapper.toEntity(addressDto);
+        Address a = addressMapper.toEntity(addressDto, client.getId());
 
         return repository.save(a);
     }

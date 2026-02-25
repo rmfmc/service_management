@@ -5,11 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 public class ApplianceRequestDto {
 
-    public Long id;
-
-    @NotNull(message = "addressId is required")
-    public Long addressId;
-
     @NotNull(message = "applianceTypeId is required")
     public Long applianceTypeId;
 

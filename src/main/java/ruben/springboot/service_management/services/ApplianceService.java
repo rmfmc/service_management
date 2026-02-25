@@ -14,8 +14,10 @@ import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Address;
 import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.Client;
+import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
 import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
+import ruben.springboot.service_management.repositories.AddressRepository;
 import ruben.springboot.service_management.repositories.ApplianceRepository;
 import ruben.springboot.service_management.repositories.ApplianceTypeRepository;
 import ruben.springboot.service_management.repositories.BrandRepository;
@@ -31,13 +33,7 @@ public class ApplianceService {
     private ApplianceMapper applianceMapper;
 
     @Autowired
-    private ApplianceTypeRepository applianceTypeRepository;
-    
-    @Autowired
-    private BrandRepository brandRepository;
-    
-    @Autowired
-    private ClientRepository clientRepository;
+    private AddressRepository addressRepository;
 
     @Transactional
     public Set<Appliance> resolve(Set<Long> applianceIds, List<ApplianceRequestDto> applianceDtos, Address address) {
@@ -52,7 +48,8 @@ public class ApplianceService {
             }
             for (Appliance a : found) {
                 if (!a.getAddress().getId().equals(address.getId())) {
-                    throw new IllegalArgumentException("Appliance " + a.getId() + " does not belong to address " + address.getId());
+                    throw new IllegalArgumentException(
+                            "Appliance " + a.getId() + " does not belong to address " + address.getId());
                 }
                 result.add(a);
             }
@@ -61,85 +58,76 @@ public class ApplianceService {
         // crear nuevos
         if (applianceDtos != null) {
             for (ApplianceRequestDto dto : applianceDtos) {
-                Appliance a = new Appliance();
 
-                a.setAddress(address);
-
-                a.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
-                        .orElseThrow(() -> new NotFoundException("ApplianceType not found: " + dto.applianceTypeId)));
-
-                if (dto.brandId != null) {
-                    a.setBrand(brandRepository.findById(dto.brandId)
-                            .orElseThrow(() -> new NotFoundException("Brand not found: " + dto.brandId)));
-                } else {
-                    a.setBrand(null);
-                }
-
-                a.setModel(dto.model);
-                a.setSerialNumber(dto.serialNumber);
-                a.setActive(dto.active != null ? dto.active : true);
-
-                result.add(applianceRepository.save(a));
+                Appliance appliance = new Appliance();
+                appliance.setAddress(address);
+                applianceMapper.update(appliance, dto);
+                
+                result.add(applianceRepository.save(appliance));
             }
         }
 
         return result;
     }
 
-    // @Transactional
-    // public ApplianceResponseDto create(ApplianceRequestDto req) {
-    //     Client client = clientRepository.findById(req.clientId)
-    //             .orElseThrow(() -> new NotFoundException("client not found"));
+    @Transactional
+    public ApplianceResponseDto createForAddress(Long addressId, ApplianceRequestDto req) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new NotFoundException("Address not found: " + addressId));
 
-    //     Appliance a = applianceMapper.toEntity(req, client);
-    //     a = applianceRepository.save(a);
-    //     return applianceMapper.toResponse(a);
-    // }
+        Appliance appliance = new Appliance();
+        appliance.setAddress(address);
+        applianceMapper.toEntity(req, addressId);
 
-    // @Transactional(readOnly = true)
-    // public List<ApplianceResponseDto> listActive() {
-    //     return applianceRepository.findByActiveTrueOrderByBrandAscModelAsc()
-    //             .stream().map(applianceMapper::toResponse).toList();
-    // }
+        return applianceMapper.toResponse(applianceRepository.save(appliance));
+    }
+    
+    @Transactional
+    public ApplianceResponseDto updateByAddressAndId(Long addressId, Long applianceId, ApplianceRequestDto req) {
+        Appliance appliance = findByAddressAndIdOrThrow(addressId, applianceId);
+        applianceMapper.update(appliance, req);
+        return applianceMapper.toResponse(applianceRepository.save(appliance));
+    }
 
-    // @Transactional(readOnly = true)
-    // public List<ApplianceResponseDto> listActiveByClient(Long clientId) {
-    //     return applianceRepository.findByClientIdAndActiveTrueOrderByBrandAscModelAsc(clientId)
-    //             .stream().map(applianceMapper::toResponse).toList();
-    // }
+    @Transactional
+    public void setNotActiveByAddressAndId(Long addressId, Long applianceId) {
+        Appliance appliance = findByAddressAndIdOrThrow(addressId, applianceId);
+        appliance.setActive(false);
+        applianceRepository.save(appliance);
+    }
 
-    // @Transactional(readOnly = true)
-    // public ApplianceResponseDto getById(Long id) {
-    //     Appliance a = applianceRepository.findById(id)
-    //             .orElseThrow(() -> new NotFoundException("appliance not found"));
-    //     return applianceMapper.toResponse(a);
-    // }
+    @Transactional(readOnly = true)
+    public List<ApplianceListDto> listByAddress(Long addressId) {
+        ensureAddressExists(addressId);
+        return applianceRepository.findByAddressIdOrderByIdAsc(addressId).stream().map(applianceMapper::toList)
+                .toList();
+    }
 
-    // @Transactional
-    // public ApplianceResponseDto update(Long id, ApplianceRequestDto req) {
-    //     Appliance a = applianceRepository.findById(id)
-    //             .orElseThrow(() -> new NotFoundException("appliance not found"));
+    @Transactional(readOnly = true)
+    public ApplianceResponseDto getByAddressAndId(Long addressId, Long applianceId) {
+        Appliance appliance = findByAddressAndIdOrThrow(addressId, applianceId);
+        return applianceMapper.toResponse(appliance);
+    }
 
-    //     Client client = clientRepository.findById(req.clientId)
-    //             .orElseThrow(() -> new NotFoundException("client not found"));
+    private void ensureAddressExists(Long addressId) {
+        if (!addressRepository.existsById(addressId)) {
+            throw new NotFoundException("Address not found: " + addressId);
+        }
+    }
 
-    //     applianceMapper.updateEntity(a, req, client);
-    //     a = applianceRepository.save(a);
-    //     return applianceMapper.toResponse(a);
-    // }
+    private Appliance findByAddressAndIdOrThrow(Long addressId, Long applianceId) {
 
-    // @Transactional
-    // public void setNotActive(Long id) {
-    //     Appliance a = applianceRepository.findById(id)
-    //             .orElseThrow(() -> new NotFoundException("appliance not found"));
+        ensureAddressExists(addressId);
 
-    //     a.setActive(false);
-    //     applianceRepository.save(a);
-    // }
+        Appliance appliance = applianceRepository.findById(applianceId)
+                .orElseThrow(() -> new NotFoundException("Appliance not found: " + applianceId));
 
-    // @Transactional
-    // public void addApplianceType(String name){
-    //     ApplianceType(name);
-    // }
+        if (!appliance.getAddress().getId().equals(addressId)) {
+            throw new IllegalArgumentException(
+                    "Appliance " + applianceId + " does not belong to address " + addressId);
+        }
+
+        return appliance;
+    }
 
 }

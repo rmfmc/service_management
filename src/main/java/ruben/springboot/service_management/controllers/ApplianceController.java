@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
 import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
 import ruben.springboot.service_management.services.ApplianceService;
@@ -27,33 +28,34 @@ public class ApplianceController {
     @Autowired
     private ApplianceService service;
 
-    // @PostMapping
-    // @ResponseStatus(HttpStatus.CREATED)
-    // public ApplianceResponseDto create(@Valid @RequestBody ApplianceRequestDto req) {
-    //     return service.create(req);
-    // }
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApplianceResponseDto create(@PathVariable Long addressId, @Valid @RequestBody ApplianceRequestDto req) {
+        return service.createForAddress(addressId, req);
+    }
 
-    // // /api/appliances?clientId=123  -> lista por cliente
-    // @GetMapping
-    // public List<ApplianceResponseDto> list(@RequestParam(required = false) Long clientId) {
-    //     if (clientId != null) return service.listActiveByClient(clientId);
-    //     return service.listActive();
-    // }
+    @GetMapping
+    public List<ApplianceListDto> list(@PathVariable Long addressId) {
+        return service.listByAddress(addressId);
+    }
 
-    // @GetMapping("/{id}")
-    // public ApplianceResponseDto get(@PathVariable Long id) {
-    //     return service.getById(id);
-    // }
+    @GetMapping("/{id}")
+    public ApplianceResponseDto get(@PathVariable Long addressId, @PathVariable Long id) {
+        return service.getByAddressAndId(addressId, id);
+    }
 
-    // @PutMapping("/{id}")
-    // public ApplianceResponseDto update(@PathVariable Long id, @Valid @RequestBody ApplianceRequestDto req) {
-    //     return service.update(id, req);
-    // }
+    @PutMapping("/{id}")
+    public ApplianceResponseDto update(
+            @PathVariable Long addressId,
+            @PathVariable Long id,
+            @Valid @RequestBody ApplianceRequestDto req) {
+        return service.updateByAddressAndId(addressId, id, req);
+    }
 
-    // @DeleteMapping("/{id}")
-    // @ResponseStatus(HttpStatus.OK)
-    // public void delete(@PathVariable Long id) {
-    //     service.setNotActive(id);
-    // }
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable Long addressId, @PathVariable Long id) {
+        service.setNotActiveByAddressAndId(addressId, id);
+    }
 
 }

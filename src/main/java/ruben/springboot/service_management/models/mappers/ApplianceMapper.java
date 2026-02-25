@@ -24,10 +24,10 @@ public class ApplianceMapper {
     @Autowired
     private BrandRepository brandRepository;
 
-    public Appliance toEntity(ApplianceRequestDto dto) {
+    public Appliance toEntity(ApplianceRequestDto dto, Long addressId) {
         Appliance a = new Appliance();
 
-        a.setAddress(addressRepository.findById(dto.addressId)
+        a.setAddress(addressRepository.findById(addressId)
                 .orElseThrow(() -> new NotFoundException("Address not found")));
 
         a.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
@@ -40,34 +40,30 @@ public class ApplianceMapper {
             a.setBrand(null);
         }
 
-        a.setModel(dto.model);
-        a.setSerialNumber(dto.serialNumber);
-
+        a.setModel(dto.model == null ? null : dto.model.trim());
+        a.setSerialNumber(dto.serialNumber == null ? null : dto.serialNumber.trim());
         a.setActive(dto.active == null ? true : dto.active);
 
         return a;
     }
 
-    public Appliance update(ApplianceRequestDto dto, Appliance a) {
+    public Appliance update(Appliance appliance, ApplianceRequestDto dto) {
 
-        a.setAddress(addressRepository.findById(dto.addressId)
-                .orElseThrow(() -> new NotFoundException("Address not found: " + dto.addressId)));
-
-        a.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
+        appliance.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
                 .orElseThrow(() -> new NotFoundException("ApplianceType not found: " + dto.applianceTypeId)));
 
         if (dto.brandId != null) {
-            a.setBrand(brandRepository.findById(dto.brandId)
+            appliance.setBrand(brandRepository.findById(dto.brandId)
                     .orElseThrow(() -> new NotFoundException("Brand not found: " + dto.brandId)));
         } else {
-            a.setBrand(null);
+            appliance.setBrand(null);
         }
 
-        a.setModel(dto.model);
-        a.setSerialNumber(dto.serialNumber);
-        a.setActive(dto.active == null ? true : dto.active);
+        appliance.setModel(dto.model == null ? null : dto.model.trim());
+        appliance.setSerialNumber(dto.serialNumber == null ? null : dto.serialNumber.trim());
+        appliance.setActive(dto.active == null ? true : dto.active);
 
-        return a;
+        return appliance;
     }
 
     public ApplianceResponseDto toResponse(Appliance a) {

@@ -24,10 +24,10 @@ public class AddressMapper {
     @Autowired
     private ApplianceRepository applianceRepository;
 
-    public Address toEntity(AddressRequestDto dto) {
+    public Address toEntity(AddressRequestDto dto, Long clientId) {
 
         Address a = new Address();
-        a.setClient(clientRepository.findById(dto.clientId)
+        a.setClient(clientRepository.findById(clientId)
                 .orElseThrow(() -> new NotFoundException("client not found")));
         a.setAddress(dto.address);
         a.setCity(dto.city);
@@ -37,9 +37,9 @@ public class AddressMapper {
 
     }
 
-    public Address update(AddressRequestDto dto, Address a) {
-        a.setClient(clientRepository.findById(dto.clientId)
-                .orElseThrow(() -> new NotFoundException("Client not found: " + dto.clientId)));
+    public Address update(AddressRequestDto dto, Address a, Long clientId) {
+        a.setClient(clientRepository.findById(clientId)
+                .orElseThrow(() -> new NotFoundException("Client not found: " + clientId)));
         a.setAddress(dto.address);
         a.setCity(dto.city);
         a.setProvince(dto.province);
