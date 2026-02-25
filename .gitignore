@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Local secrets
+src/main/resources/application-local.properties
+src/main/resources/application-prod.properties
+*.env
+
+# Logs / build
+target/
+*.log
