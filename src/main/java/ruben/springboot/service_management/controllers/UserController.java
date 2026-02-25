@@ -5,16 +5,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import ruben.springboot.service_management.models.dtos.requests.UserRequestDto;
+import ruben.springboot.service_management.models.dtos.requests.UserWithoutPasswordRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.UserResponseDto;
 import ruben.springboot.service_management.services.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
@@ -28,6 +32,16 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDto create(@Valid @RequestBody UserRequestDto req) {
         return service.create(req);
+    }
+
+    @PutMapping("/{id}")
+    public UserResponseDto updateData(@PathVariable Long id, @Valid @RequestBody UserWithoutPasswordRequestDto req) {
+        return service.updateData(id, req);
+    }
+
+    @PutMapping("/{id}")
+    public UserResponseDto updatePassword(@PathVariable Long id, @RequestParam String password) {
+        return service.updatePassword(id, password);
     }
 
     @GetMapping
