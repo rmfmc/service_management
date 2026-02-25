@@ -39,7 +39,7 @@ public class UserController {
         return service.updateData(id, req);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/password")
     public UserResponseDto updatePassword(@PathVariable Long id, @RequestParam String password) {
         return service.updatePassword(id, password);
     }

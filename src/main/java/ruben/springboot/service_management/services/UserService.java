@@ -71,7 +71,7 @@ public class UserService {
 
         User userDB = repository.findById(id).orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
-        userDB.setPasswordHash(password);
+        userDB.setPasswordHash(encoder.encode(password));
         
         userDB = repository.save(userDB);
 
