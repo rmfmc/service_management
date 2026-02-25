@@ -52,6 +52,11 @@ public class UserController {
         return service.list();
     }
 
+    @GetMapping("/{id}")
+    public UserResponseDto getById(@PathVariable Long id) {
+        return service.getById(id);
+    }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){
         service.delete(id);
