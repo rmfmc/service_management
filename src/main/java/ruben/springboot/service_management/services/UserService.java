@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ruben.springboot.service_management.errors.AlreadyExistsException;
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.User;
-import ruben.springboot.service_management.models.dtos.requests.UserRequestDto;
+import ruben.springboot.service_management.models.dtos.requests.UserPasswordRequestDto;
 import ruben.springboot.service_management.models.dtos.requests.UserWithoutPasswordRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.UserResponseDto;
 import ruben.springboot.service_management.models.mappers.UserMapper;
@@ -27,7 +27,7 @@ public class UserService {
     private PasswordEncoder encoder;
 
     @Transactional
-    public UserResponseDto create(UserRequestDto req) {
+    public UserResponseDto create(UserPasswordRequestDto req) {
 
         if (repository.existsByUsernameIgnoreCase(req.username)) {
             throw new AlreadyExistsException("username already exists");
@@ -67,11 +67,11 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto updatePassword(Long id, String password) {
+    public UserResponseDto updatePassword(Long id, UserPasswordRequestDto req) {
 
         User userDB = repository.findById(id).orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
-        userDB.setPasswordHash(password);
+        userDB.setPasswordHash(encoder.encode(req.password));
         
         userDB = repository.save(userDB);
 
