@@ -95,13 +95,13 @@ public class ApplianceService {
     @Transactional(readOnly = true)
     public List<ApplianceListDto> listByAddress(Long addressId) {
         ensureAddressExists(addressId);
-        return applianceRepository.findByAddressIdOrderByIdAsc(addressId).stream().map(applianceMapper::toList)
+        return applianceRepository.findByAddressIdOrderByIdAsc(addressId).stream().map(ApplianceMapper::toList)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public List<ApplianceListDto> listAll() {
-        return applianceRepository.findAll().stream().map(applianceMapper::toList).toList();
+        return applianceRepository.findAll().stream().map(ApplianceMapper::toList).toList();
     }
 
     @Transactional(readOnly = true)

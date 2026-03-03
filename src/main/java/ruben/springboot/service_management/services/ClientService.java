@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.errors.AlreadyExistsException;
 import ruben.springboot.service_management.models.Client;
-import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
 import ruben.springboot.service_management.models.dtos.lists.ClientListDto;
 import ruben.springboot.service_management.models.dtos.requests.ClientRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ClientResponseDto;
@@ -113,7 +112,7 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public Page<ClientListDto> listAll(int pageInt) {
-        return repository.findAll(pageableCreatedAtDesc(pageInt)).map(clientMapper::toListDto);
+        return repository.findAll(pageableCreatedAtDesc(pageInt)).map(ClientMapper::toList);
     }
 
     @Transactional(readOnly = true)
@@ -124,7 +123,7 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public List<ClientListDto> search(String q) {
-        return repository.search(q).stream().map(clientMapper::toListDto).toList();
+        return repository.search(q).stream().map(ClientMapper::toList).toList();
     }
 
     // HELPER

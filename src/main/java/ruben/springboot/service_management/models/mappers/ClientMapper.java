@@ -24,9 +24,6 @@ import ruben.springboot.service_management.repositories.WorkOrderRepository;
 public class ClientMapper {
 
     @Autowired
-    private AddressMapper addressMapper;
-
-    @Autowired
     private WorkOrderRepository workOrderRepository;
 
     @Autowired
@@ -83,7 +80,7 @@ public class ClientMapper {
             List<ApplianceListDto> appliancesList = new ArrayList<>();
 
             for (Address ad : c.getAddresses()) {
-                adressesList.add(addressMapper.toList(ad));
+                adressesList.add(AddressMapper.toList(ad));
                 
                 if (!applianceRepository.findByAddressId(ad.getId()).isEmpty()) {
                     for (Appliance ap : applianceRepository.findByAddressId(ad.getId())) {
@@ -115,7 +112,7 @@ public class ClientMapper {
         return dto;
     }
 
-    public ClientListDto toListDto(Client c) {
+    public static ClientListDto toList(Client c) {
         ClientListDto dto = new ClientListDto();
         dto.id = c.getId();
         dto.name = c.getName();

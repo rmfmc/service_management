@@ -18,8 +18,7 @@ import ruben.springboot.service_management.errors.UnauthorizedException;
 import ruben.springboot.service_management.models.WorkOrder;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderFullRequestDto;
-import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseAdminDto;
-import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseTechDto;
+import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 import ruben.springboot.service_management.models.mappers.WorkOrderMapper;
 import ruben.springboot.service_management.repositories.WorkOrderRepository;
@@ -40,7 +39,7 @@ public class WorkOrderService {
 
     // ADMIN
     @Transactional
-    public WorkOrderResponseAdminDto createFull(WorkOrderFullRequestDto req) {
+    public WorkOrderResponseDto createFull(WorkOrderFullRequestDto req) {
 
         if (req == null) {
             throw new IllegalArgumentException("request is required");
@@ -50,12 +49,12 @@ public class WorkOrderService {
         w = workOrderFactory.buildFromFullRequest(req, w);
 
         WorkOrder saved = workOrderRepository.save(w);
-        return workOrderMapper.toResponseAdmin(saved);
+        return workOrderMapper.toResponse(saved);
     }
 
     // ADMIN
     @Transactional
-    public WorkOrderResponseAdminDto updateFull(Long workOrderId, WorkOrderFullRequestDto req) {
+    public WorkOrderResponseDto updateFull(Long workOrderId, WorkOrderFullRequestDto req) {
 
         if (req == null) {
             throw new IllegalArgumentException("request is required");
@@ -67,7 +66,7 @@ public class WorkOrderService {
         w = workOrderFactory.buildFromFullRequest(req, w);
 
         WorkOrder saved = workOrderRepository.save(w);
-        return workOrderMapper.toResponseAdmin(saved);
+        return workOrderMapper.toResponse(saved);
     }
 
     // ADMIN
@@ -78,21 +77,11 @@ public class WorkOrderService {
 
     // ADMIN
     @Transactional(readOnly = true)
-    public WorkOrderResponseAdminDto adminGetById(Long id) {
+    public WorkOrderResponseDto getById(Long id) {
 
         Optional<WorkOrder> optWorkOrder = workOrderRepository.findById(id);
 
-        return workOrderMapper.toResponseAdmin(
-                optWorkOrder.orElseThrow(() -> new NotFoundException("workOrder not found with id " + id)));
-    }
-
-    // TECH
-    @Transactional(readOnly = true)
-    public WorkOrderResponseTechDto techGetById(Long id) {
-
-        Optional<WorkOrder> optWorkOrder = workOrderRepository.findById(id);
-
-        return workOrderMapper.toResponseTech(
+        return workOrderMapper.toResponse(
                 optWorkOrder.orElseThrow(() -> new NotFoundException("workOrder not found with id " + id)));
     }
 
@@ -102,7 +91,7 @@ public class WorkOrderService {
 
         Page<WorkOrder> page = workOrderRepository.findAll(pageableByPagePriorityDescCreatedDesc(pageInt));
 
-        return page.map(workOrderMapper::toList);
+        return page.map(WorkOrderMapper::toList);
 
     }
 
@@ -113,7 +102,7 @@ public class WorkOrderService {
         Page<WorkOrder> page = workOrderRepository.findByScheduledAt(date,
                 pageableByPagePriorityDescCreatedAsc(pageInt));
 
-        return page.map(workOrderMapper::toList);
+        return page.map(WorkOrderMapper::toList);
     }
 
     // ADMIN
@@ -128,7 +117,7 @@ public class WorkOrderService {
         Page<WorkOrder> page = workOrderRepository.findByStatusIn(pending,
                 pageableByPagePriorityDescCreatedAsc(pageInt));
 
-        return page.map(workOrderMapper::toList);
+        return page.map(WorkOrderMapper::toList);
     }
 
     // ADMIN
@@ -140,15 +129,16 @@ public class WorkOrderService {
         Page<WorkOrder> page = workOrderRepository.findByAssignedUserIdAndScheduledAt(userId, date,
                 pageableByPagePriorityDescCreatedAsc(pageInt));
 
-        return page.map(workOrderMapper::toList);
+        return page.map(WorkOrderMapper::toList);
     }
 
+    // ADMIN
     @Transactional(readOnly = true)
     public Page<WorkOrderListDto> adminListByCreationDate(LocalDate date, int pageInt) {
         
         Page<WorkOrder> page = workOrderRepository.findByCreatedAt(date, pageableByPagePriorityDescCreatedAsc(pageInt));
 
-        return page.map(workOrderMapper::toList);
+        return page.map(WorkOrderMapper::toList);
     }
 
     // TECH
@@ -165,7 +155,7 @@ public class WorkOrderService {
         Page<WorkOrder> page = workOrderRepository.findByAssignedUserIdAndScheduledAt(userId, date,
                 pageableByPagePriorityDescCreatedDesc(pageInt));
 
-        return page.map(workOrderMapper::toList);
+        return page.map(WorkOrderMapper::toList);
     }
 
     // HELPER

@@ -60,7 +60,7 @@ public class AddressMapper {
         dto.city = a.getCity();
         dto.province = a.getProvince();
         dto.postalCode = a.getPostalCode();
-        dto.client = clientMapper.toListDto(a.getClient());
+        dto.client = clientMapper.toList(a.getClient());
         
         List<Appliance> appliances = applianceRepository.findByAddressId(a.getId());
         if (!appliances.isEmpty()) {
@@ -82,7 +82,7 @@ public class AddressMapper {
         return dto;
     }
 
-    public AddressListDto toList(Address a){
+    public static AddressListDto toList(Address a){
         AddressListDto dto = new AddressListDto();
 
         dto.id = a.getId();

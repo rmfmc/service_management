@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderFullRequestDto;
-import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseAdminDto;
-import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseTechDto;
+import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
 import ruben.springboot.service_management.services.WorkOrderService;
 
 import java.time.LocalDate;
@@ -24,12 +23,12 @@ public class WorkOrderController {
 
     @PostMapping("/admin")
     @ResponseStatus(HttpStatus.CREATED)
-    public WorkOrderResponseAdminDto create(@Valid @RequestBody WorkOrderFullRequestDto req) {
+    public WorkOrderResponseDto create(@Valid @RequestBody WorkOrderFullRequestDto req) {
         return service.createFull(req);
     }
 
     @PutMapping("/admin/{id}")
-    public WorkOrderResponseAdminDto update(@PathVariable Long id, @Valid @RequestBody WorkOrderFullRequestDto req) {
+    public WorkOrderResponseDto update(@PathVariable Long id, @Valid @RequestBody WorkOrderFullRequestDto req) {
         return service.updateFull(id, req);
     }
     
@@ -40,8 +39,8 @@ public class WorkOrderController {
     }
 
     @GetMapping("/admin/{id}")
-    public WorkOrderResponseAdminDto adminGetById(@PathVariable Long id) {
-        return service.adminGetById(id);
+    public WorkOrderResponseDto adminGetById(@PathVariable Long id) {
+        return service.getById(id);
     }
 
     @GetMapping("/admin")
@@ -75,8 +74,8 @@ public class WorkOrderController {
     }
 
     @GetMapping("/tech/{id}")
-    public WorkOrderResponseTechDto techGetById(@PathVariable Long id) {
-        return service.techGetById(id);
+    public WorkOrderResponseDto techGetById(@PathVariable Long id) {
+        return service.getById(id);
     }
 
 

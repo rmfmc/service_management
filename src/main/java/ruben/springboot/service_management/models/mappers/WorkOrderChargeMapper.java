@@ -1,5 +1,7 @@
 package ruben.springboot.service_management.models.mappers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import ruben.springboot.service_management.authentication.SecurityUtils;
 import ruben.springboot.service_management.models.WorkOrderCharge;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderChargeListDto;
@@ -44,13 +46,14 @@ public class WorkOrderChargeMapper {
         WorkOrderChargeResponseDto dto = new WorkOrderChargeResponseDto();
 
         dto.id = charge.getId();
-        dto.workOrderId = charge.getWorkOrder().getId();
         dto.chargeType = charge.getChargeType() != null ? charge.getChargeType().getLabelEs() : null;
         dto.paymentMethod = charge.getPaymentMethod() != null ? charge.getPaymentMethod().getLabelEs() : null;
         dto.description = charge.getDescription();
         dto.price = charge.getPrice();
         dto.payer = charge.getPayer();
         dto.paid = charge.getPaid();
+        dto.workOrder = WorkOrderMapper.toList(charge.getWorkOrder());
+        dto.client = ClientMapper.toList(charge.getWorkOrder().getClient());
         dto.createdUserId = charge.getCreatedUserId();
         dto.createdUserName = charge.getCreatedUserName();
         dto.createdAt = charge.getCreatedAt();

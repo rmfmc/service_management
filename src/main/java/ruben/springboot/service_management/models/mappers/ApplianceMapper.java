@@ -25,6 +25,9 @@ public class ApplianceMapper {
     @Autowired
     private BrandRepository brandRepository;
 
+    @Autowired
+    private ClientMapper clientMapper;
+
     public Appliance toEntity(ApplianceRequestDto dto, Long addressId) {
         Appliance a = new Appliance();
 
@@ -69,27 +72,22 @@ public class ApplianceMapper {
 
     public ApplianceResponseDto toResponse(Appliance a) {
         ApplianceResponseDto dto = new ApplianceResponseDto();
+
         dto.id = a.getId();
-
-        dto.clientId = a.getAddress().getClient().getId();
-        dto.clientName = a.getAddress().getClient().getName();
-        dto.addressId = a.getAddress().getId();
-        dto.addressName = a.getAddress().getAddress();
-
-        dto.applianceTypeId = a.getApplianceType().getId();
         dto.applianceTypeName = a.getApplianceType().getName();
-        dto.brandId = a.getBrand() != null ? a.getBrand().getId() : null;
         dto.brandName = a.getBrand() != null ? a.getBrand().getName() : null;
         dto.model = a.getModel();
         dto.serialNumber = a.getSerialNumber();
         dto.active = a.isActive();
+        dto.address = AddressMapper.toList(a.getAddress());
+        dto.client = clientMapper.toList(a.getAddress().getClient());
         return dto;
 
     }
 
     public static ApplianceOnlyResponseDto toOnlyResponse(Appliance a) {
         ApplianceOnlyResponseDto dto = new ApplianceOnlyResponseDto();
-        
+
         dto.id = a.getId();
         dto.applianceTypeName = a.getApplianceType().getName();
         dto.brandId = a.getBrand() != null ? a.getBrand().getId() : null;

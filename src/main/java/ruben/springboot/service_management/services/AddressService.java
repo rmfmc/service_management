@@ -114,12 +114,12 @@ public class AddressService {
 
     @Transactional(readOnly = true)
     public Page<AddressListDto> list(int pageInt) {
-        return repository.findAll(pageableIdDesc(pageInt)).map(addressMapper::toList);
+        return repository.findAll(pageableIdDesc(pageInt)).map(AddressMapper::toList);
     }
 
     @Transactional(readOnly = true)
     public List<AddressListDto> listByClientId(Long clientId) {
-        return repository.findByClientId(clientId).stream().map(addressMapper::toList).toList();
+        return repository.findByClientId(clientId).stream().map(AddressMapper::toList).toList();
     }
 
     // HELPER
