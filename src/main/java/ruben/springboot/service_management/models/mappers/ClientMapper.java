@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ruben.springboot.service_management.models.Address;
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
 import ruben.springboot.service_management.models.dtos.lists.ClientListDto;
@@ -70,6 +71,22 @@ public class ClientMapper {
         dto.name = c.getName();
         dto.phone = c.getPhone();
         dto.phone2 = c.getPhone2();
+
+        if (c.getAddresses() != null) {
+            
+            ArrayList<String> addressesNames = new ArrayList<>();
+            ArrayList<String> addressesCities = new ArrayList<>();
+            
+            for (Address a : c.getAddresses()) {
+                addressesNames.add(a.getAddress());
+                addressesCities.add(a.getCity());
+            }
+
+            dto.addressesNames = addressesNames;
+            dto.addressesCities = addressesCities;
+
+        }
+
         return dto;
     }
 

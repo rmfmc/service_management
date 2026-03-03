@@ -3,12 +3,17 @@ package ruben.springboot.service_management.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.errors.AlreadyExistsException;
 import ruben.springboot.service_management.models.Client;
+import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
 import ruben.springboot.service_management.models.dtos.lists.ClientListDto;
 import ruben.springboot.service_management.models.dtos.requests.ClientRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ClientResponseDto;
@@ -23,6 +28,8 @@ public class ClientService {
 
     @Autowired
     private ClientMapper clientMapper;
+
+    private int MAX_PAGE_SIZE = 30;
 
     @Transactional
     public ClientResponseDto create(ClientRequestDto dto) {
@@ -105,8 +112,8 @@ public class ClientService {
     }
 
     @Transactional(readOnly = true)
-    public List<ClientListDto> list() {
-        return repository.findAll().stream().map(clientMapper::toListDto).toList();
+    public Page<ClientListDto> listAll(int pageInt) {
+        return repository.findAll(pageableCreatedAtDesc(pageInt)).map(clientMapper::toListDto);
     }
 
     @Transactional(readOnly = true)
@@ -120,7 +127,7 @@ public class ClientService {
         return repository.search(q).stream().map(clientMapper::toListDto).toList();
     }
 
-    // Helper
+    // HELPER
     @Transactional(readOnly = true)
     private void checkIfPhoneAlreadyExists(ClientRequestDto dto) {
 
@@ -130,6 +137,11 @@ public class ClientService {
                     "phone already exists by client: " + repository.findByPhone(dto.phone).get().getName());
         }
 
+    }
+
+    // HELPER
+    private Pageable pageableCreatedAtDesc(int pageInt) {
+        return PageRequest.of(Math.max(pageInt, 0), MAX_PAGE_SIZE, Sort.by(Sort.Order.desc("createdAt")));
     }
 
 }

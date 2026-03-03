@@ -3,6 +3,7 @@ package ruben.springboot.service_management.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -47,16 +48,16 @@ public class ClientController {
         service.deleteById(id);
     }
 
+    @GetMapping
+    public Page<ClientListDto> list(@RequestParam(defaultValue = "0") int pageInt) {
+        return service.listAll(pageInt);
+    }
+
     @GetMapping("/{id}")
     public ClientResponseDto getById(@PathVariable Long id) {
         return service.getById(id);
     }
     
-    @GetMapping
-    public List<ClientListDto> list() {
-        return service.list();
-    }
-
     @GetMapping("/search")
     public List<ClientListDto> search(@RequestParam(name = "q", required = false) String q) {
         return service.search(q);

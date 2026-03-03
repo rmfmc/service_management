@@ -3,6 +3,8 @@ package ruben.springboot.service_management.repositories;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,6 +31,8 @@ public interface ClientRepository extends JpaRepository<Client, Long>{
     List<Client> search(@Param("q") String q);
 
     boolean existsByPhoneAndIdNot(String newPhone, Long clientId);
+
+    Page<Client> findAll(Pageable page);
 
 
 }
