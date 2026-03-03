@@ -101,7 +101,7 @@ public class ApplianceMapper {
 
     }
 
-    public ApplianceListDto toList(Appliance a) {
+    public static ApplianceListDto toList(Appliance a) {
 
         ApplianceListDto dto = new ApplianceListDto();
 

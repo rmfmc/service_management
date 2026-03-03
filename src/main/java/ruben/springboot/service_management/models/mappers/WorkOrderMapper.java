@@ -181,7 +181,7 @@ public class WorkOrderMapper {
         return dto;
     }
 
-    public WorkOrderListDto toList(WorkOrder w) {
+    public static WorkOrderListDto toList(WorkOrder w) {
 
         WorkOrderListDto dto = new WorkOrderListDto();
 

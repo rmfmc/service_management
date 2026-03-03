@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
+import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
+import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 
 public class ClientResponseDto {
     
@@ -17,6 +19,8 @@ public class ClientResponseDto {
     public String notes;
     public LocalDateTime createdAt;
 
+    public List<WorkOrderListDto> workOrders;
     public List<AddressListDto> addresses;
+    public List<ApplianceListDto> appliances;
 
 }
