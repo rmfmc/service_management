@@ -1,6 +1,8 @@
 package ruben.springboot.service_management.authentication;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import ruben.springboot.service_management.authentication.dto.CurrentUserDto;
 
 @Component
-public class JwtAuthFilter extends OncePerRequestFilter{
+public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtService jwtService;
@@ -37,14 +40,16 @@ public class JwtAuthFilter extends OncePerRequestFilter{
             String username = jwtService.getUsername(token);
             String role = jwtService.getRole(token);
             Long userId = jwtService.getUserId(token);
+            String userName = jwtService.getUserName(token);
+
+            CurrentUserDto currentUser = new CurrentUserDto(userId, userName);
 
             var auth = new UsernamePasswordAuthenticationToken(
                     username,
                     null,
-                    role == null ? List.of() : List.of(new SimpleGrantedAuthority("ROLE_" + role))
-            );
+                    role == null ? List.of() : List.of(new SimpleGrantedAuthority("ROLE_" + role)));
 
-            auth.setDetails(userId);
+            auth.setDetails(currentUser);
 
             SecurityContextHolder.getContext().setAuthentication(auth);
         } catch (Exception e) {

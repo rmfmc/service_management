@@ -34,6 +34,9 @@ public class WorkOrderCharge {
     @Column(name = "created_by_user_id")
     private Long createdUserId;
 
+    @Column(name = "created_by_user_nmame")
+    private String createdUserName;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "charge_type", nullable = false, length = 20)
     private ChargeType chargeType;
@@ -56,11 +59,12 @@ public class WorkOrderCharge {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public WorkOrderCharge(Long id, WorkOrder workOrder, Long createdUserId, ChargeType chargeType, String description,
+    public WorkOrderCharge(Long id, WorkOrder workOrder, Long createdUserId, String createdUserName, ChargeType chargeType, String description,
             BigDecimal price, String payer, boolean paid, PaymentMethod paymentMethod, LocalDateTime createdAt) {
         this.id = id;
         this.workOrder = workOrder;
         this.createdUserId = createdUserId;
+        this.createdUserName = createdUserName;
         this.chargeType = chargeType;
         this.description = description;
         this.price = price;
@@ -100,6 +104,14 @@ public class WorkOrderCharge {
 
     public void setCreatedUserId(Long createdUserId) {
         this.createdUserId = createdUserId;
+    }
+
+    public String getCreatedUserName() {
+        return createdUserName;
+    }
+
+    public void setCreatedUserName(String createdUserName) {
+        this.createdUserName = createdUserName;
     }
 
     public ChargeType getChargeType() {

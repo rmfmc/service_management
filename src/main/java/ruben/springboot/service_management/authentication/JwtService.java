@@ -35,6 +35,7 @@ public class JwtService {
                 .subject(user.getUsername())
                 .claim("userId", user.getId())
                 .claim("role", user.getRole().name())
+                .claim("userName", user.getName())
                 .issuedAt(now)
                 .expiration(exp)
                 .signWith(key)
@@ -69,6 +70,11 @@ public class JwtService {
 
     public String getRole(String token) {
         Object v = parseClaims(token).get("role");
+        return v == null ? null : v.toString();
+    }
+
+    public String getUserName(String token) {
+        Object v = parseClaims(token).get("userName");
         return v == null ? null : v.toString();
     }
 

@@ -1,8 +1,13 @@
 package ruben.springboot.service_management.authentication;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import ruben.springboot.service_management.authentication.dto.CurrentUserDto;
 
 @Component
 public class SecurityUtils {
@@ -14,11 +19,21 @@ public class SecurityUtils {
         Object details = auth.getDetails();
         if (details == null) return null;
 
-        if (details instanceof Long) return (Long) details;
-        if (details instanceof Integer) return ((Integer) details).longValue();
-        if (details instanceof String) return Long.parseLong((String) details);
+        CurrentUserDto currentUser = (CurrentUserDto) details;
 
-        return null;
+        return currentUser.getCurrentUserId();
+    }
+
+    public static String currentUserName() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) return null;
+
+        Object details = auth.getDetails();
+        if (details == null) return null;
+
+        CurrentUserDto currentUser = (CurrentUserDto) details;
+
+        return currentUser.getCurrentUserName();
     }
 
     public static String currentUsername() {
