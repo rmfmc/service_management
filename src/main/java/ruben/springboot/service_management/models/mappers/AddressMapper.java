@@ -10,6 +10,7 @@ import ruben.springboot.service_management.models.Address;
 import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
+import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
 import ruben.springboot.service_management.models.dtos.requests.AddressRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.AddressOnlyResponseDto;
 import ruben.springboot.service_management.models.dtos.responses.AddressResponseDto;
@@ -21,6 +22,8 @@ public class AddressMapper {
 
     @Autowired
     private ClientRepository clientRepository;
+    @Autowired
+    private ClientMapper clientMapper;
 
     @Autowired
     private ApplianceRepository applianceRepository;
@@ -52,22 +55,16 @@ public class AddressMapper {
     public AddressResponseDto toResponse(Address a) {
         AddressResponseDto dto = new AddressResponseDto();
 
-        Client c = a.getClient();
-
         dto.id = a.getId();
-        dto.clientId = c.getId();
-        dto.clientName = c.getName();
-        dto.clientPhone = c.getPhone();
         dto.address = a.getAddress();
         dto.city = a.getCity();
         dto.province = a.getProvince();
         dto.postalCode = a.getPostalCode();
-        dto.appliances = 0;
-
+        dto.client = clientMapper.toListDto(a.getClient());
+        
         List<Appliance> appliances = applianceRepository.findByAddressId(a.getId());
-
         if (!appliances.isEmpty()) {
-            dto.appliances = appliances.size();
+            dto.appliances = appliances.stream().map(ApplianceMapper::toList).toList();
         }
 
         return dto;

@@ -19,7 +19,6 @@ import ruben.springboot.service_management.models.dtos.responses.ClientOnlyRespo
 import ruben.springboot.service_management.models.dtos.responses.ClientResponseDto;
 import ruben.springboot.service_management.repositories.ApplianceRepository;
 import ruben.springboot.service_management.repositories.WorkOrderRepository;
-import ruben.springboot.service_management.services.ApplianceService;
 
 @Service
 public class ClientMapper {
