@@ -2,6 +2,7 @@ package ruben.springboot.service_management.models.dtos.requests;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -51,6 +52,11 @@ public class WorkOrderRequestDto {
     public List<WorkOrderChargeRequestDto> charges;
 
     public Long tenantId;
+
+    public LocalDateTime createdAt;
+
+    @NotNull(message = "shceduledAt is required")
+    public LocalDateTime lastUpdateAt;
 
     @NotNull(message = "shceduledAt is required")
     public LocalDate scheduledAt;

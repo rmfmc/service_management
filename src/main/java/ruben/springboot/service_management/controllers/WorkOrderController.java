@@ -64,6 +64,11 @@ public class WorkOrderController {
         return service.adminListByUserAndScheduledDate(date, page);
     }
 
+    @GetMapping("/admin/created")
+    public Page<WorkOrderListDto> adminListByCreationDate(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
+        return service.adminListByCreationDate(date, page);
+    }
+
     @GetMapping("/tech")
     public Page<WorkOrderListDto> techListByScheduledDateAndUserId(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
         return service.techListByUserAndScheduledDate(date, page);

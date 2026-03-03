@@ -40,4 +40,6 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
 
   Page<WorkOrder> findByAssignedUserIdAndScheduledAt(Long userId, LocalDate date, Pageable pageable);
 
+  Page<WorkOrder> findByCreatedAt(LocalDate date, Pageable pageable);
+
 }

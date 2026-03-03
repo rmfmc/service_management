@@ -48,24 +48,24 @@ public class WorkOrderService {
 
         WorkOrder w = new WorkOrder();
         w = workOrderFactory.buildFromFullRequest(req, w);
-        
+
         WorkOrder saved = workOrderRepository.save(w);
         return workOrderMapper.toResponseAdmin(saved);
     }
-    
+
     // ADMIN
     @Transactional
     public WorkOrderResponseAdminDto updateFull(Long workOrderId, WorkOrderFullRequestDto req) {
-        
+
         if (req == null) {
             throw new IllegalArgumentException("request is required");
         }
-        
+
         WorkOrder w = workOrderRepository.findById(workOrderId)
-        .orElseThrow(() -> new NotFoundException("WorkOrder not found: " + workOrderId));
-        
+                .orElseThrow(() -> new NotFoundException("WorkOrder not found: " + workOrderId));
+
         w = workOrderFactory.buildFromFullRequest(req, w);
-        
+
         WorkOrder saved = workOrderRepository.save(w);
         return workOrderMapper.toResponseAdmin(saved);
     }
@@ -78,22 +78,23 @@ public class WorkOrderService {
 
     // ADMIN
     @Transactional(readOnly = true)
-    public WorkOrderResponseAdminDto adminGetById(Long id){
+    public WorkOrderResponseAdminDto adminGetById(Long id) {
 
         Optional<WorkOrder> optWorkOrder = workOrderRepository.findById(id);
-        
-        return workOrderMapper.toResponseAdmin(optWorkOrder.orElseThrow(() -> new NotFoundException("workOrder not found with id " + id)));
+
+        return workOrderMapper.toResponseAdmin(
+                optWorkOrder.orElseThrow(() -> new NotFoundException("workOrder not found with id " + id)));
     }
 
     // TECH
     @Transactional(readOnly = true)
-    public WorkOrderResponseTechDto techGetById(Long id){
+    public WorkOrderResponseTechDto techGetById(Long id) {
 
         Optional<WorkOrder> optWorkOrder = workOrderRepository.findById(id);
-        
-        return workOrderMapper.toResponseTech(optWorkOrder.orElseThrow(() -> new NotFoundException("workOrder not found with id " + id)));
-    }
 
+        return workOrderMapper.toResponseTech(
+                optWorkOrder.orElseThrow(() -> new NotFoundException("workOrder not found with id " + id)));
+    }
 
     // ADMIN
     @Transactional(readOnly = true)
@@ -109,7 +110,8 @@ public class WorkOrderService {
     @Transactional(readOnly = true)
     public Page<WorkOrderListDto> adminListByScheduledDate(LocalDate date, int pageInt) {
 
-        Page<WorkOrder> page = workOrderRepository.findByScheduledAt(date, pageableByPagePriorityDescCreatedAsc(pageInt));
+        Page<WorkOrder> page = workOrderRepository.findByScheduledAt(date,
+                pageableByPagePriorityDescCreatedAsc(pageInt));
 
         return page.map(workOrderMapper::toList);
     }
@@ -123,7 +125,8 @@ public class WorkOrderService {
                 WorkOrderStatus.PENDING_CUSTOMER,
                 WorkOrderStatus.PENDING_PAYMENT);
 
-        Page<WorkOrder> page = workOrderRepository.findByStatusIn(pending, pageableByPagePriorityDescCreatedAsc(pageInt));
+        Page<WorkOrder> page = workOrderRepository.findByStatusIn(pending,
+                pageableByPagePriorityDescCreatedAsc(pageInt));
 
         return page.map(workOrderMapper::toList);
     }
@@ -134,7 +137,16 @@ public class WorkOrderService {
 
         Long userId = SecurityUtils.currentUserId();
 
-        Page<WorkOrder> page = workOrderRepository.findByAssignedUserIdAndScheduledAt(userId, date, pageableByPagePriorityDescCreatedAsc(pageInt));
+        Page<WorkOrder> page = workOrderRepository.findByAssignedUserIdAndScheduledAt(userId, date,
+                pageableByPagePriorityDescCreatedAsc(pageInt));
+
+        return page.map(workOrderMapper::toList);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<WorkOrderListDto> adminListByCreationDate(LocalDate date, int pageInt) {
+        
+        Page<WorkOrder> page = workOrderRepository.findByCreatedAt(date, pageableByPagePriorityDescCreatedAsc(pageInt));
 
         return page.map(workOrderMapper::toList);
     }
@@ -150,12 +162,13 @@ public class WorkOrderService {
             throw new UnauthorizedException("date must be within the last 3 days");
         }
 
-        Page<WorkOrder> page = workOrderRepository.findByAssignedUserIdAndScheduledAt(userId, date,pageableByPagePriorityDescCreatedDesc(pageInt));
+        Page<WorkOrder> page = workOrderRepository.findByAssignedUserIdAndScheduledAt(userId, date,
+                pageableByPagePriorityDescCreatedDesc(pageInt));
 
         return page.map(workOrderMapper::toList);
     }
 
-    //HELPER
+    // HELPER
     private Pageable pageableByPagePriorityDescCreatedDesc(int page) {
         return PageRequest.of(
                 Math.max(page, 0),
@@ -163,13 +176,12 @@ public class WorkOrderService {
                 Sort.by(Sort.Order.desc("priority"), Sort.Order.desc("createdAt")));
     }
 
-    //HELPER
+    // HELPER
     private Pageable pageableByPagePriorityDescCreatedAsc(int page) {
         return PageRequest.of(
                 Math.max(page, 0),
                 MAX_PAGE_SIZE,
                 Sort.by(Sort.Order.desc("priority"), Sort.Order.asc("createdAt")));
     }
-
 
 }

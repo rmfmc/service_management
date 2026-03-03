@@ -107,17 +107,6 @@ public class WorkOrder {
     @JoinColumn(name = "tenant_id")
     private Client tenant;
 
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.lastUpdatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.lastUpdatedAt = LocalDateTime.now();
-    }
-
     public Long getId() {
         return id;
     }
