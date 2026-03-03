@@ -15,6 +15,7 @@ import ruben.springboot.service_management.models.Address;
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
 import ruben.springboot.service_management.models.dtos.requests.AddressRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.AddressResponseDto;
 import ruben.springboot.service_management.models.mappers.AddressMapper;
 import ruben.springboot.service_management.repositories.AddressRepository;
 
@@ -45,7 +46,7 @@ public class AddressService {
             }
 
             if (addressDto != null) {
-                addressDb = repository.save(addressMapper.update(addressDto, addressDb, client.getId()));
+                addressDb = repository.save(addressMapper.update(addressDb, addressDto, client.getId()));
             }
 
             return addressDb;
@@ -61,13 +62,63 @@ public class AddressService {
         return repository.save(a);
     }
 
+    @Transactional
+    public AddressResponseDto create(Long clientId, AddressRequestDto req) {
+
+        if (clientId == null) {
+            throw new IllegalArgumentException("clientId is required");
+        }
+
+        if (req == null) {
+            throw new IllegalArgumentException("addressDto is required");
+        }
+
+        Address created = repository.save(addressMapper.toEntity(req, clientId));
+        return addressMapper.toResponse(created);
+    }
+
+    @Transactional
+    public AddressResponseDto update(Long clientId, Long addressId, AddressRequestDto req) {
+
+        if (clientId == null) {
+            throw new IllegalArgumentException("clientId is required");
+        }
+
+        if (addressId == null) {
+            throw new IllegalArgumentException("addressId is required");
+        }
+
+        if (req == null) {
+            throw new IllegalArgumentException("addressDto is required");
+        }
+
+        Address addressDb = repository.findById(addressId)
+                .orElseThrow(() -> new NotFoundException("Address not found: " + addressId));
+
+        addressMapper.update(addressDb, req, clientId);
+        return addressMapper.toResponse(repository.save(addressDb));
+    }
+
+    @Transactional
+    public void delete(Long id) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("addressId is required");
+        }
+
+        Address address = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Address not found: " + id));
+
+        repository.delete(address);
+    }
+
     @Transactional(readOnly = true)
-    public Page<AddressListDto> list(int pageInt){
+    public Page<AddressListDto> list(int pageInt) {
         return repository.findAll(pageableIdDesc(pageInt)).map(addressMapper::toList);
     }
 
     @Transactional(readOnly = true)
-    public List<AddressListDto> listByClientId(Long clientId){
+    public List<AddressListDto> listByClientId(Long clientId) {
         return repository.findByClientId(clientId).stream().map(addressMapper::toList).toList();
     }
 

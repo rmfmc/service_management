@@ -37,7 +37,7 @@ public class AddressMapper {
 
     }
 
-    public Address update(AddressRequestDto dto, Address a, Long clientId) {
+    public Address update(Address a, AddressRequestDto dto, Long clientId) {
         a.setClient(clientRepository.findById(clientId)
                 .orElseThrow(() -> new NotFoundException("Client not found: " + clientId)));
         a.setAddress(dto.address);
