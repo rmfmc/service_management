@@ -7,6 +7,7 @@ import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
 import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.ApplianceOnlyResponseDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
 import ruben.springboot.service_management.repositories.AddressRepository;
 import ruben.springboot.service_management.repositories.ApplianceTypeRepository;
@@ -76,6 +77,20 @@ public class ApplianceMapper {
         dto.addressName = a.getAddress().getAddress();
 
         dto.applianceTypeId = a.getApplianceType().getId();
+        dto.applianceTypeName = a.getApplianceType().getName();
+        dto.brandId = a.getBrand() != null ? a.getBrand().getId() : null;
+        dto.brandName = a.getBrand() != null ? a.getBrand().getName() : null;
+        dto.model = a.getModel();
+        dto.serialNumber = a.getSerialNumber();
+        dto.active = a.isActive();
+        return dto;
+
+    }
+
+    public static ApplianceOnlyResponseDto toOnlyResponse(Appliance a) {
+        ApplianceOnlyResponseDto dto = new ApplianceOnlyResponseDto();
+        
+        dto.id = a.getId();
         dto.applianceTypeName = a.getApplianceType().getName();
         dto.brandId = a.getBrand() != null ? a.getBrand().getId() : null;
         dto.brandName = a.getBrand() != null ? a.getBrand().getName() : null;

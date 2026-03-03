@@ -11,6 +11,7 @@ import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
 import ruben.springboot.service_management.models.dtos.requests.AddressRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.AddressOnlyResponseDto;
 import ruben.springboot.service_management.models.dtos.responses.AddressResponseDto;
 import ruben.springboot.service_management.repositories.ApplianceRepository;
 import ruben.springboot.service_management.repositories.ClientRepository;
@@ -68,6 +69,18 @@ public class AddressMapper {
         if (!appliances.isEmpty()) {
             dto.appliances = appliances.size();
         }
+
+        return dto;
+    }
+
+    public static AddressOnlyResponseDto toOnlyResponse(Address a) {
+        AddressOnlyResponseDto dto = new AddressOnlyResponseDto();
+
+        dto.id = a.getId();
+        dto.address = a.getAddress();
+        dto.city = a.getCity();
+        dto.province = a.getProvince();
+        dto.postalCode = a.getPostalCode();
 
         return dto;
     }

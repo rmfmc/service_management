@@ -11,7 +11,7 @@ import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
 import ruben.springboot.service_management.models.dtos.lists.ClientListDto;
 import ruben.springboot.service_management.models.dtos.requests.ClientRequestDto;
-import ruben.springboot.service_management.models.dtos.responses.AddressResponseDto;
+import ruben.springboot.service_management.models.dtos.responses.ClientOnlyResponseDto;
 import ruben.springboot.service_management.models.dtos.responses.ClientResponseDto;
 
 @Service
@@ -61,6 +61,22 @@ public class ClientMapper {
             adresses = c.getAddresses().stream().map(addressMapper::toList).toList();
             dto.addresses = adresses;
         }
+        
+        return dto;
+    }
+
+    public static ClientOnlyResponseDto toOnlyResponse(Client c) {
+        ClientOnlyResponseDto dto = new ClientOnlyResponseDto();
+
+        dto.id = c.getId();
+        dto.name = c.getName();
+        dto.phone = c.getPhone();
+        dto.phone2 = c.getPhone2();
+        dto.phone3 = c.getPhone3();
+        dto.phone4 = c.getPhone4();
+        dto.email = c.getEmail();
+        dto.notes = c.getNotes();
+        dto.createdAt = c.getCreatedAt();
         
         return dto;
     }

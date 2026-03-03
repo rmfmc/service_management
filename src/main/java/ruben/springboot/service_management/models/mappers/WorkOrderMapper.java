@@ -1,4 +1,5 @@
 package ruben.springboot.service_management.models.mappers;
+
 import ruben.springboot.service_management.models.*;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
@@ -21,25 +22,17 @@ public class WorkOrderMapper {
 
         Client client = w.getClient();
         if (client != null) {
-            dto.clientId = client.getId();
-            dto.clientName = client.getName();
-            dto.clientPhone = client.getPhone();
+            ClientMapper.toOnlyResponse(client);
         }
 
         Address address = w.getAddress();
         if (address != null) {
-            dto.addressId = address.getId();
-            dto.address = address.getAddress();
-            dto.city = address.getCity();
-            dto.province = address.getProvince();
-            dto.postalCode = address.getPostalCode();
+            AddressMapper.toOnlyResponse(address);
         }
 
         Client tenant = w.getTenant();
         if (tenant != null) {
-            dto.tenantId = tenant.getId();
-            dto.tenantName = tenant.getName();
-            dto.tenantPhone = tenant.getPhone();
+            ClientMapper.toOnlyResponse(tenant);
         }
 
         if (w.getAssignedUser() != null) {
@@ -55,19 +48,15 @@ public class WorkOrderMapper {
         }
 
         dto.issueDescription = w.getIssueDescription();
-
         dto.status = w.getStatus().getLabelEs();
         dto.priority = w.getPriority();
-
         dto.notes = w.getNotes();
         dto.workPerformed = w.getWorkPerformed();
-
         dto.discountVisit = w.getDiscountVisit();
         dto.billTo = w.getBillTo();
         dto.totalPrice = w.getTotalPrice();
 
         dto.scheduledAt = w.getScheduledAt();
-
         dto.createdAt = w.getCreatedAt();
         dto.closedAt = w.getClosedAt();
         dto.lastUpdatedAt = w.getLastUpdatedAt();
@@ -75,55 +64,16 @@ public class WorkOrderMapper {
         dto.appliances = new ArrayList<>();
         if (w.getAppliances() != null) {
             for (Appliance a : w.getAppliances()) {
-
-                ApplianceResponseDto ad = new ApplianceResponseDto();
-                ad.id = a.getId();
-
-                if (a.getAddress() != null) {
-                    ad.addressId = a.getAddress().getId();
-                    ad.addressName = a.getAddress().getAddress();
-                }
-
-                if (a.getApplianceType() != null) {
-                    ad.applianceTypeId = a.getApplianceType().getId();
-                    ad.applianceTypeName = a.getApplianceType().getName();
-                }
-
-                if (a.getBrand() != null) {
-                    ad.brandId = a.getBrand().getId();
-                    ad.brandName = a.getBrand().getName();
-                }
-
-                ad.model = a.getModel();
-                ad.serialNumber = a.getSerialNumber();
-                ad.active = a.isActive();
-
-                dto.appliances.add(ad);
+                dto.appliances.add(ApplianceMapper.toOnlyResponse(a));
             }
         }
 
         dto.charges = new ArrayList<>();
-    if (w.getCharges() != null) {
-        for (WorkOrderCharge ch : w.getCharges()) {
-
-            WorkOrderChargeResponseDto cd = new WorkOrderChargeResponseDto();
-            cd.id = ch.getId();
-            cd.workOrderId = w.getId();
-
-            cd.chargeType = (ch.getChargeType() != null) ? ch.getChargeType().getLabelEs() : null;
-            cd.paymentMethod = (ch.getPaymentMethod() != null) ? ch.getPaymentMethod().getLabelEs() : null;
-
-            cd.description = ch.getDescription();
-            cd.price = ch.getPrice();
-            cd.payer = ch.getPayer();
-            cd.paid = ch.getPaid();
-
-            cd.createdUserId = ch.getCreatedUserId();
-            cd.createdAt = ch.getCreatedAt();
-
-            dto.charges.add(cd);
+        if (w.getCharges() != null) {
+            for (WorkOrderCharge ch : w.getCharges()) {
+                dto.charges.add(WorkOrderChargeMapper.toOnlyResponse(ch));
+            }
         }
-    }
 
         return dto;
     }
@@ -206,27 +156,27 @@ public class WorkOrderMapper {
         }
 
         dto.charges = new ArrayList<>();
-    if (w.getCharges() != null) {
-        for (WorkOrderCharge ch : w.getCharges()) {
+        if (w.getCharges() != null) {
+            for (WorkOrderCharge ch : w.getCharges()) {
 
-            WorkOrderChargeResponseDto cd = new WorkOrderChargeResponseDto();
-            cd.id = ch.getId();
-            cd.workOrderId = w.getId();
+                WorkOrderChargeResponseDto cd = new WorkOrderChargeResponseDto();
+                cd.id = ch.getId();
+                cd.workOrderId = w.getId();
 
-            cd.chargeType = (ch.getChargeType() != null) ? ch.getChargeType().getLabelEs() : null;
-            cd.paymentMethod = (ch.getPaymentMethod() != null) ? ch.getPaymentMethod().getLabelEs() : null;
+                cd.chargeType = (ch.getChargeType() != null) ? ch.getChargeType().getLabelEs() : null;
+                cd.paymentMethod = (ch.getPaymentMethod() != null) ? ch.getPaymentMethod().getLabelEs() : null;
 
-            cd.description = ch.getDescription();
-            cd.price = ch.getPrice();
-            cd.payer = ch.getPayer();
-            cd.paid = ch.getPaid();
+                cd.description = ch.getDescription();
+                cd.price = ch.getPrice();
+                cd.payer = ch.getPayer();
+                cd.paid = ch.getPaid();
 
-            cd.createdUserId = ch.getCreatedUserId();
-            cd.createdAt = ch.getCreatedAt();
+                cd.createdUserId = ch.getCreatedUserId();
+                cd.createdAt = ch.getCreatedAt();
 
-            dto.charges.add(cd);
+                dto.charges.add(cd);
+            }
         }
-    }
 
         return dto;
     }
@@ -240,7 +190,7 @@ public class WorkOrderMapper {
 
         if (w.getStatus() != null)
             dto.status = w.getStatus().getLabelEs();
-        
+
         dto.priority = w.getPriority();
 
         dto.scheduledAt = w.getScheduledAt();
