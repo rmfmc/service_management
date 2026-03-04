@@ -6,6 +6,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +35,8 @@ public class ApplianceService {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    private int MAX_PAGE_SIZE = 30;
 
     @Transactional
     public Set<Appliance> resolve(Set<Long> applianceIds, List<ApplianceRequestDto> applianceDtos, Address address) {
@@ -100,8 +106,8 @@ public class ApplianceService {
     }
 
     @Transactional(readOnly = true)
-    public List<ApplianceListDto> listAll() {
-        return applianceRepository.findAll().stream().map(ApplianceMapper::toList).toList();
+    public Page<ApplianceListDto> listAll(int pageInt) {
+        return applianceRepository.findAll(pageableIdDesc(pageInt)).map(ApplianceMapper::toList);
     }
 
     @Transactional(readOnly = true)
@@ -130,6 +136,11 @@ public class ApplianceService {
         }
 
         return appliance;
+    }
+
+    // HELPER
+    private Pageable pageableIdDesc(int pageInt) {
+        return PageRequest.of(Math.max(pageInt, 0), MAX_PAGE_SIZE, Sort.by(Sort.Order.desc("id")));
     }
 
 }

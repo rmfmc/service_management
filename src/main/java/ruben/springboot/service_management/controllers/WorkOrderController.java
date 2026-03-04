@@ -75,7 +75,7 @@ public class WorkOrderController {
 
     @GetMapping("/tech/{id}")
     public WorkOrderResponseDto techGetById(@PathVariable Long id) {
-        return service.getById(id);
+        return service.techGetById(id);
     }
 
 

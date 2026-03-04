@@ -3,6 +3,7 @@ package ruben.springboot.service_management.repositories;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,5 +42,7 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
   Page<WorkOrder> findByAssignedUserIdAndScheduledAt(Long userId, LocalDate date, Pageable pageable);
 
   Page<WorkOrder> findByCreatedAt(LocalDate date, Pageable pageable);
+
+  Optional<WorkOrder> findByIdAndAssignedUserId(Long id, Long assignedUserId);
 
 }

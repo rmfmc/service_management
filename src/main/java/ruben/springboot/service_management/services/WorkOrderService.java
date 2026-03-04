@@ -141,6 +141,18 @@ public class WorkOrderService {
         return page.map(WorkOrderMapper::toList);
     }
 
+     // TECH
+    @Transactional(readOnly = true)
+    public WorkOrderResponseDto techGetById(Long id) {
+
+        Long userId = SecurityUtils.currentUserId();
+
+        WorkOrder workOrder = workOrderRepository.findByIdAndAssignedUserId(id, userId)
+                .orElseThrow(() -> new NotFoundException("workOrder not found with id " + id));
+
+        return workOrderMapper.toResponse(workOrder);
+    }
+
     // TECH
     @Transactional(readOnly = true)
     public Page<WorkOrderListDto> techListByUserAndScheduledDate(LocalDate date, int pageInt) {
