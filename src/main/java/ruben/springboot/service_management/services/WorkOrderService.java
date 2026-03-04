@@ -18,6 +18,7 @@ import ruben.springboot.service_management.errors.UnauthorizedException;
 import ruben.springboot.service_management.models.WorkOrder;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderFullRequestDto;
+import ruben.springboot.service_management.models.dtos.requests.WorkOrderTechUpdateRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 import ruben.springboot.service_management.models.mappers.WorkOrderMapper;
@@ -139,6 +140,25 @@ public class WorkOrderService {
         Page<WorkOrder> page = workOrderRepository.findByCreatedAt(date, pageableByPagePriorityDescCreatedAsc(pageInt));
 
         return page.map(WorkOrderMapper::toList);
+    }
+
+    // TECH
+    @Transactional
+    public WorkOrderResponseDto techUpdate(Long workOrderId, WorkOrderTechUpdateRequestDto req) {
+
+        if (req == null) {
+            throw new IllegalArgumentException("request is required");
+        }
+
+        Long userId = SecurityUtils.currentUserId();
+
+        WorkOrder w = workOrderRepository.findByIdAndAssignedUserId(workOrderId, userId)
+                .orElseThrow(() -> new NotFoundException("WorkOrder not found: " + workOrderId));
+
+        w = workOrderMapper.techUpdate(w, req);
+
+        WorkOrder saved = workOrderRepository.save(w);
+        return workOrderMapper.toResponse(saved);
     }
 
      // TECH

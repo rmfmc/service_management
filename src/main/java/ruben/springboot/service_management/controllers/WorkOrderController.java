@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderFullRequestDto;
+import ruben.springboot.service_management.models.dtos.requests.WorkOrderTechUpdateRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
 import ruben.springboot.service_management.services.WorkOrderService;
 
@@ -66,6 +67,11 @@ public class WorkOrderController {
     @GetMapping("/admin/created")
     public Page<WorkOrderListDto> adminListByCreationDate(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
         return service.adminListByCreationDate(date, page);
+    }
+
+    @PutMapping("/tech/{id}")
+    public WorkOrderResponseDto techUpdate(@PathVariable Long id, @Valid @RequestBody WorkOrderTechUpdateRequestDto req) {
+        return service.techUpdate(id,req);
     }
 
     @GetMapping("/tech")

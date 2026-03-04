@@ -55,7 +55,7 @@ public class WorkOrderRequestDto {
 
     public LocalDateTime createdAt;
 
-    @NotNull(message = "shceduledAt is required")
+    @NotNull(message = "lastUpdateAt is required")
     public LocalDateTime lastUpdateAt;
 
     @NotNull(message = "shceduledAt is required")

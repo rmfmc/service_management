@@ -2,6 +2,7 @@ package ruben.springboot.service_management.models.mappers;
 
 import ruben.springboot.service_management.models.*;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
+import ruben.springboot.service_management.models.dtos.requests.WorkOrderTechUpdateRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
 
 import java.util.ArrayList;
@@ -118,6 +119,24 @@ public class WorkOrderMapper {
         }
 
         return dto;
+    }
+
+    public WorkOrder techUpdate(WorkOrder w, WorkOrderTechUpdateRequestDto dto) {
+
+        if (dto.status != null) {
+            w.setStatus(dto.status);
+        }
+        if (dto.workPerformed !=null) {
+            w.setWorkPerformed(dto.workPerformed);
+        }
+        if (dto.notes != null) {
+            w.setNotes(dto.notes);
+        }
+        if (dto.billTo != null) {
+            w.setBillTo(dto.billTo);
+        }
+
+        return w;
     }
 
 }
