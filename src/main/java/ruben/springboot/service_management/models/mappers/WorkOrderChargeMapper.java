@@ -1,7 +1,5 @@
 package ruben.springboot.service_management.models.mappers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import ruben.springboot.service_management.authentication.SecurityUtils;
 import ruben.springboot.service_management.models.WorkOrderCharge;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderChargeListDto;

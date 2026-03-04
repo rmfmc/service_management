@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Address;
 import ruben.springboot.service_management.models.Appliance;
-import ruben.springboot.service_management.models.Client;
 import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
-import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
 import ruben.springboot.service_management.models.dtos.requests.AddressRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.AddressOnlyResponseDto;
 import ruben.springboot.service_management.models.dtos.responses.AddressResponseDto;
@@ -22,8 +20,6 @@ public class AddressMapper {
 
     @Autowired
     private ClientRepository clientRepository;
-    @Autowired
-    private ClientMapper clientMapper;
 
     @Autowired
     private ApplianceRepository applianceRepository;
@@ -60,7 +56,7 @@ public class AddressMapper {
         dto.city = a.getCity();
         dto.province = a.getProvince();
         dto.postalCode = a.getPostalCode();
-        dto.client = clientMapper.toList(a.getClient());
+        dto.client = ClientMapper.toList(a.getClient());
         
         List<Appliance> appliances = applianceRepository.findByAddressId(a.getId());
         if (!appliances.isEmpty()) {

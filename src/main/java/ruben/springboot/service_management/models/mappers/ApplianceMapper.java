@@ -24,10 +24,7 @@ public class ApplianceMapper {
 
     @Autowired
     private BrandRepository brandRepository;
-
-    @Autowired
-    private ClientMapper clientMapper;
-
+    
     public Appliance toEntity(ApplianceRequestDto dto, Long addressId) {
         Appliance a = new Appliance();
 
@@ -80,7 +77,7 @@ public class ApplianceMapper {
         dto.serialNumber = a.getSerialNumber();
         dto.active = a.isActive();
         dto.address = AddressMapper.toList(a.getAddress());
-        dto.client = clientMapper.toList(a.getAddress().getClient());
+        dto.client = ClientMapper.toList(a.getAddress().getClient());
         return dto;
 
     }

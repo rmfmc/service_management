@@ -23,7 +23,7 @@ import ruben.springboot.service_management.models.dtos.responses.WorkOrderCharge
 import ruben.springboot.service_management.services.WorkOrderChargeService;
 
 @RestController
-@RequestMapping("/api/work-order-charges")
+@RequestMapping("/api/charges")
 public class WorkOrderChargeController {
 
     @Autowired

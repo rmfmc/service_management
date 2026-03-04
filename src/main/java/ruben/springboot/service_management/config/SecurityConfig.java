@@ -49,17 +49,18 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
 
-                        .requestMatchers("/api/clients/**").hasAnyRole("ADMIN", "TECH")
-
-                        .requestMatchers(HttpMethod.GET, "/api/appliances/**").hasAnyRole("ADMIN", "TECH")
-                        .requestMatchers(HttpMethod.POST, "/api/appliances").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/appliances/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/appliances/**").hasRole("ADMIN")
+                        .requestMatchers("/api/clients/**").hasRole("ADMIN")
                         
-                        .requestMatchers(HttpMethod.GET, "/api/work-orders/**").hasAnyRole("ADMIN", "TECH")
-                        .requestMatchers(HttpMethod.POST, "/api/work-orders").hasAnyRole("ADMIN", "TECH")
-                        .requestMatchers(HttpMethod.PUT, "/api/work-orders/**").hasAnyRole("ADMIN", "TECH")
-                        .requestMatchers(HttpMethod.DELETE, "/api/work-orders/**").hasRole("ADMIN")
+                        .requestMatchers("/api/appliances/**").hasRole("ADMIN")
+
+                        .requestMatchers("/api/addresses/**").hasRole("ADMIN")
+
+                        .requestMatchers("/api/charges/**").hasRole("ADMIN")
+
+                        .requestMatchers("/api/work-orders/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/work-orders/tech/**").hasRole("TECH")
+
+
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
