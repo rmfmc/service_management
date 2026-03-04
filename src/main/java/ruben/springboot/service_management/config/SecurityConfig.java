@@ -55,10 +55,14 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/addresses/**").hasRole("ADMIN")
 
-                        .requestMatchers("/api/charges/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/charges/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/charges/**").hasAnyRole("ADMIN", "TECH")
+                        .requestMatchers(HttpMethod.PUT, "/api/charges/**").hasAnyRole("ADMIN", "TECH")
+                        .requestMatchers(HttpMethod.GET, "/api/charges").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/charges/**").hasAnyRole("ADMIN", "TECH")
 
                         .requestMatchers("/api/work-orders/admin/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/work-orders/tech/**").hasRole("TECH")
+                        .requestMatchers(HttpMethod.GET, "/api/work-orders/tech/**").hasAnyRole("ADMIN", "TECH")
 
 
                         .anyRequest().authenticated())
