@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
 
         Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", Instant.now().toString());
         body.put("status", 400);
         body.put("errors", errors);
         return body;
@@ -115,6 +116,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public Map<String, Object> handleNotFound(NotFoundException ex) {
         return Map.of(
+                "timestamp", Instant.now().toString(),
                 "status", 404,
                 "error", "NOT_FOUND",
                 "message", ex.getMessage());
@@ -124,6 +126,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public Map<String, Object> handleBadRequest(UnauthorizedException ex) {
         return Map.of(
+                "timestamp", Instant.now().toString(),
                 "status", 401,
                 "error", "UNAUTHORIZED",
                 "message", ex.getMessage());

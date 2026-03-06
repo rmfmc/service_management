@@ -20,7 +20,7 @@ public class UserWithoutPasswordRequestDto {
     public String username;
 
     @NotNull(message = "active is required")
-    public boolean active;
+    public Boolean active;
 
     @NotNull(message = "role is required")
     public UserRole role;

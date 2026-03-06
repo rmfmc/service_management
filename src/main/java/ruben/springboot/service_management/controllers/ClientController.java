@@ -49,8 +49,8 @@ public class ClientController {
     }
 
     @GetMapping
-    public Page<ClientListDto> list(@RequestParam(defaultValue = "0") int pageInt) {
-        return service.listAll(pageInt);
+    public Page<ClientListDto> list(@RequestParam(defaultValue = "0") int page) {
+        return service.listAll(page);
     }
 
     @GetMapping("/{id}")

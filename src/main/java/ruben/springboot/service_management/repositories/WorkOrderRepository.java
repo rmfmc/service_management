@@ -45,4 +45,6 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
 
   Optional<WorkOrder> findByIdAndAssignedUserId(Long id, Long assignedUserId);
 
+  boolean existsByAssignedUserId(Long id);
+
 }
