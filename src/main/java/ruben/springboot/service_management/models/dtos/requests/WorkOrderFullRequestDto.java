@@ -27,6 +27,7 @@ public class WorkOrderFullRequestDto {
     @Valid
     public List<WorkOrderChargeRequestDto> charges;
 
+    @Valid
     public ClientRequestDto tenant;
 
 }
