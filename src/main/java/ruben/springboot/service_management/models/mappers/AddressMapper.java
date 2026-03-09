@@ -66,7 +66,7 @@ public class AddressMapper {
         return dto;
     }
 
-    public static AddressOnlyResponseDto toOnlyResponse(Address a) {
+    public AddressOnlyResponseDto toOnlyResponse(Address a) {
         AddressOnlyResponseDto dto = new AddressOnlyResponseDto();
 
         dto.id = a.getId();
@@ -74,6 +74,7 @@ public class AddressMapper {
         dto.city = a.getCity();
         dto.province = a.getProvince();
         dto.postalCode = a.getPostalCode();
+        dto.appliances = applianceRepository.findByAddressId(a.getId()).size();
 
         return dto;
     }

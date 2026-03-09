@@ -7,10 +7,14 @@ import ruben.springboot.service_management.models.dtos.responses.WorkOrderRespon
 
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WorkOrderMapper {
+
+    @Autowired
+    private AddressMapper addressMapper;
 
     public WorkOrderResponseDto toResponse(WorkOrder w) {
 
@@ -20,17 +24,17 @@ public class WorkOrderMapper {
 
         Client client = w.getClient();
         if (client != null) {
-            ClientMapper.toOnlyResponse(client);
+            dto.client = ClientMapper.toOnlyResponse(client);
         }
 
         Address address = w.getAddress();
         if (address != null) {
-            AddressMapper.toOnlyResponse(address);
+            dto.address = addressMapper.toOnlyResponse(address);
         }
 
         Client tenant = w.getTenant();
         if (tenant != null) {
-            ClientMapper.toOnlyResponse(tenant);
+            dto.tenant = ClientMapper.toOnlyResponse(tenant);
         }
 
         if (w.getAssignedUser() != null) {
