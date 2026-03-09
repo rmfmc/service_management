@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import ruben.springboot.service_management.errors.NotFoundException;
+import ruben.springboot.service_management.models.Address;
 import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
 import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
@@ -48,7 +49,7 @@ public class ApplianceMapper {
         return a;
     }
 
-    public Appliance update(Appliance appliance, ApplianceRequestDto dto) {
+    public Appliance update(Appliance appliance, Address address, ApplianceRequestDto dto) {
 
         appliance.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
                 .orElseThrow(() -> new NotFoundException("ApplianceType not found: " + dto.applianceTypeId)));
@@ -63,6 +64,7 @@ public class ApplianceMapper {
         appliance.setModel(dto.model == null ? null : dto.model.trim());
         appliance.setSerialNumber(dto.serialNumber == null ? null : dto.serialNumber.trim());
         appliance.setActive(dto.active == null ? true : dto.active);
+        appliance.setAddress(address);
 
         return appliance;
     }

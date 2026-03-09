@@ -47,8 +47,8 @@ public class ApplianceController {
     }
 
     @GetMapping
-    public Page<ApplianceListDto> list(@RequestParam(defaultValue = "0") int pageInt) {
-        return service.listAll(pageInt);
+    public Page<ApplianceListDto> list(@RequestParam(defaultValue = "0") int page) {
+        return service.listAll(page);
     }
 
     @GetMapping("/address/{addressId}")

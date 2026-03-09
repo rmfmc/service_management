@@ -63,8 +63,7 @@ public class ApplianceService {
             for (ApplianceRequestDto dto : applianceDtos) {
 
                 Appliance appliance = new Appliance();
-                appliance.setAddress(address);
-                applianceMapper.update(appliance, dto);
+                applianceMapper.update(appliance, address, dto);
                 
                 result.add(applianceRepository.save(appliance));
             }
@@ -86,8 +85,11 @@ public class ApplianceService {
     
     @Transactional
     public ApplianceResponseDto updateByAddressAndId(Long addressId, Long applianceId, ApplianceRequestDto req) {
-        Appliance appliance = findByAddressAndIdOrThrow(addressId, applianceId);
-        applianceMapper.update(appliance, req);
+        
+        Appliance appliance = applianceRepository.findById(applianceId).orElseThrow(() -> new NotFoundException("Appliance not found: " + applianceId));
+        Address address = addressRepository.findById(addressId).orElseThrow(() -> new NotFoundException("Address not found: " + addressId));
+
+        applianceMapper.update(appliance, address, req);
         return applianceMapper.toResponse(applianceRepository.save(appliance));
     }
 
@@ -100,7 +102,9 @@ public class ApplianceService {
 
     @Transactional(readOnly = true)
     public List<ApplianceListDto> listByAddress(Long addressId) {
-        ensureAddressExists(addressId);
+        if (!addressRepository.existsById(addressId)) {
+            throw new NotFoundException("Address nor found with id: " + addressId);
+        }
         return applianceRepository.findByAddressIdOrderByIdAsc(addressId).stream().map(ApplianceMapper::toList)
                 .toList();
     }
@@ -114,28 +118,6 @@ public class ApplianceService {
     public ApplianceResponseDto getById(Long id) {
         Optional<Appliance> applianceOpt = applianceRepository.findById(id);
         return applianceMapper.toResponse(applianceOpt.orElseThrow(() -> new NotFoundException("Appliance not found: " + id)));
-    }
-
-
-    private void ensureAddressExists(Long addressId) {
-        if (!addressRepository.existsById(addressId)) {
-            throw new NotFoundException("Address not found: " + addressId);
-        }
-    }
-
-    private Appliance findByAddressAndIdOrThrow(Long addressId, Long applianceId) {
-
-        ensureAddressExists(addressId);
-
-        Appliance appliance = applianceRepository.findById(applianceId)
-                .orElseThrow(() -> new NotFoundException("Appliance not found: " + applianceId));
-
-        if (!appliance.getAddress().getId().equals(addressId)) {
-            throw new IllegalArgumentException(
-                    "Appliance " + applianceId + " does not belong to address " + addressId);
-        }
-
-        return appliance;
     }
 
     // HELPER

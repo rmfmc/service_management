@@ -47,11 +47,16 @@ public class AddressController {
     }
 
     @GetMapping
-    public Page<AddressListDto> list(@RequestParam(defaultValue = "0") int pageInt) {
-        return service.list(pageInt);
+    public Page<AddressListDto> list(@RequestParam(defaultValue = "0") int page) {
+        return service.list(page);
     }
 
-    @GetMapping("/{clientId}")
+    @GetMapping("/{id}")
+    public AddressResponseDto getById(@PathVariable Long id) {
+        return service.getById(id);
+    }
+
+    @GetMapping("/client/{clientId}")
     public List<AddressListDto> listByClientId(@PathVariable Long clientId) {
         return service.listByClientId(clientId);
     }

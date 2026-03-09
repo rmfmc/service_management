@@ -118,6 +118,11 @@ public class AddressService {
     }
 
     @Transactional(readOnly = true)
+    public AddressResponseDto getById(Long id) {
+        return addressMapper.toResponse(repository.findById(id).orElseThrow(() -> new NotFoundException("address not found with id: " + id)));
+    }
+
+    @Transactional(readOnly = true)
     public List<AddressListDto> listByClientId(Long clientId) {
         return repository.findByClientId(clientId).stream().map(AddressMapper::toList).toList();
     }
