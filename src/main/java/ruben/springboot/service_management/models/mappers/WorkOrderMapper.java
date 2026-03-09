@@ -80,6 +80,59 @@ public class WorkOrderMapper {
         return dto;
     }
 
+    public WorkOrderResponseDto toTechResponse(WorkOrder w) {
+
+        WorkOrderResponseDto dto = new WorkOrderResponseDto();
+
+        dto.workOrderId = w.getId();
+
+        Client client = w.getClient();
+        if (client != null) {
+            dto.client = ClientMapper.toOnlyResponse(client);
+        }
+
+        Address address = w.getAddress();
+        if (address != null) {
+            dto.address = addressMapper.toOnlyResponse(address);
+        }
+
+        Client tenant = w.getTenant();
+        if (tenant != null) {
+            dto.tenant = ClientMapper.toOnlyResponse(tenant);
+        }
+
+        if (w.getAssignedUser() != null) {
+            dto.assignedUser = w.getAssignedUser().getName();
+        }
+
+        dto.issueDescription = w.getIssueDescription();
+        dto.status = w.getStatus().getLabelEs();
+        dto.priority = w.getPriority();
+        dto.notes = w.getNotes();
+        dto.workPerformed = w.getWorkPerformed();
+        dto.discountVisit = w.getDiscountVisit();
+        dto.billTo = w.getBillTo();
+        dto.totalPrice = w.getTotalPrice();
+
+        dto.scheduledAt = w.getScheduledAt();
+
+        dto.appliances = new ArrayList<>();
+        if (w.getAppliances() != null) {
+            for (Appliance a : w.getAppliances()) {
+                dto.appliances.add(ApplianceMapper.toOnlyResponse(a));
+            }
+        }
+
+        dto.charges = new ArrayList<>();
+        if (w.getCharges() != null) {
+            for (WorkOrderCharge ch : w.getCharges()) {
+                dto.charges.add(WorkOrderChargeMapper.toOnlyResponse(ch));
+            }
+        }
+
+        return dto;
+    }
+
     public static WorkOrderListDto toList(WorkOrder w) {
 
         WorkOrderListDto dto = new WorkOrderListDto();

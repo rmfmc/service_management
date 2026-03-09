@@ -137,7 +137,10 @@ public class WorkOrderService {
     @Transactional(readOnly = true)
     public Page<WorkOrderListDto> adminListByCreationDate(LocalDate date, int pageInt) {
         
-        Page<WorkOrder> page = workOrderRepository.findByCreatedAt(date, pageableByPagePriorityDescCreatedAsc(pageInt));
+        Page<WorkOrder> page = workOrderRepository.findByCreatedAtBetween(
+                date.atStartOfDay(),
+                date.plusDays(1).atStartOfDay().minusNanos(1),
+                pageableByPagePriorityDescCreatedAsc(pageInt));
 
         return page.map(WorkOrderMapper::toList);
     }
@@ -158,7 +161,7 @@ public class WorkOrderService {
         w = workOrderMapper.techUpdate(w, req);
 
         WorkOrder saved = workOrderRepository.save(w);
-        return workOrderMapper.toResponse(saved);
+        return workOrderMapper.toTechResponse(saved);
     }
 
      // TECH
@@ -170,7 +173,7 @@ public class WorkOrderService {
         WorkOrder workOrder = workOrderRepository.findByIdAndAssignedUserId(id, userId)
                 .orElseThrow(() -> new NotFoundException("workOrder not found with id " + id));
 
-        return workOrderMapper.toResponse(workOrder);
+        return workOrderMapper.toTechResponse(workOrder);
     }
 
     // TECH
