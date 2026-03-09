@@ -34,7 +34,7 @@ public class WorkOrderCharge {
     @Column(name = "created_by_user_id")
     private Long createdUserId;
 
-    @Column(name = "created_by_user_nmame")
+    @Column(name = "created_by_user_name")
     private String createdUserName;
 
     @Enumerated(EnumType.STRING)

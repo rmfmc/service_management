@@ -45,10 +45,10 @@ public class WorkOrderFactory {
         User currentUser = userRepository.getReferenceById(currentUserId);
 
         // 1) Client
-        Client client = clientService.resolveForWorkOrder(req.clientId, req.clientDto);
+        Client client = clientService.resolveForWorkOrder(req.clientId, req.client);
 
         // 2) Address
-        Address address = addressService.resolve(req.addressId, req.addressDto, client);
+        Address address = addressService.resolve(req.addressId, req.address, client);
 
         // 3) Appliances
         Set<Appliance> appliances = applianceService.resolve(req.applianceIds, req.newAppliances, address);
@@ -60,24 +60,24 @@ public class WorkOrderFactory {
         w.getAppliances().clear();
         w.getAppliances().addAll(appliances);
 
-        Long assignedUserId = req.workOrderDto.assignedUserId;
+        Long assignedUserId = req.workOrder.assignedUserId;
         w.setAssignedUser(assignedUserId == null ? null : userRepository.findById(assignedUserId).orElseThrow(() -> new NotFoundException("AssignedUser not found")));
 
-        w.setIssueDescription(req.workOrderDto.issueDescription);
-        w.setStatus(req.workOrderDto.status == null ? WorkOrderStatus.NEW : req.workOrderDto.status);
-        w.setPriority(req.workOrderDto.priority);
-        w.setNotes(req.workOrderDto.notes);
-        w.setWorkPerformed(req.workOrderDto.workPerformed);
-        w.setDiscountVisit(req.workOrderDto.discountVisit != null ? req.workOrderDto.discountVisit : false);
-        w.setBillTo(req.workOrderDto.billTo);
-        w.setCreatedAt(req.workOrderDto.createdAt != null ? req.workOrderDto.createdAt : req.workOrderDto.lastUpdateAt);
-        w.setLastUpdatedAt(req.workOrderDto.lastUpdateAt);
-        w.setScheduledAt(req.workOrderDto.scheduledAt);
+        w.setIssueDescription(req.workOrder.issueDescription);
+        w.setStatus(req.workOrder.status == null ? WorkOrderStatus.NEW : req.workOrder.status);
+        w.setPriority(req.workOrder.priority);
+        w.setNotes(req.workOrder.notes);
+        w.setWorkPerformed(req.workOrder.workPerformed);
+        w.setDiscountVisit(req.workOrder.discountVisit != null ? req.workOrder.discountVisit : false);
+        w.setBillTo(req.workOrder.billTo);
+        w.setCreatedAt(req.workOrder.createdAt != null ? req.workOrder.createdAt : req.workOrder.lastUpdateAt);
+        w.setLastUpdatedAt(req.workOrder.lastUpdateAt);
+        w.setScheduledAt(req.workOrder.scheduledAt);
 
-        if (req.tenantDto == null && req.workOrderDto.tenantId == null) {
+        if (req.tenant == null && req.workOrder.tenantId == null) {
             w.setTenant(null);
         } else {
-            w.setTenant(clientService.resolveForWorkOrder(req.workOrderDto.tenantId, req.tenantDto));
+            w.setTenant(clientService.resolveForWorkOrder(req.workOrder.tenantId, req.tenant));
         }
 
         if (w.getId() == null) {

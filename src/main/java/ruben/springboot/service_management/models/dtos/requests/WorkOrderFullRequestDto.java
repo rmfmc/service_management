@@ -9,13 +9,11 @@ import jakarta.validation.constraints.NotNull;
 public class WorkOrderFullRequestDto {
 
     @Valid
-    @NotNull(message = "client is required")
-    public ClientRequestDto clientDto;
+    public ClientRequestDto client;
     public Long clientId;    
     
     @Valid
-    @NotNull(message = "address is required")
-    public AddressRequestDto addressDto;
+    public AddressRequestDto address;
     public Long addressId;
 
     @Valid
@@ -24,12 +22,11 @@ public class WorkOrderFullRequestDto {
 
     @Valid
     @NotNull(message = "workOrder is required")
-    public WorkOrderRequestDto workOrderDto;
-    public Long workOrderId;
+    public WorkOrderRequestDto workOrder;
 
     @Valid
     public List<WorkOrderChargeRequestDto> charges;
 
-    public ClientRequestDto tenantDto;
+    public ClientRequestDto tenant;
 
 }

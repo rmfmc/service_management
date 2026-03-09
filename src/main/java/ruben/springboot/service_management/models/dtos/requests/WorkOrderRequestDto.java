@@ -3,24 +3,13 @@ package ruben.springboot.service_management.models.dtos.requests;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 public class WorkOrderRequestDto {
-
-    @NotNull(message = "clientId is required")
-    public Long clientId;
-
-    @NotNull(message = "addressId is required")
-    public Long addressId;
-
-    public Set<Long> applianceIds;
 
     public Long createdUserId;
     public Long lastUpdateUserId;
@@ -47,9 +36,6 @@ public class WorkOrderRequestDto {
 
     @Size(max = 45, message = "issueDescription must be at most 45 characters")
     public String billTo;
-
-    @Valid
-    public List<WorkOrderChargeRequestDto> charges;
 
     public Long tenantId;
 
