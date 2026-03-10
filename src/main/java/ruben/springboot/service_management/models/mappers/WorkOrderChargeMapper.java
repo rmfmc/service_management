@@ -44,8 +44,8 @@ public class WorkOrderChargeMapper {
         WorkOrderChargeResponseDto dto = new WorkOrderChargeResponseDto();
 
         dto.id = charge.getId();
-        dto.chargeType = charge.getChargeType() != null ? charge.getChargeType().getLabelEs() : null;
-        dto.paymentMethod = charge.getPaymentMethod() != null ? charge.getPaymentMethod().getLabelEs() : null;
+        dto.chargeType = charge.getChargeType().getLabelEs();
+        dto.paymentMethod = charge.getPaymentMethod().getLabelEs();
         dto.description = charge.getDescription();
         dto.price = charge.getPrice();
         dto.payer = charge.getPayer();
@@ -64,8 +64,8 @@ public class WorkOrderChargeMapper {
         WorkOrderChargeOnlyResponseDto dto = new WorkOrderChargeOnlyResponseDto();
 
         dto.id = charge.getId();
-        dto.chargeType = charge.getChargeType() != null ? charge.getChargeType().getLabelEs() : null;
-        dto.paymentMethod = charge.getPaymentMethod() != null ? charge.getPaymentMethod().getLabelEs() : null;
+        dto.chargeType = charge.getChargeType().getLabelEs();
+        dto.paymentMethod = charge.getPaymentMethod().getLabelEs();
         dto.description = charge.getDescription();
         dto.price = charge.getPrice();
         dto.payer = charge.getPayer();
@@ -83,8 +83,8 @@ public class WorkOrderChargeMapper {
 
         dto.id = charge.getId();
         dto.workOrderId = charge.getWorkOrder().getId();
-        dto.chargeType = charge.getChargeType() != null ? charge.getChargeType().getLabelEs() : null;
-        dto.paymentMethod = charge.getPaymentMethod() != null ? charge.getPaymentMethod().getLabelEs() : null;
+        dto.chargeType = charge.getChargeType().getLabelEs();
+        dto.paymentMethod = charge.getPaymentMethod().getLabelEs();
         dto.description = charge.getDescription();
         dto.price = charge.getPrice();
         dto.payer = charge.getPayer();

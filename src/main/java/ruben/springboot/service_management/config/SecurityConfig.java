@@ -65,7 +65,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/work-orders/tech/**").hasAnyRole("ADMIN", "TECH")
 
 
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

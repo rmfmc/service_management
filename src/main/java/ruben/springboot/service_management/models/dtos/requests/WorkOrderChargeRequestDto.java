@@ -10,6 +10,7 @@ import ruben.springboot.service_management.models.enums.PaymentMethod;
 
 public class WorkOrderChargeRequestDto {
     
+    @NotNull(message = "chargeType is required")
     public ChargeType chargeType;
 
     @Size(max = 45)
@@ -24,6 +25,7 @@ public class WorkOrderChargeRequestDto {
 
     public Boolean paid;
 
+    @NotNull(message = "paymentMethod is required")
     public PaymentMethod paymentMethod;
     
 }
