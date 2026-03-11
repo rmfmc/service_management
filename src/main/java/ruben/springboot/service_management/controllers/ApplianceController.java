@@ -19,7 +19,7 @@ import jakarta.validation.Valid;
 import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
 import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
-import ruben.springboot.service_management.models.dtos.responses.PageResponseDto;
+import ruben.springboot.service_management.models.dtos.responses.PageResponse;
 import ruben.springboot.service_management.models.mappers.PageMapper;
 import ruben.springboot.service_management.services.ApplianceService;
 
@@ -48,7 +48,7 @@ public class ApplianceController {
     }
 
     @GetMapping
-    public PageResponseDto<ApplianceListDto> list(@RequestParam(defaultValue = "0") int page) {
+    public PageResponse<ApplianceListDto> list(@RequestParam(defaultValue = "0") int page) {
         return PageMapper.toResponse(service.listAll(page));
     }
 

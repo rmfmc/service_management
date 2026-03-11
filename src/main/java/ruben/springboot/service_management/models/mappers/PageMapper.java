@@ -2,16 +2,17 @@ package ruben.springboot.service_management.models.mappers;
 
 import org.springframework.data.domain.Page;
 
-import ruben.springboot.service_management.models.dtos.responses.PageResponseDto;
+import ruben.springboot.service_management.models.dtos.responses.PageResponse;
 
 public class PageMapper {
 
-    public static <T> PageResponseDto<T> toResponse(Page<T> page) {
-        PageResponseDto<T> dto = new PageResponseDto<>();
+    public static <T> PageResponse<T> toResponse(Page<T> page) {
+        PageResponse<T> dto = new PageResponse<>();
         dto.content = page.getContent();
-        dto.page = page.getNumber();
-        dto.size = page.getSize();
-        dto.totalElements = page.getTotalElements();
+        dto.currentPage = page.getNumber();
+        dto.pageSize = page.getSize();
+        dto.totalItems = page.getTotalElements();
+        dto.itemsInPage = page.getNumberOfElements();
         dto.totalPages = page.getTotalPages();
         dto.first = page.isFirst();
         dto.last = page.isLast();

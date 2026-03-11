@@ -17,7 +17,7 @@ import jakarta.validation.Valid;
 import ruben.springboot.service_management.models.dtos.lists.ClientListDto;
 import ruben.springboot.service_management.models.dtos.requests.ClientRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ClientResponseDto;
-import ruben.springboot.service_management.models.dtos.responses.PageResponseDto;
+import ruben.springboot.service_management.models.dtos.responses.PageResponse;
 import ruben.springboot.service_management.models.mappers.PageMapper;
 import ruben.springboot.service_management.services.ClientService;
 
@@ -51,7 +51,7 @@ public class ClientController {
     }
 
     @GetMapping
-    public PageResponseDto<ClientListDto> list(@RequestParam(defaultValue = "0") int page) {
+    public PageResponse<ClientListDto> list(@RequestParam(defaultValue = "0") int page) {
         return PageMapper.toResponse(service.listAll(page));
     }
 

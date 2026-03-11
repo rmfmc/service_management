@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderFullRequestDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderTechUpdateRequestDto;
-import ruben.springboot.service_management.models.dtos.responses.PageResponseDto;
+import ruben.springboot.service_management.models.dtos.responses.PageResponse;
 import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
 import ruben.springboot.service_management.models.mappers.PageMapper;
 import ruben.springboot.service_management.services.WorkOrderService;
@@ -46,27 +46,27 @@ public class WorkOrderController {
     }
 
     @GetMapping
-    public PageResponseDto<WorkOrderListDto> adminListAll(@RequestParam(defaultValue = "0") int page) {
+    public PageResponse<WorkOrderListDto> adminListAll(@RequestParam(defaultValue = "0") int page) {
         return PageMapper.toResponse(service.adminListAll(page));
     }
 
     @GetMapping("/scheduled")
-    public PageResponseDto<WorkOrderListDto> adminListByScheduledDate(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
+    public PageResponse<WorkOrderListDto> adminListByScheduledDate(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
         return PageMapper.toResponse(service.adminListByScheduledDate(date, page));
     }
 
     @GetMapping("/pending")
-    public PageResponseDto<WorkOrderListDto> adminListPending(@RequestParam(defaultValue = "0") int page) {
+    public PageResponse<WorkOrderListDto> adminListPending(@RequestParam(defaultValue = "0") int page) {
         return PageMapper.toResponse(service.adminListPending(page));
     }
 
     @GetMapping("/user-scheduled")
-    public PageResponseDto<WorkOrderListDto> adminListByScheduledDateAndUserId(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
+    public PageResponse<WorkOrderListDto> adminListByScheduledDateAndUserId(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
         return PageMapper.toResponse(service.adminListByUserAndScheduledDate(date, page));
     }
 
     @GetMapping("/created")
-    public PageResponseDto<WorkOrderListDto> adminListByCreationDate(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
+    public PageResponse<WorkOrderListDto> adminListByCreationDate(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
         return PageMapper.toResponse(service.adminListByCreationDate(date, page));
     }
 
@@ -76,7 +76,7 @@ public class WorkOrderController {
     }
 
     @GetMapping("/tech")
-    public PageResponseDto<WorkOrderListDto> techListByScheduledDateAndUserId(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
+    public PageResponse<WorkOrderListDto> techListByScheduledDateAndUserId(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
         return PageMapper.toResponse(service.techListByUserAndScheduledDate(date, page));
     }
 

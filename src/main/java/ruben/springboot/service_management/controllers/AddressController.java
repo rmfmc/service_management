@@ -20,7 +20,7 @@ import jakarta.validation.Valid;
 import ruben.springboot.service_management.models.dtos.lists.AddressListDto;
 import ruben.springboot.service_management.models.dtos.requests.AddressRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.AddressResponseDto;
-import ruben.springboot.service_management.models.dtos.responses.PageResponseDto;
+import ruben.springboot.service_management.models.dtos.responses.PageResponse;
 import ruben.springboot.service_management.models.mappers.PageMapper;
 import ruben.springboot.service_management.services.AddressService;
 
@@ -49,10 +49,10 @@ public class AddressController {
     }
 
     @GetMapping
-    public PageResponseDto<AddressListDto> list(@RequestParam(defaultValue = "0") int page) {
+    public PageResponse<AddressListDto> list(@RequestParam(defaultValue = "0") int page) {
         return PageMapper.toResponse(service.list(page));
     }
-    
+
     @GetMapping("/{id}")
     public AddressResponseDto getById(@PathVariable Long id) {
         return service.getById(id);
