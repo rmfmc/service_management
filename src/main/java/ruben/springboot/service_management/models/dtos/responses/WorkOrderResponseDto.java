@@ -26,7 +26,7 @@ public class WorkOrderResponseDto {
     // Aviso
     public String issueDescription;
     public String status;
-    public int priority;
+    public String priority;
     public String notes;
     public String workPerformed;
     public Boolean discountVisit;

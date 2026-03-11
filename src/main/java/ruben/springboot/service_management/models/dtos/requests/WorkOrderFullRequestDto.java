@@ -29,5 +29,6 @@ public class WorkOrderFullRequestDto {
 
     @Valid
     public ClientRequestDto tenant;
+    public Long tenantId;
 
 }

@@ -4,6 +4,7 @@ import ruben.springboot.service_management.models.*;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderTechUpdateRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.WorkOrderResponseDto;
+import ruben.springboot.service_management.models.enums.WorkOrderPriority;
 
 import java.util.ArrayList;
 
@@ -51,7 +52,7 @@ public class WorkOrderMapper {
 
         dto.issueDescription = w.getIssueDescription();
         dto.status = w.getStatus().getLabelEs();
-        dto.priority = w.getPriority();
+        dto.priority = WorkOrderPriority.getLabelEsByInt(w.getPriority());
         dto.notes = w.getNotes();
         dto.workPerformed = w.getWorkPerformed();
         dto.discountVisit = w.getDiscountVisit();
@@ -107,7 +108,7 @@ public class WorkOrderMapper {
 
         dto.issueDescription = w.getIssueDescription();
         dto.status = w.getStatus().getLabelEs();
-        dto.priority = w.getPriority();
+        dto.priority = WorkOrderPriority.getLabelEsByInt(w.getPriority());
         dto.notes = w.getNotes();
         dto.workPerformed = w.getWorkPerformed();
         dto.discountVisit = w.getDiscountVisit();
@@ -139,11 +140,8 @@ public class WorkOrderMapper {
 
         dto.id = w.getId();
         dto.issueDescription = w.getIssueDescription();
-
-        if (w.getStatus() != null)
-            dto.status = w.getStatus().getLabelEs();
-
-        dto.priority = w.getPriority();
+        dto.status = w.getStatus().getLabelEs();
+        dto.priority = WorkOrderPriority.getLabelEsByInt(w.getPriority());
 
         dto.scheduledAt = w.getScheduledAt();
         dto.createdAt = w.getCreatedAt();

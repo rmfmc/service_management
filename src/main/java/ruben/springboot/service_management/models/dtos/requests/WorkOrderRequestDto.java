@@ -20,9 +20,8 @@ public class WorkOrderRequestDto {
 
     public WorkOrderStatus status;
 
-    @PositiveOrZero(message = "priority must be between 0 and 3")
-    @NotNull(message = "priority is required")
-    public int priority;
+    @PositiveOrZero(message = "priority must be between 1 and 4")
+    public Integer priority;
 
     @Size(max = 250, message = "notes must be at most 250 characters")
     public String notes;
@@ -36,8 +35,6 @@ public class WorkOrderRequestDto {
 
     @Size(max = 45, message = "issueDescription must be at most 45 characters")
     public String billTo;
-
-    public Long tenantId;
 
     public LocalDateTime createdAt;
 

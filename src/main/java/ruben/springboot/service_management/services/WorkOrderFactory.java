@@ -19,6 +19,7 @@ import ruben.springboot.service_management.models.WorkOrderCharge;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderChargeRequestDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderFullRequestDto;
 import ruben.springboot.service_management.models.enums.ChargeType;
+import ruben.springboot.service_management.models.enums.WorkOrderPriority;
 import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 import ruben.springboot.service_management.models.mappers.WorkOrderChargeMapper;
 import ruben.springboot.service_management.repositories.UserRepository;
@@ -65,7 +66,7 @@ public class WorkOrderFactory {
 
         w.setIssueDescription(req.workOrder.issueDescription);
         w.setStatus(req.workOrder.status == null ? WorkOrderStatus.NEW : req.workOrder.status);
-        w.setPriority(req.workOrder.priority);
+        w.setPriority(req.workOrder.priority == null ? WorkOrderPriority.MID.getPriority() : req.workOrder.priority);
         w.setNotes(req.workOrder.notes);
         w.setWorkPerformed(req.workOrder.workPerformed);
         w.setDiscountVisit(req.workOrder.discountVisit != null ? req.workOrder.discountVisit : false);
@@ -74,10 +75,10 @@ public class WorkOrderFactory {
         w.setLastUpdatedAt(req.workOrder.lastUpdateAt);
         w.setScheduledAt(req.workOrder.scheduledAt);
 
-        if (req.tenant == null && req.workOrder.tenantId == null) {
+        if (req.tenant == null && req.tenantId == null) {
             w.setTenant(null);
         } else {
-            w.setTenant(clientService.resolveForWorkOrder(req.workOrder.tenantId, req.tenant));
+            w.setTenant(clientService.resolveForWorkOrder(req.tenantId, req.tenant));
         }
 
         if (w.getId() == null) {

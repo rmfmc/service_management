@@ -3,12 +3,14 @@ package ruben.springboot.service_management.models.dtos.lists;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import ruben.springboot.service_management.models.enums.WorkOrderPriority;
+
 public class WorkOrderListDto {
 
     public Long id;
     public String issueDescription;
     public String status;
-    public int priority;
+    public String priority;
     public LocalDate scheduledAt;
     public LocalDateTime createdAt;
 
@@ -28,8 +30,7 @@ public class WorkOrderListDto {
         this.id = id;
         this.issueDescription = issueDescription;
         this.status = status;
-        this.priority = priority;
-        this.priority = priority;
+        this.priority = WorkOrderPriority.getLabelEsByInt(priority);
         this.scheduledAt = scheduledAt;
         this.createdAt = createdAt;
         this.clientName = clientName;
