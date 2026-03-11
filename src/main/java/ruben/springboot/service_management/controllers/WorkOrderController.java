@@ -22,49 +22,49 @@ public class WorkOrderController {
     @Autowired
     private WorkOrderService service;
 
-    @PostMapping("/admin")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public WorkOrderResponseDto create(@Valid @RequestBody WorkOrderFullRequestDto req) {
         return service.createFull(req);
     }
 
-    @PutMapping("/admin/{id}")
+    @PutMapping("/{id}")
     public WorkOrderResponseDto update(@PathVariable Long id, @Valid @RequestBody WorkOrderFullRequestDto req) {
         return service.updateFull(id, req);
     }
     
-    @DeleteMapping("/admin/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
 
-    @GetMapping("/admin/{id}")
+    @GetMapping("/{id}")
     public WorkOrderResponseDto adminGetById(@PathVariable Long id) {
         return service.getById(id);
     }
 
-    @GetMapping("/admin")
+    @GetMapping
     public Page<WorkOrderListDto> adminListAll(@RequestParam(defaultValue = "0") int page) {
         return service.adminListAll(page);
     }
 
-    @GetMapping("/admin/scheduled")
+    @GetMapping("/scheduled")
     public Page<WorkOrderListDto> adminListByScheduledDate(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
         return service.adminListByScheduledDate(date, page);
     }
 
-    @GetMapping("/admin/pending")
+    @GetMapping("/pending")
     public Page<WorkOrderListDto> adminListPending(@RequestParam(defaultValue = "0") int page) {
         return service.adminListPending(page);
     }
 
-    @GetMapping("/admin/user-scheduled")
+    @GetMapping("/user-scheduled")
     public Page<WorkOrderListDto> adminListByScheduledDateAndUserId(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
         return service.adminListByUserAndScheduledDate(date, page);
     }
 
-    @GetMapping("/admin/created")
+    @GetMapping("/created")
     public Page<WorkOrderListDto> adminListByCreationDate(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
         return service.adminListByCreationDate(date, page);
     }

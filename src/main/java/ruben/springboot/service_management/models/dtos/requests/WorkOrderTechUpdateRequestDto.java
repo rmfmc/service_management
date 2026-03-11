@@ -13,7 +13,7 @@ public class WorkOrderTechUpdateRequestDto {
     @Size(max = 100, message = "workPerformed must be at most 100 characters")
     public String workPerformed;
 
-    @Size(max = 45, message = "issueDescription must be at most 45 characters")
+    @Size(max = 45, message = "billTo must be at most 45 characters")
     public String billTo;
 
 }
