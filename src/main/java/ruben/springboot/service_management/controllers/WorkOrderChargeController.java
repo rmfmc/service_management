@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderChargeListDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderChargeRequestDto;
+import ruben.springboot.service_management.models.dtos.responses.PageResponseDto;
 import ruben.springboot.service_management.models.dtos.responses.WorkOrderChargeResponseDto;
+import ruben.springboot.service_management.models.mappers.PageMapper;
 import ruben.springboot.service_management.services.WorkOrderChargeService;
 
 @RestController
@@ -46,9 +48,8 @@ public class WorkOrderChargeController {
         service.delete(id);
     }
 
-    @GetMapping
-    public Page<WorkOrderChargeListDto> listAll(@RequestParam(defaultValue = "0") int page) {
-        return service.listAll(page);
+    public PageResponseDto<WorkOrderChargeListDto> listAll(@RequestParam(defaultValue = "0") int page) {
+        return PageMapper.toResponse(service.listAll(page));
     }
 
     @GetMapping("/{id}")

@@ -3,7 +3,6 @@ package ruben.springboot.service_management.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,8 @@ import jakarta.validation.Valid;
 import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
 import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
+import ruben.springboot.service_management.models.dtos.responses.PageResponseDto;
+import ruben.springboot.service_management.models.mappers.PageMapper;
 import ruben.springboot.service_management.services.ApplianceService;
 
 @RestController
@@ -47,8 +48,8 @@ public class ApplianceController {
     }
 
     @GetMapping
-    public Page<ApplianceListDto> list(@RequestParam(defaultValue = "0") int page) {
-        return service.listAll(page);
+    public PageResponseDto<ApplianceListDto> list(@RequestParam(defaultValue = "0") int page) {
+        return PageMapper.toResponse(service.listAll(page));
     }
 
     @GetMapping("/address/{addressId}")
