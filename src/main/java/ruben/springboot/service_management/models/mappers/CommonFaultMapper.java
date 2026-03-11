@@ -7,12 +7,15 @@ import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.CommonFault;
 import ruben.springboot.service_management.models.dtos.CommonFaultDto;
 import ruben.springboot.service_management.repositories.ApplianceTypeRepository;
+import ruben.springboot.service_management.repositories.CommonFaultRepository;
 
 @Component
 public class CommonFaultMapper {
 
     @Autowired
     private ApplianceTypeRepository applianceTypeRepository;
+    @Autowired
+    private CommonFaultRepository repository;
 
     public CommonFault toEntity(CommonFaultDto dto) {
         CommonFault cf = new CommonFault();
@@ -22,7 +25,8 @@ public class CommonFaultMapper {
         return cf;
     }
 
-    public CommonFault update(CommonFaultDto dto, CommonFault cf) {
+    public CommonFault update(CommonFaultDto dto, Long commonFaultId) {
+        CommonFault cf = repository.findById(commonFaultId).orElseThrow(() -> new NotFoundException("Common Fault not found: " + commonFaultId));
         cf.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
                 .orElseThrow(() -> new NotFoundException("applianceType not found: " + dto.applianceTypeId)));
         cf.setName(dto.name);
