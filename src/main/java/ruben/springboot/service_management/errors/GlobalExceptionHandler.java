@@ -3,10 +3,12 @@ package ruben.springboot.service_management.errors;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -137,9 +139,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<Map<String, Object>> handleMissingServletRequestParameter(
-            MissingServletRequestParameterException ex,
-            HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> handleMissingServletRequestParameter( MissingServletRequestParameterException ex, HttpServletRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", Instant.now());
@@ -149,6 +149,20 @@ public class GlobalExceptionHandler {
         body.put("path", request.getRequestURI());
 
         return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<Map<String, Object>> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex,HttpServletRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", Instant.now());
+        body.put("status", HttpStatus.METHOD_NOT_ALLOWED.value());
+        body.put("error", "Method Not Allowed");
+        String method = ex.getMethod();
+        body.put("message", method + " is not allowed for this endpoint");
+        body.put("path", request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(body);
     }
 
 }
