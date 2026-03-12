@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,10 +36,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = header.substring(7);
 
         try {
-            String username = jwtService.getUsername(token);
-            String role = jwtService.getRole(token);
+            Claims claims = jwtService.parseClaims(token);
+            if (jwtService.isExpired(claims)) {
+                SecurityContextHolder.clearContext();
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            String username = claims.getSubject();
+            String role = claims.get("role", String.class);
             Long userId = jwtService.getUserId(token);
-            String userName = jwtService.getUserName(token);
+            String userName = claims.get("userName", String.class);
 
             CurrentUserDto currentUser = new CurrentUserDto(userId, userName);
 

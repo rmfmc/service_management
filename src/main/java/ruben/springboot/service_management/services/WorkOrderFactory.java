@@ -104,7 +104,7 @@ public class WorkOrderFactory {
 
         boolean visitChargedAndPaid = false;
         BigDecimal visitPrice = BigDecimal.ZERO;
-        BigDecimal total = w.getTotalPrice() == null ? BigDecimal.ZERO : w.getTotalPrice();
+        BigDecimal total = BigDecimal.ZERO;
 
         if (chargesDto != null) {
             for (WorkOrderChargeRequestDto cDto : chargesDto) {

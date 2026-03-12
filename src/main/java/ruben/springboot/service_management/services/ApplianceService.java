@@ -103,7 +103,7 @@ public class ApplianceService {
     @Transactional(readOnly = true)
     public List<ApplianceListDto> listByAddress(Long addressId) {
         if (!addressRepository.existsById(addressId)) {
-            throw new NotFoundException("Address nor found with id: " + addressId);
+            throw new NotFoundException("Address not found with id: " + addressId);
         }
         return applianceRepository.findByAddressIdOrderByIdAsc(addressId).stream().map(ApplianceMapper::toList)
                 .toList();

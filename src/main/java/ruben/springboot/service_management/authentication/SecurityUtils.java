@@ -14,9 +14,7 @@ public class SecurityUtils {
         if (auth == null) return null;
 
         Object details = auth.getDetails();
-        if (details == null) return null;
-
-        CurrentUserDto currentUser = (CurrentUserDto) details;
+        if (!(details instanceof CurrentUserDto currentUser)) return null;
 
         return currentUser.getCurrentUserId();
     }
@@ -26,9 +24,7 @@ public class SecurityUtils {
         if (auth == null) return null;
 
         Object details = auth.getDetails();
-        if (details == null) return null;
-
-        CurrentUserDto currentUser = (CurrentUserDto) details;
+        if (!(details instanceof CurrentUserDto currentUser)) return null;
 
         return currentUser.getCurrentUserName();
     }

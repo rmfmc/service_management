@@ -72,7 +72,7 @@ public class UserService {
     @Transactional()
     public void delete(Long id){
         if (WorkOrderRepository.existsByAssignedUserId(id)) {
-            throw new UnauthorizedException("User has one or more WorkOrders asiggned. Deactivate the user or delete the related workOrders");
+            throw new UnauthorizedException("User has one or more WorkOrders assigned. Deactivate the user or delete the related workOrders");
         }
         repository.deleteById(id);
     }
