@@ -27,7 +27,7 @@ public class UserService {
     private UserRepository repository;
 
     @Autowired
-    private WorkOrderRepository WorkOrderRepository;
+    private WorkOrderRepository workOrderRepository;
 
     @Autowired
     private PasswordEncoder encoder;
@@ -71,10 +71,12 @@ public class UserService {
 
     @Transactional()
     public void delete(Long id){
-        if (WorkOrderRepository.existsByAssignedUserId(id)) {
+        User user = repository.findById(id).orElseThrow(() -> new NotFoundException("Usuario", id));
+
+        if (workOrderRepository.existsByAssignedUserId(id)) {
             throw new ForbiddenException("El usuario tiene avisos asignados. Desactiva el usuario o elimina los avisos relacionados");
         }
-        repository.deleteById(id);
+        repository.delete(user);
     }
 
     @Transactional(readOnly = true)

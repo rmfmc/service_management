@@ -12,39 +12,39 @@ import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 public class WorkOrderRequestDto {
 
-    @Positive(message = "createdUserId must be greater than 0")
+    @Positive(message = "el id del usuario creador debe ser mayor que 0")
     public Long createdUserId;
-    @Positive(message = "lastUpdateUserId must be greater than 0")
+    @Positive(message = "el id del usuario de última actualización debe ser mayor que 0")
     public Long lastUpdateUserId;
-    @Positive(message = "assignedUserId must be greater than 0")
+    @Positive(message = "el id del usuario asignado debe ser mayor que 0")
     public Long assignedUserId;
 
-    @Size(max = 100, message = "issueDescription must be at most 100 characters")
+    @Size(max = 100, message = "la descripción de la avería debe tener como máximo 100 caracteres")
     public String issueDescription;
 
     public WorkOrderStatus status;
 
-    @Min(value = 1, message = "priority must be between 1 and 4")
-    @Max(value = 4, message = "priority must be between 1 and 4")
+    @Min(value = 1, message = "la prioridad debe estar entre 1 y 4")
+    @Max(value = 4, message = "la prioridad debe estar entre 1 y 4")
     public Integer priority;
 
-    @Size(max = 250, message = "notes must be at most 250 characters")
+    @Size(max = 250, message = "las notas deben tener como máximo 250 caracteres")
     public String notes;
 
-    @Size(max = 100, message = "workPerformed must be at most 100 characters")
+    @Size(max = 100, message = "el trabajo realizado debe tener como máximo 100 caracteres")
     public String workPerformed;
 
     public Boolean discountVisit;
 
-    @Size(max = 45, message = "billTo must be at most 45 characters")
+    @Size(max = 45, message = "el campo facturar a debe tener como máximo 45 caracteres")
     public String billTo;
 
     public LocalDateTime createdAt;
 
-    @NotNull(message = "lastUpdateAt is required")
+    @NotNull(message = "la fecha de última actualización es obligatoria")
     public LocalDateTime lastUpdateAt;
 
-    @NotNull(message = "scheduledAt is required")
+    @NotNull(message = "la fecha programada es obligatoria")
     public LocalDate scheduledAt;
 
 }

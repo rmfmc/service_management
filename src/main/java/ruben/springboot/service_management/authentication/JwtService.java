@@ -65,7 +65,7 @@ public class JwtService {
         if (v instanceof Integer) return ((Integer) v).longValue();
         if (v instanceof Long) return (Long) v;
         if (v instanceof String) return Long.parseLong((String) v);
-        throw new RuntimeException("Invalid userId in token");
+        throw new RuntimeException("userId inválido en el token");
     }
 
     public String getRole(String token) {

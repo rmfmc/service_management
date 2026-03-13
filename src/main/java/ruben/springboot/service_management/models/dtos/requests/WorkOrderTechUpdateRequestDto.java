@@ -7,13 +7,13 @@ public class WorkOrderTechUpdateRequestDto {
 
     public WorkOrderStatus status;
 
-    @Size(max = 250, message = "notes must be at most 250 characters")
+    @Size(max = 250, message = "las notas deben tener como máximo 250 caracteres")
     public String notes;
 
-    @Size(max = 100, message = "workPerformed must be at most 100 characters")
+    @Size(max = 100, message = "el trabajo realizado debe tener como máximo 100 caracteres")
     public String workPerformed;
 
-    @Size(max = 45, message = "billTo must be at most 45 characters")
+    @Size(max = 45, message = "el campo facturar a debe tener como máximo 45 caracteres")
     public String billTo;
 
 }

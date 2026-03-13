@@ -5,12 +5,12 @@ import jakarta.validation.constraints.Size;
 
 public class LoginRequestDto {
 
-    @NotBlank(message = "username is required")
-    @Size(min = 3, max = 20, message = "username must be between 3 and 20 characters")
+    @NotBlank(message = "el nombre de usuario es obligatorio")
+    @Size(min = 3, max = 20, message = "el nombre de usuario debe tener entre 3 y 20 caracteres")
     private String username;
 
-    @NotBlank(message = "password is required")
-    @Size(min = 6, message = "password must be at least 6 characters")
+     @NotBlank(message = "la contraseña es obligatoria")
+    @Size(min = 6, message = "la contraseña debe tener al menos 6 caracteres")
     private String password;
 
     public LoginRequestDto() {

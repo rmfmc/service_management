@@ -65,7 +65,9 @@ public class WorkOrderService {
     // ADMIN
     @Transactional
     public void delete(Long id) {
-        workOrderRepository.deleteById(id);
+        WorkOrder workOrder = workOrderRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Aviso", id));
+        workOrderRepository.delete(workOrder);
     }
 
     // ADMIN

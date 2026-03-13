@@ -6,17 +6,17 @@ import jakarta.validation.constraints.Positive;
 
 public class ApplianceRequestDto {
 
-    @NotNull(message = "applianceTypeId is required")
-    @Positive(message = "applianceTypeId must be greater than 0")
+    @NotNull(message = "el id del tipo de electrodoméstico es obligatorio")
+    @Positive(message = "el id del tipo de electrodoméstico debe ser mayor que 0")
     public Long applianceTypeId;
 
-    @Positive(message = "brandId must be greater than 0")
+    @Positive(message = "el id de la marca debe ser mayor que 0")
     public Long brandId;
 
-    @Size(max = 20, message = "model must be at most 20 characters")
+    @Size(max = 20, message = "el modelo debe tener como máximo 20 caracteres")
     public String model;
 
-    @Size(max = 45, message = "serialNumber must be at most 45 characters")
+    @Size(max = 45, message = "el número de serie debe tener como máximo 45 caracteres")
     public String serialNumber;
 
     public Boolean active;

@@ -7,23 +7,23 @@ import ruben.springboot.service_management.models.enums.UserRole;
 
 public class UserRequestDto {
 
-    @NotBlank(message = "name is required")
-    @Size(max = 45, message = "name must be at most 45 characters")
+    @NotBlank(message = "el nombre es obligatorio")
+    @Size(max = 45, message = "el nombre debe tener como máximo 45 caracteres")
     public String name;
 
-    @NotBlank(message = "phone is required")
-    @Size(min = 9, max = 12, message = "phone must be between 9 and 12 characters")
+    @NotBlank(message = "el teléfono es obligatorio")
+    @Size(min = 9, max = 12, message = "el teléfono debe tener entre 9 y 12 caracteres")
     public String phone;
 
-    @NotBlank(message = "username is required")
-    @Size(min = 3, max = 20, message = "username must be between 3 and 20 characters")
+    @NotBlank(message = "el nombre de usuario es obligatorio")
+    @Size(min = 3, max = 20, message = "el nombre de usuario debe tener entre 3 y 20 caracteres")
     public String username;
 
-    @NotBlank(message = "password is required")
-    @Size(min = 6, message = "password must be at least 6 characters")
+    @NotBlank(message = "la contraseña es obligatoria")
+    @Size(min = 6, message = "la contraseña debe tener al menos 6 caracteres")
     public String password;
 
-    @NotNull(message = "role is required")
+    @NotNull(message = "el rol es obligatorio")
     public UserRole role;
 
     

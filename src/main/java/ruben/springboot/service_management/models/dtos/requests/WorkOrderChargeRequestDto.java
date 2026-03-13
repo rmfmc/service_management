@@ -10,22 +10,22 @@ import ruben.springboot.service_management.models.enums.PaymentMethod;
 
 public class WorkOrderChargeRequestDto {
     
-    @NotNull(message = "chargeType is required")
+    @NotNull(message = "el tipo de cargo es obligatorio")
     public ChargeType chargeType;
 
-    @Size(max = 45, message = "description must be at most 45 characters")
+    @Size(max = 45, message = "la descripción debe tener como máximo 45 caracteres")
     public String description;
 
-    @NotNull(message = "price is required")
-    @DecimalMin(value = "0.0", inclusive = true, message = "price must be greater than or equal to 0")
+    @NotNull(message = "el precio es obligatorio")
+    @DecimalMin(value = "0.0", inclusive = true, message = "el precio debe ser mayor o igual que 0")
     public BigDecimal price;
 
-    @Size(max = 45, message = "payer must be at most 45 characters")
+    @Size(max = 45, message = "el pagador debe tener como máximo 45 caracteres")
     public String payer;
 
     public Boolean paid;
 
-    @NotNull(message = "paymentMethod is required")
+    @NotNull(message = "el método de pago es obligatorio")
     public PaymentMethod paymentMethod;
     
 }

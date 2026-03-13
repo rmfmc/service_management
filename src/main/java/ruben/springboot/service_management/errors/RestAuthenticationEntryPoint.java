@@ -26,7 +26,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         body.put("timestamp", Instant.now().toString());
         body.put("status", 401);
         body.put("error", "UNAUTHORIZED");
-        body.put("message", "Authentication is required");
+        body.put("message", "La autenticación es obligatoria");
         body.put("path", request.getRequestURI());
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

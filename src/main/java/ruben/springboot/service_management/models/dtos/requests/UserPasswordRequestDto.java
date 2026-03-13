@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Size;
 
 public class UserPasswordRequestDto {
 
-    @NotBlank(message = "password is required")
-    @Size(min = 6, message = "password must be at least 6 characters")
+    @NotBlank(message = "la contraseña es obligatoria")
+    @Size(min = 6, message = "la contraseña debe tener al menos 6 caracteres")
     public String password;
     
 }

@@ -5,17 +5,17 @@ import jakarta.validation.constraints.Size;
 
 public class AddressRequestDto {
 
-    @NotBlank(message = "address is required")
-    @Size(max = 100, message = "address must be at most 100 characters")
+    @NotBlank(message = "la dirección es obligatoria")
+    @Size(max = 100, message = "la dirección debe tener como máximo 100 caracteres")
     public String address;
 
-    @Size(max = 45, message = "city must be at most 45 characters")
+    @Size(max = 45, message = "la ciudad debe tener como máximo 45 caracteres")
     public String city;
 
-    @Size(max = 45, message = "province must be at most 45 characters")
+    @Size(max = 45, message = "la provincia debe tener como máximo 45 caracteres")
     public String province;
 
-    @Size(max = 20, message = "postalCode must be at most 20 characters")
+    @Size(max = 20, message = "el código postal debe tener como máximo 20 caracteres")
     public String postalCode;
 
 }
