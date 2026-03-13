@@ -7,7 +7,6 @@ public class AddressOnlyResponseDto {
     public String city;
     public String province;
     public String postalCode;
-    public int appliances;
     
 }
 

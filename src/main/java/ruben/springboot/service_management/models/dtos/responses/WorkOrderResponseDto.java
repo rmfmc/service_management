@@ -9,21 +9,16 @@ public class WorkOrderResponseDto {
 
     public Long workOrderId;
 
-    // Cliente
     public ClientOnlyResponseDto client;
 
-    // Dirección (real)
     public AddressOnlyResponseDto address;
 
-    // Inquilino
     public ClientOnlyResponseDto tenant;
 
-    // Users (resumen)
     public String assignedUser;
     public String createdUser;
     public String lastUpdatedUser;
 
-    // Aviso
     public String issueDescription;
     public String status;
     public String priority;
@@ -38,10 +33,8 @@ public class WorkOrderResponseDto {
     public LocalDateTime closedAt;
     public LocalDateTime lastUpdatedAt;
 
-    // Relación con aparatos
     public List<ApplianceOnlyResponseDto> appliances;
 
-    // Charges ordenados por createdAt ASC
     public List<WorkOrderChargeOnlyResponseDto> charges;
     
 }

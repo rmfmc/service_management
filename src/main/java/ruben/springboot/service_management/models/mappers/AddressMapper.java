@@ -74,7 +74,6 @@ public class AddressMapper {
         dto.city = a.getCity();
         dto.province = a.getProvince();
         dto.postalCode = a.getPostalCode();
-        dto.appliances = applianceRepository.findByAddressId(a.getId()).size();
 
         return dto;
     }

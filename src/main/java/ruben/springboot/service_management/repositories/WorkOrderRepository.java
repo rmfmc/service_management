@@ -99,6 +99,20 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
   })
   Optional<WorkOrder> findByIdAndAssignedUserId(Long id, Long assignedUserId);
 
+  @EntityGraph(attributePaths = {
+      "client",
+      "address",
+      "tenant",
+      "assignedUser",
+      "createdUser",
+      "lastUpdatedUser",
+      "appliances",
+      "appliances.applianceType",
+      "appliances.brand",
+      "charges"
+  })
+  Optional<WorkOrder> findById(Long id);
+
   boolean existsByAssignedUserId(Long id);
 
 }

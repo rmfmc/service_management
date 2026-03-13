@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,18 +15,25 @@ import ruben.springboot.service_management.models.Appliance;
 
 public interface ApplianceRepository extends JpaRepository<Appliance, Long>{
 
+    @EntityGraph(attributePaths = {"applianceType", "brand"})
     List<Appliance> findByActiveTrueOrderByBrandAscModelAsc();
 
+    @EntityGraph(attributePaths = {"applianceType", "brand"})
     List<Appliance> findByAddressId(Long addressId);
 
+    @EntityGraph(attributePaths = {"applianceType", "brand"})
     List<Appliance> findByApplianceTypeId(Long applianceTypeId);
     
+    @EntityGraph(attributePaths = {"applianceType", "brand"})
     List<Appliance> findByBrandId(Long brandId);
 
+    @EntityGraph(attributePaths = {"applianceType", "brand"})
     List<Appliance> findByAddressIdOrderByIdAsc(Long addressId);
 
+    @EntityGraph(attributePaths = {"applianceType", "brand"})
     Optional<Appliance> findById(Long id);
 
+    @EntityGraph(attributePaths = {"applianceType", "brand"})
     Page<Appliance> findAll(Pageable page);
 
     @Query("""
