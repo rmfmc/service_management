@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ruben.springboot.service_management.authentication.SecurityUtils;
+import ruben.springboot.service_management.errors.ForbiddenException;
 import ruben.springboot.service_management.errors.NotFoundException;
-import ruben.springboot.service_management.errors.UnauthorizedException;
 import ruben.springboot.service_management.models.WorkOrder;
 import ruben.springboot.service_management.models.WorkOrderCharge;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderChargeListDto;
@@ -42,7 +42,7 @@ public class WorkOrderChargeService {
     public WorkOrderChargeResponseDto create(Long workOrderId, WorkOrderChargeRequestDto dto) {
 
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
-                .orElseThrow(() -> new NotFoundException("WorkOrder not found: " + workOrderId));
+                .orElseThrow(() -> new NotFoundException("Aviso", workOrderId));
 
         validateTechAccessToWorkOrder(workOrder);
 
@@ -63,7 +63,7 @@ public class WorkOrderChargeService {
     public WorkOrderChargeResponseDto update(Long chargeId, WorkOrderChargeRequestDto dto) {
 
         WorkOrderCharge chargeDb = repository.findById(chargeId)
-                .orElseThrow(() -> new NotFoundException("WorkOrderCharge not found: " + chargeId));
+                .orElseThrow(() -> new NotFoundException("Cargo", chargeId));
 
         validateTechAccessToCharge(chargeDb);
 
@@ -80,7 +80,7 @@ public class WorkOrderChargeService {
     public void delete(Long chargeId) {
 
         WorkOrderCharge chargeDb = repository.findById(chargeId)
-                .orElseThrow(() -> new NotFoundException("WorkOrderCharge not found: " + chargeId));
+                .orElseThrow(() -> new NotFoundException("Cargo", chargeId));
 
         WorkOrder workOrder = chargeDb.getWorkOrder();
         workOrder.removeCharge(chargeDb);
@@ -92,7 +92,7 @@ public class WorkOrderChargeService {
     @Transactional(readOnly = true)
     public WorkOrderChargeResponseDto getById(Long chargeId) {
         WorkOrderCharge charge = repository.findById(chargeId)
-                .orElseThrow(() -> new NotFoundException("WorkOrderCharge not found: " + chargeId));
+                .orElseThrow(() -> new NotFoundException("Cargo", chargeId));
 
         validateTechAccessToCharge(charge);
 
@@ -107,7 +107,7 @@ public class WorkOrderChargeService {
     @Transactional(readOnly = true)
     public List<WorkOrderChargeListDto> listByWorkOrderId(Long workOrderId) {
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
-                .orElseThrow(() -> new NotFoundException("WorkOrder not found: " + workOrderId));
+                .orElseThrow(() -> new NotFoundException("Aviso", workOrderId));
 
         validateTechAccessToWorkOrder(workOrder);
 
@@ -125,7 +125,7 @@ public class WorkOrderChargeService {
         Long createdUserId = workOrderCharge.getCreatedUserId();
 
         if (currentUserId == null || createdUserId == null || !createdUserId.equals(currentUserId)) {
-            throw new UnauthorizedException("Technician is not allowed to access this charge");
+            throw new ForbiddenException("El técnico no tiene permisos para acceder a este cargo");
         }
     }
 
@@ -139,7 +139,7 @@ public class WorkOrderChargeService {
         Long assignedUserId = workOrder.getAssignedUser() != null ? workOrder.getAssignedUser().getId() : null;
 
         if (currentUserId == null || assignedUserId == null || !assignedUserId.equals(currentUserId)) {
-            throw new UnauthorizedException("Technician is not allowed to access this work order");
+            throw new ForbiddenException("El técnico no tiene permisos para acceder a este aviso");
         }
     }
 
@@ -173,6 +173,7 @@ public class WorkOrderChargeService {
 
         if (Boolean.TRUE.equals(workOrder.getDiscountVisit()) && visitChargedAndPaid) {
             workOrder.setTotalPrice(total.subtract(visitPrice));
+            return;
         }
 
         workOrder.setTotalPrice(total);

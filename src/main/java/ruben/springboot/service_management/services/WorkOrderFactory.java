@@ -62,7 +62,8 @@ public class WorkOrderFactory {
         w.getAppliances().addAll(appliances);
 
         Long assignedUserId = req.workOrder.assignedUserId;
-        w.setAssignedUser(assignedUserId == null ? null : userRepository.findById(assignedUserId).orElseThrow(() -> new NotFoundException("AssignedUser not found")));
+        w.setAssignedUser(assignedUserId == null ? null : userRepository.findById(assignedUserId)
+                .orElseThrow(() -> new NotFoundException("Usuario asignado", assignedUserId)));
 
         w.setIssueDescription(req.workOrder.issueDescription);
         w.setStatus(req.workOrder.status == null ? WorkOrderStatus.NEW : req.workOrder.status);

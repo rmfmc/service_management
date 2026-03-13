@@ -47,6 +47,7 @@ public class WorkOrderChargeController {
         service.delete(id);
     }
 
+    @GetMapping
     public PageResponse<WorkOrderChargeListDto> listAll(@RequestParam(defaultValue = "0") int page) {
         return PageMapper.toResponse(service.listAll(page));
     }

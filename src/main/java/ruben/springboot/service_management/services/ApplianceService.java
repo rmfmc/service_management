@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ruben.springboot.service_management.models.mappers.ApplianceMapper;
+import ruben.springboot.service_management.errors.BadRequestException;
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Address;
 import ruben.springboot.service_management.models.Appliance;
@@ -43,27 +44,24 @@ public class ApplianceService {
 
         Set<Appliance> result = new HashSet<>();
 
-        // ids existentes
         if (applianceIds != null && !applianceIds.isEmpty()) {
             List<Appliance> found = applianceRepository.findAllById(applianceIds);
             if (found.size() != applianceIds.size()) {
-                throw new NotFoundException("Some applianceIds not found");
+                throw new NotFoundException("Algunos electrodomésticos no existen");
             }
             for (Appliance a : found) {
                 if (!a.getAddress().getId().equals(address.getId())) {
-                    throw new IllegalArgumentException(
-                            "Appliance " + a.getId() + " does not belong to address " + address.getId());
+                    throw new BadRequestException(
+                            "Electrodoméstico " + a.getId() + " no pertenece a la dirección " + address.getId(), null);
                 }
                 result.add(a);
             }
         }
 
-        // crear nuevos
         if (applianceDtos != null) {
             for (ApplianceRequestDto dto : applianceDtos) {
 
-                Appliance appliance = new Appliance();
-                applianceMapper.update(appliance, address, dto);
+                Appliance appliance = applianceMapper.toEntity(dto, address.getId());
                 
                 result.add(applianceRepository.save(appliance));
             }
@@ -74,36 +72,33 @@ public class ApplianceService {
 
     @Transactional
     public ApplianceResponseDto createForAddress(Long addressId, ApplianceRequestDto req) {
-        Address address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new NotFoundException("Address not found: " + addressId));
-
+        
         Appliance appliance = applianceMapper.toEntity(req, addressId);
-        appliance.setAddress(address);
 
         return applianceMapper.toResponse(applianceRepository.save(appliance));
+
     }
     
     @Transactional
     public ApplianceResponseDto updateByAddressAndId(Long addressId, Long applianceId, ApplianceRequestDto req) {
-        
-        Appliance appliance = applianceRepository.findById(applianceId).orElseThrow(() -> new NotFoundException("Appliance not found: " + applianceId));
-        Address address = addressRepository.findById(addressId).orElseThrow(() -> new NotFoundException("Address not found: " + addressId));
 
-        applianceMapper.update(appliance, address, req);
-        return applianceMapper.toResponse(applianceRepository.save(appliance));
+        Appliance a = applianceMapper.update(applianceId, addressId, req);
+
+        return applianceMapper.toResponse(applianceRepository.save(a));
+
     }
 
     @Transactional
-    public void setNotActiveById(Long id) {
-        Appliance appliance = applianceRepository.findById(id).orElseThrow(() -> new NotFoundException("Appliance not found: " + id));
+    public ApplianceResponseDto setNotActiveById(Long id) {
+        Appliance appliance = applianceRepository.findById(id).orElseThrow(() -> new NotFoundException("Electrodoméstico", id));
         appliance.setActive(false);
-        applianceRepository.save(appliance);
+        return applianceMapper.toResponse(applianceRepository.save(appliance));
     }
 
     @Transactional(readOnly = true)
     public List<ApplianceListDto> listByAddress(Long addressId) {
         if (!addressRepository.existsById(addressId)) {
-            throw new NotFoundException("Address not found with id: " + addressId);
+            throw new NotFoundException("Dirección", addressId);
         }
         return applianceRepository.findByAddressIdOrderByIdAsc(addressId).stream().map(ApplianceMapper::toList)
                 .toList();
@@ -117,7 +112,7 @@ public class ApplianceService {
     @Transactional(readOnly = true)
     public ApplianceResponseDto getById(Long id) {
         Optional<Appliance> applianceOpt = applianceRepository.findById(id);
-        return applianceMapper.toResponse(applianceOpt.orElseThrow(() -> new NotFoundException("Appliance not found: " + id)));
+        return applianceMapper.toResponse(applianceOpt.orElseThrow(() -> new NotFoundException("Electrodoméstico", id)));
     }
 
     // HELPER

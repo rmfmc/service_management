@@ -23,7 +23,7 @@ public class ApplianceTypeService {
     public ApplianceTypeDto create(ApplianceTypeDto dto) {
         dto.name = dto.name.trim();
         if (repository.existsByNameIgnoreCase(dto.name)) {
-            throw new AlreadyExistsException("Appliance type already exists: " + dto.name);
+            throw new AlreadyExistsException("Tipo de electrodoméstico", dto.name);
         }
 
         ApplianceType applianceType = ApplianceTypeMapper.toEntity(dto);
@@ -33,13 +33,13 @@ public class ApplianceTypeService {
     @Transactional
     public ApplianceTypeDto update(Long applianceTypeId, ApplianceTypeDto dto) {
         ApplianceType applianceTypeDb = repository.findById(applianceTypeId)
-                .orElseThrow(() -> new NotFoundException("ApplianceType not found: " + applianceTypeId));
+                .orElseThrow(() -> new NotFoundException("Tipo de electrodoméstico", applianceTypeId));
 
         dto.name = dto.name.trim();
         String oldName = applianceTypeDb.getName();
 
         if (!dto.name.equalsIgnoreCase(oldName) && repository.existsByNameIgnoreCase(dto.name)) {
-            throw new AlreadyExistsException("Appliance type already exists: " + dto.name);
+            throw new AlreadyExistsException("Tipo de electrodoméstico", dto.name);
         }
 
         ApplianceTypeMapper.update(dto, applianceTypeDb);
@@ -49,7 +49,7 @@ public class ApplianceTypeService {
     @Transactional
     public void deleteById(Long applianceTypeId) {
         ApplianceType applianceType = repository.findById(applianceTypeId)
-                .orElseThrow(() -> new NotFoundException("ApplianceType not found: " + applianceTypeId));
+                .orElseThrow(() -> new NotFoundException("Tipo de electrodoméstico", applianceTypeId));
         repository.delete(applianceType);
     }
 
@@ -61,7 +61,7 @@ public class ApplianceTypeService {
     @Transactional(readOnly = true)
     public ApplianceTypeDto getById(Long applianceTypeId) {
         ApplianceType applianceType = repository.findById(applianceTypeId)
-                .orElseThrow(() -> new NotFoundException("ApplianceType not found: " + applianceTypeId));
+                .orElseThrow(() -> new NotFoundException("Tipo de electrodoméstico", applianceTypeId));
         return ApplianceTypeMapper.toDto(applianceType);
     }
 

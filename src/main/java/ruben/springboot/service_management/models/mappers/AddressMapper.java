@@ -28,7 +28,7 @@ public class AddressMapper {
 
         Address a = new Address();
         a.setClient(clientRepository.findById(clientId)
-                .orElseThrow(() -> new NotFoundException("client not found")));
+                .orElseThrow(() -> new NotFoundException("Cliente", clientId)));
         a.setAddress(dto.address);
         a.setCity(dto.city);
         a.setProvince(dto.province);
@@ -39,7 +39,7 @@ public class AddressMapper {
 
     public Address update(Address a, AddressRequestDto dto, Long clientId) {
         a.setClient(clientRepository.findById(clientId)
-                .orElseThrow(() -> new NotFoundException("Client not found: " + clientId)));
+                .orElseThrow(() -> new NotFoundException("Cliente", clientId)));
         a.setAddress(dto.address);
         a.setCity(dto.city);
         a.setProvince(dto.province);

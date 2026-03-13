@@ -20,15 +20,15 @@ public class CommonFaultMapper {
     public CommonFault toEntity(CommonFaultDto dto) {
         CommonFault cf = new CommonFault();
         cf.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
-                .orElseThrow(() -> new NotFoundException("applianceType not found")));
+                .orElseThrow(() -> new NotFoundException("Tipo de electrodoméstico", dto.applianceTypeId)));
         cf.setName(dto.name);
         return cf;
     }
 
     public CommonFault update(CommonFaultDto dto, Long commonFaultId) {
-        CommonFault cf = repository.findById(commonFaultId).orElseThrow(() -> new NotFoundException("Common Fault not found: " + commonFaultId));
+        CommonFault cf = repository.findById(commonFaultId).orElseThrow(() -> new NotFoundException("Fallo común", commonFaultId));
         cf.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
-                .orElseThrow(() -> new NotFoundException("applianceType not found: " + dto.applianceTypeId)));
+                .orElseThrow(() -> new NotFoundException("Tipo de electrodoméstico", dto.applianceTypeId)));
         cf.setName(dto.name);
         return cf;
     }

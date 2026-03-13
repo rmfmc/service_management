@@ -4,18 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import ruben.springboot.service_management.errors.NotFoundException;
-import ruben.springboot.service_management.models.Address;
 import ruben.springboot.service_management.models.Appliance;
 import ruben.springboot.service_management.models.dtos.lists.ApplianceListDto;
 import ruben.springboot.service_management.models.dtos.requests.ApplianceRequestDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceOnlyResponseDto;
 import ruben.springboot.service_management.models.dtos.responses.ApplianceResponseDto;
 import ruben.springboot.service_management.repositories.AddressRepository;
+import ruben.springboot.service_management.repositories.ApplianceRepository;
 import ruben.springboot.service_management.repositories.ApplianceTypeRepository;
 import ruben.springboot.service_management.repositories.BrandRepository;
 
 @Component
 public class ApplianceMapper {
+
+    @Autowired
+    private ApplianceRepository repository;
 
     @Autowired
     private AddressRepository addressRepository;
@@ -25,48 +28,21 @@ public class ApplianceMapper {
 
     @Autowired
     private BrandRepository brandRepository;
-    
+
     public Appliance toEntity(ApplianceRequestDto dto, Long addressId) {
+        
         Appliance a = new Appliance();
-
-        a.setAddress(addressRepository.findById(addressId)
-                .orElseThrow(() -> new NotFoundException("Address not found")));
-
-        a.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
-                .orElseThrow(() -> new NotFoundException("ApplianceType not found")));
-
-        if (dto.brandId != null) {
-            a.setBrand(brandRepository.findById(dto.brandId)
-                    .orElseThrow(() -> new NotFoundException("Brand not found")));
-        } else {
-            a.setBrand(null);
-        }
-
-        a.setModel(dto.model == null ? null : dto.model.trim());
-        a.setSerialNumber(dto.serialNumber == null ? null : dto.serialNumber.trim());
-        a.setActive(dto.active == null ? true : dto.active);
+        resolve(a, addressId, dto);
 
         return a;
     }
 
-    public Appliance update(Appliance appliance, Address address, ApplianceRequestDto dto) {
+    public Appliance update(Long applianceId, Long addressId, ApplianceRequestDto dto) {
 
-        appliance.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
-                .orElseThrow(() -> new NotFoundException("ApplianceType not found: " + dto.applianceTypeId)));
+        Appliance applianceDB = repository.findById(applianceId).orElseThrow(() -> new NotFoundException("Electrodoméstico" + dto.applianceTypeId));
+        resolve(applianceDB, addressId, dto);
 
-        if (dto.brandId != null) {
-            appliance.setBrand(brandRepository.findById(dto.brandId)
-                    .orElseThrow(() -> new NotFoundException("Brand not found: " + dto.brandId)));
-        } else {
-            appliance.setBrand(null);
-        }
-
-        appliance.setModel(dto.model == null ? null : dto.model.trim());
-        appliance.setSerialNumber(dto.serialNumber == null ? null : dto.serialNumber.trim());
-        appliance.setActive(dto.active == null ? true : dto.active);
-        appliance.setAddress(address);
-
-        return appliance;
+        return applianceDB;
     }
 
     public ApplianceResponseDto toResponse(Appliance a) {
@@ -103,7 +79,6 @@ public class ApplianceMapper {
         ApplianceListDto dto = new ApplianceListDto();
 
         dto.id = a.getId();
-
         dto.type = a.getApplianceType().getName();
         dto.brand = a.getBrand() != null ? a.getBrand().getName() : null;
         dto.model = a.getModel();
@@ -111,6 +86,28 @@ public class ApplianceMapper {
         dto.active = a.isActive();
 
         return dto;
+    }
+
+    private Appliance resolve(Appliance a, Long addressId, ApplianceRequestDto dto) {
+
+        a.setAddress(addressRepository.findById(addressId)
+                .orElseThrow(() -> new NotFoundException("Dirección", addressId)));
+
+        a.setApplianceType(applianceTypeRepository.findById(dto.applianceTypeId)
+                .orElseThrow(() -> new NotFoundException("Tipo de electrodoméstico", dto.applianceTypeId)));
+
+        if (dto.brandId != null) {
+            a.setBrand(brandRepository.findById(dto.brandId)
+                    .orElseThrow(() -> new NotFoundException("Marca", dto.brandId)));
+        } else {
+            a.setBrand(null);
+        }
+
+        a.setModel(dto.model == null ? null : dto.model.trim());
+        a.setSerialNumber(dto.serialNumber == null ? null : dto.serialNumber.trim());
+        a.setActive(dto.active == null ? true : dto.active);
+
+        return a;
     }
 
 }

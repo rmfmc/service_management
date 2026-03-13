@@ -43,8 +43,8 @@ public class ApplianceController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable Long id) {
-        service.setNotActiveById(id);
+    public ApplianceResponseDto delete(@PathVariable Long id) {
+        return service.setNotActiveById(id);
     }
 
     @GetMapping

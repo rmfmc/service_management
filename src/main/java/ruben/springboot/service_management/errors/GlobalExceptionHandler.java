@@ -23,24 +23,21 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, Object> validation(MethodArgumentNotValidException ex) {
+    public Map<String, Object> validation(MethodArgumentNotValidException ex, HttpServletRequest request) {
 
-        Map<String, String> errors = new LinkedHashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
+        Map<String, String> fieldErrors = new LinkedHashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(err -> fieldErrors.put(err.getField(), err.getDefaultMessage()));
 
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", Instant.now().toString());
-        body.put("status", 400);
-        body.put("errors", errors);
-        return body;
+        return errorBody(HttpStatus.BAD_REQUEST, "BAD_REQUEST", "La validación del request falló", request,
+                fieldErrors);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public Map<String, Object> handleBadJson(HttpMessageNotReadableException ex) {
+    public Map<String, Object> handleBadJson(HttpMessageNotReadableException ex, HttpServletRequest request) {
 
         String field = "body";
-        String message = "invalid request body";
+        String message = "cuerpo de request inválido";
 
         Throwable cause = ex.getMostSpecificCause();
 
@@ -55,9 +52,9 @@ public class GlobalExceptionHandler {
                         .map(Object::toString)
                         .collect(Collectors.joining(", "));
 
-                message = "invalid value for '" + field + "': '" + invalidValue + "'. Allowed: [" + allowed + "]";
+                message = "valor inválido para '" + field + "': '" + invalidValue + "'. Permitidos: [" + allowed + "]";
             } else {
-                message = "invalid value for '" + field + "'";
+                message = "valor inválido para '" + field + "'";
             }
         } else {
             String msg = cause != null ? cause.getMessage() : ex.getMessage();
@@ -65,53 +62,49 @@ public class GlobalExceptionHandler {
             if (msg != null && (msg.contains("Unexpected end-of-input")
                     || msg.contains("Unexpected character")
                     || msg.contains("was expecting"))) {
-                message = "malformed JSON";
+                message = "JSON mal formado";
             }
         }
 
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("status", 400);
+        Map<String, String> fieldErrors = new LinkedHashMap<>();
+        fieldErrors.put(field, message);
 
-        Map<String, String> errors = new LinkedHashMap<>();
-        errors.put(field, message);
-        body.put("errors", errors);
-
-        return body;
+        return errorBody(HttpStatus.BAD_REQUEST, "BAD_REQUEST", "Cuerpo de request inválido", request, fieldErrors);
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(AlreadyExistsException.class)
-    public Map<String, Object> handleUsernameExists(AlreadyExistsException ex) {
-
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", Instant.now().toString());
-        body.put("status", 409);
-
-        Map<String, String> errors = new LinkedHashMap<>();
-        errors.put("message", ex.getMessage());
-        body.put("errors", errors);
-
-        return body;
+    public Map<String, Object> handleAlreadyExists(AlreadyExistsException ex, HttpServletRequest request) {
+        return errorBody(HttpStatus.CONFLICT, "CONFLICT", safeMessage(ex.getMessage(), "El recurso ya existe"),
+                request, null);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
-    public Map<String, Object> handleNotFound(NotFoundException ex) {
-        return Map.of(
-                "timestamp", Instant.now().toString(),
-                "status", 404,
-                "error", "NOT_FOUND",
-                "message", ex.getMessage());
+    public Map<String, Object> handleNotFound(NotFoundException ex, HttpServletRequest request) {
+        return errorBody(HttpStatus.NOT_FOUND, "NOT_FOUND", safeMessage(ex.getMessage(), "Recurso no encontrado"),
+                request, null);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException.class)
-    public Map<String, Object> handleBadRequest(UnauthorizedException ex) {
-        return Map.of(
-                "timestamp", Instant.now().toString(),
-                "status", 401,
-                "error", "UNAUTHORIZED",
-                "message", ex.getMessage());
+    public Map<String, Object> handleUnauthorized(UnauthorizedException ex, HttpServletRequest request) {
+        return errorBody(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED",
+                safeMessage(ex.getMessage(),"Debes autenticarte para realizar esta acción"), request, null);
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(ForbiddenException.class)
+    public Map<String, Object> handleForbidden(ForbiddenException ex, HttpServletRequest request) {
+        return errorBody(HttpStatus.FORBIDDEN, "FORBIDDEN", safeMessage(ex.getMessage(), "No tienes permisos para realizar esta acción"),
+                request, null);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({ BadRequestException.class, IllegalArgumentException.class })
+    public Map<String, Object> handleBadRequest(RuntimeException ex, HttpServletRequest request) {
+        return errorBody(HttpStatus.BAD_REQUEST, "BAD_REQUEST", safeMessage(ex.getMessage(), "Solicitud inválida"),
+                request, null);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -119,32 +112,21 @@ public class GlobalExceptionHandler {
     public Map<String, Object> handleMissingServletRequestParameter(
             MissingServletRequestParameterException ex, HttpServletRequest request) {
 
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", Instant.now());
-        body.put("status", 400);
-        body.put("error", "Bad Request");
-        body.put("message", ex.getParameterName() + " parameter is required");
-        body.put("path", request.getRequestURI());
-
-        return body;
+        return errorBody(HttpStatus.BAD_REQUEST, "BAD_REQUEST",
+                "El parámetro " + ex.getParameterName() + " es obligatorio", request,
+                null);
     }
 
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public Map<String, Object> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex,
             HttpServletRequest request) {
-
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", Instant.now());
-        body.put("status", HttpStatus.METHOD_NOT_ALLOWED.value());
-        body.put("error", "Method Not Allowed");
-        String method = ex.getMethod();
-        body.put("message", method + " is not allowed for this endpoint");
-        body.put("path", request.getRequestURI());
-
-        return body;
+                String method = ex.getMethod();
+        return errorBody(HttpStatus.METHOD_NOT_ALLOWED, "METHOD_NOT_ALLOWED",
+                "El método " + method + " no está permitido para este endpoint", request, null);
     }
 
+    // HELPER
     private String extractField(InvalidFormatException ife) {
         if (ife.getPath().isEmpty()) {
             return "body";
@@ -165,4 +147,27 @@ public class GlobalExceptionHandler {
         return raw;
     }
 
+    // HELPER
+    private String safeMessage(String message, String fallback) {
+        if (message == null || message.isBlank()) {
+            return fallback;
+        }
+        return message;
+    }
+
+    private Map<String, Object> errorBody(HttpStatus status, String error, String message, HttpServletRequest request,
+            Map<String, String> errors) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", status.value());
+        body.put("error", error);
+        body.put("message", message);
+        body.put("path", request.getRequestURI());
+
+        if (errors != null && !errors.isEmpty()) {
+            body.put("errors", errors);
+        }
+
+        return body;
+    }
 }

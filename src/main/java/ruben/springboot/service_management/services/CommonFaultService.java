@@ -40,7 +40,7 @@ public class CommonFaultService {
     @Transactional
     public void deleteById(Long commonFaultId) {
         CommonFault commonFault = repository.findById(commonFaultId)
-                .orElseThrow(() -> new NotFoundException("CommonFault not found: " + commonFaultId));
+                .orElseThrow(() -> new NotFoundException("Fallo común", commonFaultId));
         repository.delete(commonFault);
     }
 
@@ -52,14 +52,14 @@ public class CommonFaultService {
     @Transactional(readOnly = true)
     public CommonFaultDto getById(Long commonFaultId) {
         CommonFault commonFault = repository.findById(commonFaultId)
-                .orElseThrow(() -> new NotFoundException("CommonFault not found: " + commonFaultId));
+                .orElseThrow(() -> new NotFoundException("Fallo común", commonFaultId));
         return commonFaultMapper.toDto(commonFault);
     }
 
     @Transactional(readOnly = true)
     public List<CommonFaultDto> listByApplianceTypeId(Long applianceTypeId) {
         if (!applianceTypeRepository.existsById(applianceTypeId)) {
-            throw new NotFoundException("ApplianceType not found: " + applianceTypeId);
+            throw new NotFoundException("Fallo común", applianceTypeId);
         }
         return repository.findByApplianceTypeId(applianceTypeId).stream().map(commonFaultMapper::toDto).toList();
     }

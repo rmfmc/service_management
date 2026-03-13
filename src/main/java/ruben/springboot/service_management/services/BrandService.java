@@ -23,7 +23,7 @@ public class BrandService {
     public BrandDto create(BrandDto dto) {
         dto.name = dto.name.trim();
         if (repository.existsByNameIgnoreCase(dto.name)) {
-            throw new AlreadyExistsException("Brand already exists: " + dto.name);
+            throw new AlreadyExistsException("Marca", dto.name);
         }
         Brand brand = BrandMapper.toEntity(dto);
         return BrandMapper.toDto(repository.save(brand));
@@ -32,13 +32,13 @@ public class BrandService {
     @Transactional
     public BrandDto update(Long brandId, BrandDto dto) {
         Brand brandDb = repository.findById(brandId)
-                .orElseThrow(() -> new NotFoundException("Brand not found: " + brandId));
+                .orElseThrow(() -> new NotFoundException("Marca", brandId));
 
         dto.name = dto.name.trim();
         String oldName = brandDb.getName();
 
         if (!dto.name.equalsIgnoreCase(oldName) && repository.existsByNameIgnoreCase(dto.name)) {
-            throw new AlreadyExistsException("Brand already exists: " + dto.name);
+            throw new AlreadyExistsException("Marca", dto.name);
         }
 
         BrandMapper.update(dto, brandDb);
@@ -48,7 +48,7 @@ public class BrandService {
     @Transactional
     public void deleteById(Long brandId) {
         Brand brand = repository.findById(brandId)
-                .orElseThrow(() -> new NotFoundException("Brand not found: " + brandId));
+                .orElseThrow(() -> new NotFoundException("Marca", brandId));
         repository.delete(brand);
     }
 
@@ -60,7 +60,7 @@ public class BrandService {
     @Transactional(readOnly = true)
     public BrandDto getById(Long brandId) {
         Brand brand = repository.findById(brandId)
-                .orElseThrow(() -> new NotFoundException("Brand not found: " + brandId));
+                .orElseThrow(() -> new NotFoundException("Marca", brandId));
         return BrandMapper.toDto(brand);
     }
 

@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ruben.springboot.service_management.authentication.SecurityUtils;
+import ruben.springboot.service_management.errors.BadRequestException;
 import ruben.springboot.service_management.errors.NotFoundException;
-import ruben.springboot.service_management.errors.UnauthorizedException;
 import ruben.springboot.service_management.models.WorkOrder;
 import ruben.springboot.service_management.models.dtos.lists.WorkOrderListDto;
 import ruben.springboot.service_management.models.dtos.requests.WorkOrderFullRequestDto;
@@ -42,10 +42,6 @@ public class WorkOrderService {
     @Transactional
     public WorkOrderResponseDto createFull(WorkOrderFullRequestDto req) {
 
-        if (req == null) {
-            throw new IllegalArgumentException("request is required");
-        }
-
         WorkOrder w = new WorkOrder();
         w = workOrderFactory.buildFromFullRequest(req, w);
 
@@ -57,12 +53,8 @@ public class WorkOrderService {
     @Transactional
     public WorkOrderResponseDto updateFull(Long workOrderId, WorkOrderFullRequestDto req) {
 
-        if (req == null) {
-            throw new IllegalArgumentException("request is required");
-        }
-
         WorkOrder w = workOrderRepository.findById(workOrderId)
-                .orElseThrow(() -> new NotFoundException("WorkOrder not found: " + workOrderId));
+                .orElseThrow(() -> new NotFoundException("Aviso", workOrderId));
 
         w = workOrderFactory.buildFromFullRequest(req, w);
 
@@ -83,7 +75,7 @@ public class WorkOrderService {
         Optional<WorkOrder> optWorkOrder = workOrderRepository.findById(id);
 
         return workOrderMapper.toResponse(
-                optWorkOrder.orElseThrow(() -> new NotFoundException("workOrder not found with id " + id)));
+                optWorkOrder.orElseThrow(() -> new NotFoundException("Aviso", id)));
     }
 
     // ADMIN
@@ -149,14 +141,10 @@ public class WorkOrderService {
     @Transactional
     public WorkOrderResponseDto techUpdate(Long workOrderId, WorkOrderTechUpdateRequestDto req) {
 
-        if (req == null) {
-            throw new IllegalArgumentException("request is required");
-        }
-
         Long userId = SecurityUtils.currentUserId();
 
         WorkOrder w = workOrderRepository.findByIdAndAssignedUserId(workOrderId, userId)
-                .orElseThrow(() -> new NotFoundException("WorkOrder not found: " + workOrderId));
+                .orElseThrow(() -> new NotFoundException("Aviso", workOrderId));
 
         w = workOrderMapper.techUpdate(w, req);
 
@@ -171,7 +159,7 @@ public class WorkOrderService {
         Long userId = SecurityUtils.currentUserId();
 
         WorkOrder workOrder = workOrderRepository.findByIdAndAssignedUserId(id, userId)
-                .orElseThrow(() -> new NotFoundException("workOrder not found with id " + id));
+                .orElseThrow(() -> new NotFoundException("Aviso", id));
 
         return workOrderMapper.toTechResponse(workOrder);
     }
@@ -184,7 +172,7 @@ public class WorkOrderService {
 
         LocalDate minDate = LocalDate.now().minusDays(3);
         if (date.isBefore(minDate)) {
-            throw new UnauthorizedException("date must be within the last 3 days");
+            throw new BadRequestException("Fecha", "debe estar dentro de los últimos 3 días");
         }
 
         Page<WorkOrder> page = workOrderRepository.findByAssignedUserIdAndScheduledAt(userId, date,

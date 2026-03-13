@@ -1,6 +1,7 @@
 package ruben.springboot.service_management.models.mappers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,42 +32,22 @@ public class ClientMapper {
 
     public Client toEntity(ClientRequestDto dto) {
         Client c = new Client();
-        c.setName(dto.name);
-        c.setPhone(dto.phone.trim());
-        c.setPhone2(dto.phone2);
-        c.setPhone3(dto.phone3);
-        c.setPhone4(dto.phone4);
-        c.setEmail(dto.email);
-        c.setNotes(dto.notes);
+        resolve(c, dto);
         return c;
     }
 
     public Client update(ClientRequestDto dto, Client c) {
-        c.setName(dto.name);
-        c.setPhone(dto.phone.trim());
-        c.setPhone2(dto.phone2);
-        c.setPhone3(dto.phone3);
-        c.setPhone4(dto.phone4);
-        c.setEmail(dto.email);
-        c.setNotes(dto.notes);
+        resolve(c, dto);
         return c;
     }
 
     public ClientResponseDto toResponse(Client c) {
-        ClientResponseDto dto = new ClientResponseDto();
 
-        dto.id = c.getId();
-        dto.name = c.getName();
-        dto.phone = c.getPhone();
-        dto.phone2 = c.getPhone2();
-        dto.phone3 = c.getPhone3();
-        dto.phone4 = c.getPhone4();
-        dto.email = c.getEmail();
-        dto.notes = c.getNotes();
-        dto.createdAt = c.getCreatedAt();
+        ClientResponseDto dto = new ClientResponseDto();
+        resolveToDto(dto, c);
 
         List<WorkOrder> workOrders = workOrderRepository.findByClientId(c.getId());
-        
+
         if (!workOrders.isEmpty()) {
             List<WorkOrderListDto> workOrdersList = new ArrayList<>();
             for (WorkOrder wo : workOrders) {
@@ -74,22 +55,22 @@ public class ClientMapper {
             }
             dto.workOrders = workOrdersList;
         }
-        
+
         if (c.getAddresses() != null) {
-            List<AddressListDto> adressesList = new ArrayList<>();
-            List<ApplianceListDto> appliancesList = new ArrayList<>();
+            List<AddressListDto> addressesList = new ArrayList<>();
+            List<Long> addressIds = new ArrayList<>();
 
             for (Address ad : c.getAddresses()) {
-                adressesList.add(AddressMapper.toList(ad));
-                
-                if (!applianceRepository.findByAddressId(ad.getId()).isEmpty()) {
-                    for (Appliance ap : applianceRepository.findByAddressId(ad.getId())) {
-                        appliancesList.add(ApplianceMapper.toList(ap));
-                    }
-                }
+                addressesList.add(AddressMapper.toList(ad));
+                addressIds.add(ad.getId());
             }
-            
-            dto.addresses = adressesList;
+
+            List<ApplianceListDto> appliancesList = new ArrayList<>();
+            for (Appliance ap : findAppliancesByAddressIds(addressIds)) {
+                appliancesList.add(ApplianceMapper.toList(ap));
+            }
+
+            dto.addresses = addressesList;
             dto.appliances = appliancesList;
         }
 
@@ -97,18 +78,9 @@ public class ClientMapper {
     }
 
     public static ClientOnlyResponseDto toOnlyResponse(Client c) {
+        
         ClientOnlyResponseDto dto = new ClientOnlyResponseDto();
-
-        dto.id = c.getId();
-        dto.name = c.getName();
-        dto.phone = c.getPhone();
-        dto.phone2 = c.getPhone2();
-        dto.phone3 = c.getPhone3();
-        dto.phone4 = c.getPhone4();
-        dto.email = c.getEmail();
-        dto.notes = c.getNotes();
-        dto.createdAt = c.getCreatedAt();
-
+        resolveToOnlyDto(dto, c);
         return dto;
     }
 
@@ -134,6 +106,55 @@ public class ClientMapper {
 
         }
 
+        return dto;
+    }
+
+    // HELPER
+    private List<Appliance> findAppliancesByAddressIds(List<Long> addressIds) {
+        if (addressIds == null || addressIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return applianceRepository.findByAddressIdInWithTypeAndBrand(addressIds);
+    }
+
+    // HELPER
+    private static Client resolve(Client c, ClientRequestDto dto) {
+        c.setName(dto.name);
+        c.setPhone(dto.phone.trim());
+        c.setPhone2(dto.phone2);
+        c.setPhone3(dto.phone3);
+        c.setPhone4(dto.phone4);
+        c.setEmail(dto.email);
+        c.setNotes(dto.notes);
+        return c;
+    }
+
+    // HELPER
+    private static ClientResponseDto resolveToDto(ClientResponseDto dto, Client c) {
+        dto.id = c.getId();
+        dto.name = c.getName();
+        dto.phone = c.getPhone();
+        dto.phone2 = c.getPhone2();
+        dto.phone3 = c.getPhone3();
+        dto.phone4 = c.getPhone4();
+        dto.email = c.getEmail();
+        dto.notes = c.getNotes();
+        dto.createdAt = c.getCreatedAt();
+        return dto;
+    }
+
+    // HELPER
+    private static ClientOnlyResponseDto resolveToOnlyDto(ClientOnlyResponseDto dto, Client c) {
+        dto.id = c.getId();
+        dto.name = c.getName();
+        dto.phone = c.getPhone();
+        dto.phone2 = c.getPhone2();
+        dto.phone3 = c.getPhone3();
+        dto.phone4 = c.getPhone4();
+        dto.email = c.getEmail();
+        dto.notes = c.getNotes();
+        dto.createdAt = c.getCreatedAt();
         return dto;
     }
 

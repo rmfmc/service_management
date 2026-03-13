@@ -22,14 +22,14 @@ public class AuthService {
 
     public String loginAndGetToken(String username, String rawPassword) {
         User user = userRepository.findByUsernameIgnoreCase(username)
-                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+                .orElseThrow(() -> new UnauthorizedException("Credenciales inválidas"));
 
         if (!user.isActive()) {
-            throw new UnauthorizedException("User is disabled");
+            throw new UnauthorizedException("Usuario deshabilitado");
         }
 
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
-            throw new UnauthorizedException("Invalid credentials");
+            throw new UnauthorizedException("Credenciales inválidas");
         }
 
         return jwtService.generateToken(user);
@@ -37,7 +37,7 @@ public class AuthService {
 
     public User findByUsernameIgnoreCase(String username) {
         return userRepository.findByUsernameIgnoreCase(username)
-                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+                .orElseThrow(() -> new UnauthorizedException("Credenciales inválidas"));
     }
 
 }

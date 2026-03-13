@@ -18,70 +18,14 @@ public class WorkOrderMapper {
     private AddressMapper addressMapper;
 
     public WorkOrderResponseDto toResponse(WorkOrder w) {
-
-        WorkOrderResponseDto dto = new WorkOrderResponseDto();
-
-        dto.workOrderId = w.getId();
-
-        Client client = w.getClient();
-        if (client != null) {
-            dto.client = ClientMapper.toOnlyResponse(client);
-        }
-
-        Address address = w.getAddress();
-        if (address != null) {
-            dto.address = addressMapper.toOnlyResponse(address);
-        }
-
-        Client tenant = w.getTenant();
-        if (tenant != null) {
-            dto.tenant = ClientMapper.toOnlyResponse(tenant);
-        }
-
-        if (w.getAssignedUser() != null) {
-            dto.assignedUser = w.getAssignedUser().getName();
-        }
-
-        if (w.getCreatedUser() != null) {
-            dto.createdUser = w.getCreatedUser().getName();
-        }
-
-        if (w.getLastUpdatedUser() != null) {
-            dto.lastUpdatedUser = w.getLastUpdatedUser().getName();
-        }
-
-        dto.issueDescription = w.getIssueDescription();
-        dto.status = w.getStatus().getLabelEs();
-        dto.priority = WorkOrderPriority.getLabelEsByInt(w.getPriority());
-        dto.notes = w.getNotes();
-        dto.workPerformed = w.getWorkPerformed();
-        dto.discountVisit = w.getDiscountVisit();
-        dto.billTo = w.getBillTo();
-        dto.totalPrice = w.getTotalPrice();
-
-        dto.scheduledAt = w.getScheduledAt();
-        dto.createdAt = w.getCreatedAt();
-        dto.closedAt = w.getClosedAt();
-        dto.lastUpdatedAt = w.getLastUpdatedAt();
-
-        dto.appliances = new ArrayList<>();
-        if (w.getAppliances() != null) {
-            for (Appliance a : w.getAppliances()) {
-                dto.appliances.add(ApplianceMapper.toOnlyResponse(a));
-            }
-        }
-
-        dto.charges = new ArrayList<>();
-        if (w.getCharges() != null) {
-            for (WorkOrderCharge ch : w.getCharges()) {
-                dto.charges.add(WorkOrderChargeMapper.toOnlyResponse(ch));
-            }
-        }
-
-        return dto;
+        return toResponseInternal(w, true);
     }
 
     public WorkOrderResponseDto toTechResponse(WorkOrder w) {
+        return toResponseInternal(w, false);
+    }
+
+    private WorkOrderResponseDto toResponseInternal(WorkOrder w, boolean includeAuditData) {
 
         WorkOrderResponseDto dto = new WorkOrderResponseDto();
 
@@ -114,8 +58,15 @@ public class WorkOrderMapper {
         dto.discountVisit = w.getDiscountVisit();
         dto.billTo = w.getBillTo();
         dto.totalPrice = w.getTotalPrice();
-
         dto.scheduledAt = w.getScheduledAt();
+
+        if (includeAuditData) {
+            dto.createdUser = w.getCreatedUser().getName();
+            dto.lastUpdatedUser = w.getLastUpdatedUser().getName();
+            dto.createdAt = w.getCreatedAt();
+            dto.closedAt = w.getClosedAt();
+            dto.lastUpdatedAt = w.getLastUpdatedAt();
+        }
 
         dto.appliances = new ArrayList<>();
         if (w.getAppliances() != null) {
@@ -181,7 +132,7 @@ public class WorkOrderMapper {
         if (dto.status != null) {
             w.setStatus(dto.status);
         }
-        if (dto.workPerformed !=null) {
+        if (dto.workPerformed != null) {
             w.setWorkPerformed(dto.workPerformed);
         }
         if (dto.notes != null) {

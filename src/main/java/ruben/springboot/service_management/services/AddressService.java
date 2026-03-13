@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ruben.springboot.service_management.errors.BadRequestException;
 import ruben.springboot.service_management.errors.NotFoundException;
 import ruben.springboot.service_management.models.Address;
 import ruben.springboot.service_management.models.Client;
@@ -33,16 +34,15 @@ public class AddressService {
     public Address resolve(Long addressId, AddressRequestDto addressDto, Client client) {
 
         if (client == null) {
-            throw new IllegalArgumentException("client is required");
+            throw new BadRequestException("Cliente");
         }
 
         if (addressId != null) {
             Address addressDb = repository.findById(addressId)
-                    .orElseThrow(() -> new NotFoundException("Address not found: " + addressId));
+                    .orElseThrow(() -> new NotFoundException("Dirección", addressId));
 
             if (!addressDb.getClient().getId().equals(client.getId())) {
-                throw new IllegalArgumentException(
-                        "Address " + addressId + " does not belong to client " + client.getId());
+                throw new BadRequestException("Dirección " + addressId + " no pertenece a cliente " + client.getId(), null);
             }
 
             if (addressDto != null) {
@@ -52,9 +52,8 @@ public class AddressService {
             return addressDb;
         }
 
-        // crear
         if (addressDto == null) {
-            throw new IllegalArgumentException("addressDto is required when addressId is null");
+            throw new BadRequestException("Dirección", "dirección");
         }
 
         Address a = addressMapper.toEntity(addressDto, client.getId());
@@ -65,14 +64,6 @@ public class AddressService {
     @Transactional
     public AddressResponseDto create(Long clientId, AddressRequestDto req) {
 
-        if (clientId == null) {
-            throw new IllegalArgumentException("clientId is required");
-        }
-
-        if (req == null) {
-            throw new IllegalArgumentException("addressDto is required");
-        }
-
         Address created = repository.save(addressMapper.toEntity(req, clientId));
         return addressMapper.toResponse(created);
     }
@@ -80,20 +71,8 @@ public class AddressService {
     @Transactional
     public AddressResponseDto update(Long clientId, Long addressId, AddressRequestDto req) {
 
-        if (clientId == null) {
-            throw new IllegalArgumentException("clientId is required");
-        }
-
-        if (addressId == null) {
-            throw new IllegalArgumentException("addressId is required");
-        }
-
-        if (req == null) {
-            throw new IllegalArgumentException("addressDto is required");
-        }
-
         Address addressDb = repository.findById(addressId)
-                .orElseThrow(() -> new NotFoundException("Address not found: " + addressId));
+                .orElseThrow(() -> new NotFoundException("Dirección", addressId));
 
         addressMapper.update(addressDb, req, clientId);
         return addressMapper.toResponse(repository.save(addressDb));
@@ -102,12 +81,8 @@ public class AddressService {
     @Transactional
     public void delete(Long id) {
 
-        if (id == null) {
-            throw new IllegalArgumentException("addressId is required");
-        }
-
         Address address = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Address not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Dirección", id));
 
         repository.delete(address);
     }
@@ -119,7 +94,7 @@ public class AddressService {
 
     @Transactional(readOnly = true)
     public AddressResponseDto getById(Long id) {
-        return addressMapper.toResponse(repository.findById(id).orElseThrow(() -> new NotFoundException("address not found with id: " + id)));
+        return addressMapper.toResponse(repository.findById(id).orElseThrow(() -> new NotFoundException("Dirección", id)));
     }
 
     @Transactional(readOnly = true)

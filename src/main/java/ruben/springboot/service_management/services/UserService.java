@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ruben.springboot.service_management.errors.AlreadyExistsException;
+import ruben.springboot.service_management.errors.ForbiddenException;
 import ruben.springboot.service_management.errors.NotFoundException;
-import ruben.springboot.service_management.errors.UnauthorizedException;
 import ruben.springboot.service_management.models.User;
 import ruben.springboot.service_management.models.dtos.requests.UserPasswordRequestDto;
 import ruben.springboot.service_management.models.dtos.requests.UserRequestDto;
@@ -35,7 +35,7 @@ public class UserService {
     @Transactional
     public UserResponseDto create(UserRequestDto req) {
         if (repository.existsByUsernameIgnoreCase(req.username)) {
-            throw new AlreadyExistsException("username already exists");
+            throw new AlreadyExistsException("Usuario", req.username);
         }
         
         User u = UserMapper.toCreateEntityExceptPassword(req);
@@ -50,10 +50,10 @@ public class UserService {
         Optional<User> userOpt = repository.findByUsernameIgnoreCase(req.username);
 
         if (userOpt.isPresent() && !userOpt.get().getId().equals(id)) {
-            throw new AlreadyExistsException("username already exists");
+            throw new AlreadyExistsException("Usuario", req.username);
         }
 
-        User userDB = repository.findById(id).orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+        User userDB = repository.findById(id).orElseThrow(() -> new NotFoundException("Usuario", id));
         UserMapper.updateEntityExceptPassword(userDB, req);
         
         return UserMapper.toResponse(repository.save(userDB));
@@ -62,7 +62,7 @@ public class UserService {
     @Transactional
     public UserResponseDto updatePassword(Long id, UserPasswordRequestDto req) {
 
-        User userDB = repository.findById(id).orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+        User userDB = repository.findById(id).orElseThrow(() -> new NotFoundException("Usuario", id));
 
         userDB.setPasswordHash(encoder.encode(req.password));
         
@@ -72,14 +72,14 @@ public class UserService {
     @Transactional()
     public void delete(Long id){
         if (WorkOrderRepository.existsByAssignedUserId(id)) {
-            throw new UnauthorizedException("User has one or more WorkOrders assigned. Deactivate the user or delete the related workOrders");
+            throw new ForbiddenException("El usuario tiene avisos asignados. Desactiva el usuario o elimina los avisos relacionados");
         }
         repository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     public UserResponseDto getById(Long id){
-        return UserMapper.toResponse(repository.findById(id).orElseThrow(() -> new NotFoundException("User not found with id: " + id)));
+        return UserMapper.toResponse(repository.findById(id).orElseThrow(() -> new NotFoundException("Usuario", id)));
     }
 
     @Transactional(readOnly = true)
