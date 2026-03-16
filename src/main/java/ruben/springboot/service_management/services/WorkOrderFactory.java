@@ -67,8 +67,6 @@ public class WorkOrderFactory {
         w.setWorkPerformed(req.workOrder.workPerformed);
         w.setDiscountVisit(req.workOrder.discountVisit != null ? req.workOrder.discountVisit : false);
         w.setBillTo(req.workOrder.billTo);
-        w.setCreatedAt(req.workOrder.createdAt != null ? req.workOrder.createdAt : req.workOrder.lastUpdateAt);
-        w.setLastUpdatedAt(req.workOrder.lastUpdateAt);
         w.setScheduledAt(req.workOrder.scheduledAt);
 
         if (req.tenant == null && req.tenantId == null) {

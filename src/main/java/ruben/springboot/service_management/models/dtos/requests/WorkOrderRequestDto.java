@@ -1,7 +1,6 @@
 package ruben.springboot.service_management.models.dtos.requests;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -12,10 +11,6 @@ import ruben.springboot.service_management.models.enums.WorkOrderStatus;
 
 public class WorkOrderRequestDto {
 
-    @Positive(message = "el id del usuario creador debe ser mayor que 0")
-    public Long createdUserId;
-    @Positive(message = "el id del usuario de última actualización debe ser mayor que 0")
-    public Long lastUpdateUserId;
     @Positive(message = "el id del usuario asignado debe ser mayor que 0")
     public Long assignedUserId;
 
@@ -38,11 +33,6 @@ public class WorkOrderRequestDto {
 
     @Size(max = 45, message = "el campo facturar a debe tener como máximo 45 caracteres")
     public String billTo;
-
-    public LocalDateTime createdAt;
-
-    @NotNull(message = "la fecha de última actualización es obligatoria")
-    public LocalDateTime lastUpdateAt;
 
     @NotNull(message = "la fecha programada es obligatoria")
     public LocalDate scheduledAt;

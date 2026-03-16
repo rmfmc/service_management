@@ -23,12 +23,12 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
                        AccessDeniedException accessDeniedException) throws IOException {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", Instant.now().toString());
-        body.put("status", 403);
         body.put("error", "FORBIDDEN");
-        body.put("message", "You don't have permission to access this resource");
+        body.put("message", "No tienes permisos para acceder a este recurso");
         body.put("path", request.getRequestURI());
-
+        body.put("status", 403);
+        body.put("timestamp", Instant.now().toString());
+        
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
         objectMapper.writeValue(response.getOutputStream(), body);

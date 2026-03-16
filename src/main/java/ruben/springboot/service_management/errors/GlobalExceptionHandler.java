@@ -97,13 +97,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public Map<String, Object> handleUnauthorized(UnauthorizedException ex, HttpServletRequest request) {
         return errorBody(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED",
-                safeMessage(ex.getMessage(),"Debes autenticarte para realizar esta acción"), request, null);
+                safeMessage(ex.getMessage(),"Debes autenticarte para acceder a este recurso"), request, null);
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(ForbiddenException.class)
     public Map<String, Object> handleForbidden(ForbiddenException ex, HttpServletRequest request) {
-        return errorBody(HttpStatus.FORBIDDEN, "FORBIDDEN", safeMessage(ex.getMessage(), "No tienes permisos para realizar esta acción"),
+        return errorBody(HttpStatus.FORBIDDEN, "FORBIDDEN", safeMessage(ex.getMessage(), "No tienes permisos para acceder a este recurso"),
                 request, null);
     }
 
@@ -165,11 +165,11 @@ public class GlobalExceptionHandler {
     private Map<String, Object> errorBody(HttpStatus status, String error, String message, HttpServletRequest request,
             Map<String, String> errors) {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", Instant.now().toString());
-        body.put("status", status.value());
         body.put("error", error);
         body.put("message", message);
         body.put("path", request.getRequestURI());
+        body.put("status", status.value());
+        body.put("timestamp", Instant.now().toString());
 
         if (errors != null && !errors.isEmpty()) {
             body.put("errors", errors);

@@ -23,11 +23,11 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException authException) throws IOException {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", Instant.now().toString());
-        body.put("status", 401);
         body.put("error", "UNAUTHORIZED");
-        body.put("message", "La autenticación es obligatoria");
+        body.put("message", "Debes autenticarte para acceder a este recurso");
         body.put("path", request.getRequestURI());
+        body.put("status", 401);
+        body.put("timestamp", Instant.now().toString());
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
