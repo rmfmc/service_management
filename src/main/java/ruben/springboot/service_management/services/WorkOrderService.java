@@ -117,9 +117,7 @@ public class WorkOrderService {
 
     // ADMIN
     @Transactional(readOnly = true)
-    public Page<WorkOrderListDto> adminListByUserAndScheduledDate(LocalDate date, int pageInt) {
-
-        Long userId = SecurityUtils.currentUserId();
+    public Page<WorkOrderListDto> adminListByUserIdAndScheduledDate(Long userId, LocalDate date, int pageInt) {
 
         Page<WorkOrder> page = workOrderRepository.findByAssignedUserIdAndScheduledAt(userId, date,
                 pageableByPagePriorityDescCreatedAsc(pageInt));
@@ -174,7 +172,7 @@ public class WorkOrderService {
 
         LocalDate minDate = LocalDate.now().minusDays(3);
         if (date.isBefore(minDate)) {
-            throw new BadRequestException("Fecha", "debe estar dentro de los últimos 3 días");
+            throw new BadRequestException("Fecha debe estar dentro de los últimos 3 días", false);
         }
 
         Page<WorkOrder> page = workOrderRepository.findByAssignedUserIdAndScheduledAt(userId, date,

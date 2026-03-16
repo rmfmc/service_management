@@ -60,9 +60,9 @@ public class WorkOrderController {
         return PageMapper.toResponse(service.adminListPending(page));
     }
 
-    @GetMapping("/user-scheduled")
-    public PageResponse<WorkOrderListDto> adminListByScheduledDateAndUserId(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
-        return PageMapper.toResponse(service.adminListByUserAndScheduledDate(date, page));
+    @GetMapping("/user-scheduled/{userId}")
+    public PageResponse<WorkOrderListDto> adminListByUserIdAndScheduledDate(@PathVariable Long userId, @RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
+        return PageMapper.toResponse(service.adminListByUserIdAndScheduledDate(userId, date, page));
     }
 
     @GetMapping("/created")
@@ -76,7 +76,7 @@ public class WorkOrderController {
     }
 
     @GetMapping("/tech")
-    public PageResponse<WorkOrderListDto> techListByScheduledDateAndUserId(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
+    public PageResponse<WorkOrderListDto> techListByScheduledDateAndUser(@RequestParam LocalDate date, @RequestParam(defaultValue = "0") int page) {
         return PageMapper.toResponse(service.techListByUserAndScheduledDate(date, page));
     }
 

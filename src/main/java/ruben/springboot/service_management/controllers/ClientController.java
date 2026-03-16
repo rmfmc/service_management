@@ -60,7 +60,7 @@ public class ClientController {
     }
     
     @GetMapping("/search")
-    public List<ClientListDto> search(@RequestParam(name = "q", required = false) String q) {
+    public List<ClientListDto> search(@RequestParam(required = false) String q) {
         return service.search(q);
     }
 

@@ -45,19 +45,14 @@ public class WorkOrderFactory {
         Long currentUserId = SecurityUtils.currentUserId();
         User currentUser = userRepository.getReferenceById(currentUserId);
 
-        // 1) Client
         Client client = clientService.resolveForWorkOrder(req.clientId, req.client);
 
-        // 2) Address
         Address address = addressService.resolve(req.addressId, req.address, client);
 
-        // 3) Appliances
         Set<Appliance> appliances = applianceService.resolve(req.applianceIds, req.newAppliances, address);
 
-        // 4) Core
         w.setClient(client);
         w.setAddress(address);
-
         w.getAppliances().clear();
         w.getAppliances().addAll(appliances);
 

@@ -7,7 +7,7 @@ public class NotFoundException extends RuntimeException {
     }
 
     public NotFoundException(String resource, Object id) {
-        super(resource + " no encontrado: " + id);
+        super(resource + " no encontrado con id: " + id);
     }
     
 }
