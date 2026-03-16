@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import jakarta.servlet.DispatcherType;
 import ruben.springboot.service_management.authentication.JwtAuthFilter;
 import ruben.springboot.service_management.errors.RestAccessDeniedHandler;
 import ruben.springboot.service_management.errors.RestAuthenticationEntryPoint;
@@ -41,16 +42,18 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler)
-                )
+                        .accessDeniedHandler(accessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
+
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+                        .requestMatchers("/error").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
 
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
 
                         .requestMatchers("/api/clients/**").hasRole("ADMIN")
-                        
+
                         .requestMatchers("/api/appliances/**").hasRole("ADMIN")
 
                         .requestMatchers("/api/addresses/**").hasRole("ADMIN")
@@ -69,7 +72,6 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/work-orders/tech/**").hasAnyRole("ADMIN", "TECH")
                         .requestMatchers("/api/work-orders/**").hasRole("ADMIN")
-
 
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

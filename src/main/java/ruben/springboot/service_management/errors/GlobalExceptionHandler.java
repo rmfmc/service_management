@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import tools.jackson.databind.exc.InvalidFormatException;
@@ -84,6 +85,12 @@ public class GlobalExceptionHandler {
     public Map<String, Object> handleNotFound(NotFoundException ex, HttpServletRequest request) {
         return errorBody(HttpStatus.NOT_FOUND, "NOT_FOUND", safeMessage(ex.getMessage(), "Recurso no encontrado"),
                 request, null);
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoResourceFoundException.class)
+    public Map<String, Object> handleNoResourceFound(NoResourceFoundException ex, HttpServletRequest request) {
+        return errorBody(HttpStatus.NOT_FOUND, "NOT_FOUND", "Endpoint no encontrado", request, null);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
