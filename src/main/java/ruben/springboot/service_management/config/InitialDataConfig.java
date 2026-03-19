@@ -29,7 +29,7 @@ public class InitialDataConfig {
     @Value("${APP_INITIAL_ADMIN_ENABLED:true}")
     private boolean initialAdminEnabled;
 
-    @Value("${APP_INITIAL_ADMIN_NAME:Administrador prueba}")
+    @Value("${APP_INITIAL_ADMIN_NAME:Administrador inicial}")
     private String initialAdminName;
 
     @Value("${APP_INITIAL_ADMIN_PHONE:600000000}")

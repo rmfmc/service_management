@@ -57,7 +57,7 @@ También puede añadir los datos del usuario administrador de prueba:
 
 ```bash
 export APP_INITIAL_ADMIN_ENABLED='true'
-export APP_INITIAL_ADMIN_NAME='Administrador prueba'
+export APP_INITIAL_ADMIN_NAME='Administrador inicial'
 export APP_INITIAL_ADMIN_PHONE='600000000'
 export APP_INITIAL_ADMIN_USERNAME='admin'
 export APP_INITIAL_ADMIN_PASSWORD='admin123456'
