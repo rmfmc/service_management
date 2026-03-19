@@ -1,10 +1,27 @@
 # Referencia de API
+Guía operativa de los endpoints expuestos por la aplicación.
+
+## Tabla de contenidos
+- [Convenciones generales](#convenciones-generales)
+- [Autenticación](#autenticación)
+- [Usuarios (`/users`) — solo `ADMIN`](#usuarios-users--solo-admin)
+- [Clientes (`/clients`) — solo `ADMIN`](#clientes-clients--solo-admin)
+- [Direcciones (`/addresses`) — solo `ADMIN`](#direcciones-addresses--solo-admin)
+- [Electrodomésticos (`/appliances`) — solo `ADMIN`](#electrodomésticos-appliances--solo-admin)
+- [Marcas (`/brands`) — solo `ADMIN`](#marcas-brands--solo-admin)
+- [Tipos de aparato (`/appliance-types`) — solo `ADMIN`](#tipos-de-aparato-appliance-types--solo-admin)
+- [Averías comunes (`/common-faults`) — solo `ADMIN`](#averías-comunes-common-faults--solo-admin)
+- [Avisos (`/work-orders`)](#avisos-work-orders)
+- [Cargos (`/charges`)](#cargos-charges)
+- [Respuestas y errores](#respuestas-y-errores)
+
 ## Convenciones generales
 - **Base path**: `/api`.
 - **Formato**: JSON.
 - **Autenticación**: JWT en cabecera `Authorization: Bearer <token>`.
 - **Paginación**: los listados paginados aceptan `page` y devuelven `PageResponse`.
 - **Fechas**: los filtros por fecha usan formato `YYYY-MM-DD`.
+- **Roles**: si no se indica lo contrario, los endpoints protegidos requieren autenticación.
 
 ## Autenticación
 ### `POST /auth/login`
@@ -13,7 +30,7 @@
 ```json
 {
   "username": "admin",
-  "password": "secret123"
+  "password": "admin123456"
 }
 ```
 **Validaciones**
@@ -166,28 +183,34 @@ Cada elemento de `content` es un `ClientListDto` con:
 - `GET /work-orders/{id}` obtiene detalle administrativo.
 - `GET /work-orders?page=0` lista todos los avisos paginados.
 - `GET /work-orders/scheduled?date=YYYY-MM-DD&page=0` filtra por fecha programada.
-- `GET /work-orders/pending?page=0` filtra avisos pendientes.
+- `GET /work-orders/pending?page=0` devuelve avisos con estado `PENDING_PART`, `PENDING_CUSTOMER` o `PENDING_PAYMENT`.
 - `GET /work-orders/user-scheduled/{userId}?date=YYYY-MM-DD&page=0` filtra por técnico y fecha.
 - `GET /work-orders/created?date=YYYY-MM-DD&page=0` filtra por fecha de creación.
 
 ### Operaciones `ADMIN` y `TECH`
 - `PUT /work-orders/tech/{id}` actualiza la parte técnica del aviso.
-- `GET /work-orders/tech?date=YYYY-MM-DD&page=0` lista avisos técnicos del usuario autenticado.
+- `GET /work-orders/tech?date=YYYY-MM-DD&page=0` lista avisos técnicos del usuario autenticado en la fecha programada.
 - `GET /work-orders/tech/{id}` obtiene detalle técnico del aviso.
 
 ### Body de `WorkOrderFullRequestDto`
-Este DTO combina varios bloques para crear o editar un aviso completo:
+Este DTO permite crear o actualizar un aviso completo en una sola operación. Puede mezclar referencias existentes con creaciones embebidas.
 
 - `client`: alta embebida de cliente.
 - `clientId`: reutiliza un cliente existente.
 - `address`: alta embebida de dirección.
 - `addressId`: reutiliza una dirección existente.
 - `newAppliances`: lista de aparatos a crear en la dirección.
-- `applianceIds`: conjunto de aparatos ya existentes para vincular al aviso.
+- `applianceIds`: aparatos existentes que se quieren vincular al aviso.
 - `workOrder`: bloque principal del aviso, obligatorio.
 - `charges`: cargos iniciales opcionales.
 - `tenant`: alta embebida de inquilino.
 - `tenantId`: reutiliza un inquilino existente.
+
+### Reglas prácticas para construir el request
+- Debe enviar siempre `workOrder`.
+- Puede usar `client` o `clientId` según quiera crear o reutilizar el cliente.
+- Puede usar `address` o `addressId` con la misma lógica.
+- `scheduledAt` es obligatoria y usa formato `YYYY-MM-DD`.
 
 ### Body de `workOrder`
 - `assignedUserId`: opcional, positivo.
@@ -207,20 +230,35 @@ Este DTO combina varios bloques para crear o editar un aviso completo:
 - `billTo`: opcional, máximo 45.
 
 ### Estados y prioridad
-**Estados permitidos**:
-- `NEW`
-- `IN_PROGRESS`
-- `PENDING_PART`
-- `PENDING_CUSTOMER`
-- `PENDING_PAYMENT`
-- `APPLIANCE_INSTALLED`
-- `CLOSED`
+**Estados**:
+- `NEW`: Nuevo
+- `IN_PROGRESS`: En progreso
+- `PENDING_PART`: Pendiente de pieza
+- `PENDING_CUSTOMER`: Pendiente del cliente
+- `PENDING_PAYMENT`: Pendiente de pago
+- `APPLIANCE_INSTALLED`: Aparato instalado
+- `CLOSED`: Terminado
 
 **Prioridades**:
 - `1`: baja
 - `2`: media
 - `3`: alta
 - `4`: urgente
+
+### Ejemplo mínimo de creación de aviso
+```json
+{
+  "clientId": 12,
+  "addressId": 30,
+  "applianceIds": [5],
+  "workOrder": {
+    "assignedUserId": 3,
+    "issueDescription": "No enfría",
+    "priority": 3,
+    "scheduledAt": "2026-03-20"
+  }
+}
+```
 
 ---
 
@@ -236,12 +274,40 @@ Este DTO combina varios bloques para crear o editar un aviso completo:
 - `DELETE /charges/{id}` elimina un cargo.
 
 ### Body de cargo
-- `chargeType`: obligatorio. Valores: `VISIT`, `REPAIR`, `INSTALLATION`, `NOT_SPECIFIED`, `OTHER`.
+- `chargeType`: obligatorio
 - `description`: opcional, máximo 45.
 - `price`: obligatorio, mayor o igual que 0.
 - `payer`: opcional, máximo 45.
 - `paid`: opcional.
-- `paymentMethod`: obligatorio. Valores: `CASH`, `CARD`, `BIZUM`, `TRANSFER`, `NOT_SPECIFIED`, `OTHER`.
+- `paymentMethod`: obligatorio.
+
+### Tipo de cargo y método de pago
+**Tipos de cargo / chargeType**:
+- `VISIT`: Visita
+- `REPAIR`: Reparación
+- `INSTALLATION`: Instalación
+- `NOT_SPECIFIED`: No especificado
+- `OTHER`: Otro
+
+**Métodos de pago / paymentMethod**:
+- `CASH`: Efectivo
+- `CARD`: Tarjeta
+- `BIZUM`: Bizum
+- `TRANSFER`: Transferencia
+- `NOT_SPECIFIED`: No especificado
+- `OTHER`: Otro
+
+### Ejemplo
+```json
+{
+  "chargeType": "REPAIR",
+  "description": "Cambio de bomba",
+  "price": 89.50,
+  "payer": "Cliente final",
+  "paid": false,
+  "paymentMethod": "CARD"
+}
+```
 
 ---
 
@@ -262,11 +328,24 @@ Los endpoints paginados comparten este contrato:
 }
 ```
 
-### Errores
-Errores típicos:
-- `400 BAD_REQUEST`: validación, JSON inválido o parámetros incorrectos.
-- `401 UNAUTHORIZED`: falta autenticación válida.
-- `403 FORBIDDEN`: token válido, pero sin permisos.
+### Error de validación
+```json
+{
+  "error": "BAD_REQUEST",
+  "message": "La validación del request falló",
+  "path": "/api/work-orders",
+  "status": 400,
+  "timestamp": "2026-03-19T12:00:00Z",
+  "errors": {
+    "scheduledAt": "la fecha programada es obligatoria"
+  }
+}
+```
+
+### Errores comunes
+- `400 BAD_REQUEST`: validación, JSON inválido o parámetros obligatorios ausentes.
+- `401 UNAUTHORIZED`: falta autenticación o el token no es válido.
+- `403 FORBIDDEN`: el usuario autenticado no tiene permisos.
 - `404 NOT_FOUND`: recurso o endpoint inexistente.
-- `405 METHOD_NOT_ALLOWED`: método HTTP no soportado.
+- `405 METHOD_NOT_ALLOWED`: método HTTP no permitido para la ruta.
 - `409 CONFLICT`: recurso duplicado.

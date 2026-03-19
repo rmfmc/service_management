@@ -13,7 +13,6 @@ Para que el proyecto sea fácil de consumir desde GitHub, conviene mantener actu
 - `application-local.example.properties`: ejemplo de configuración local.
 
 ## Flujo de trabajo sugerido
-
 ### 1. Clonar el repositorio
 ```bash
 git clone <repo-url>
@@ -29,10 +28,16 @@ docker compose up -d
 ```
 
 #### Opción B: MySQL local
-Cree manualmente la base de datos y las credenciales necesarias.
+Cree la base de datos manualmente y asegúrese de tener credenciales válidas.
 
-### 3. Configurar variables de entorno
-Defina:
+### 3. Configurar la aplicación
+La forma más clara es partir del ejemplo incluido:
+
+```bash
+cp application-local.example.properties src/main/resources/application-local.properties
+```
+
+Si prefiere variables de entorno, defina:
 
 ```bash
 export DB_URL='jdbc:mysql://localhost:3306/service_management?useSSL=false&serverTimezone=UTC'
@@ -42,7 +47,7 @@ export JWT_SECRET='change_this_secret_key_with_at_least_32_chars'
 export JWT_EXP_MINUTES='180'
 ```
 
-Si quiere cambiar el usuario inicial o activar datos demo, puede añadir también overrides como:
+Si quiere cambiar el usuario inicial o activar datos demo, puede añadir también:
 
 ```bash
 export APP_INITIAL_ADMIN_USERNAME='admin'
@@ -55,31 +60,23 @@ export APP_DEMO_DATA_ENABLED='true'
 ./mvnw spring-boot:run
 ```
 
-En el primer arranque sobre una base de datos vacía, la aplicación crea automáticamente un usuario admin inicial. Si además activa `APP_DEMO_DATA_ENABLED=true`, también carga catálogos de ejemplo.
+Si la base de datos está vacía, la aplicación crea automáticamente un administrador inicial. Si además activa `APP_DEMO_DATA_ENABLED=true`, también carga catálogos de ejemplo.
 
 ### 5. Ejecutar verificaciones
 ```bash
 ./mvnw test
 ```
 
-## Recomendaciones para publicar en GitHub
-- Añadir una descripción más específica en `pom.xml` si el proyecto va a ser público.
-- Mantener un ejemplo de variables de entorno actualizado.
-- Evitar subir secretos reales o ficheros locales con credenciales.
-- Acompañar cambios de API con actualización simultánea de `README.md` y `docs/API_REFERENCE.md`.
-- Añadir ejemplos de requests/responses cuando se introduzcan endpoints nuevos.
+## Recomendaciones para mantener la documentación clara
+- Actualice `README.md` cuando cambie el arranque, la configuración o el flujo básico de uso.
+- Actualice `docs/API_REFERENCE.md` cuando cambien endpoints, validaciones o contratos de request/response.
+- Actualice `docs/ARCHITECTURE.md` cuando cambien seguridad, capas o decisiones de diseño.
+- Actualice `docs/DATA_MODEL.md` cuando cambien entidades, relaciones o enums.
+- Añada ejemplos de request/response cuando un endpoint nuevo no sea obvio a primera vista.
 
 ## Issues y Pull Requests
-Buenas prácticas recomendadas:
-- Crear una rama por cambio funcional.
-- Mantener commits pequeños y descriptivos.
-- Explicar en el PR si se han modificado contratos de API, seguridad o modelo de datos.
-- Incluir comandos de validación ejecutados en local.
-
-## Versionado de la documentación
-Cuando cambie alguno de estos aspectos, revise la documentación correspondiente:
-
-- **nuevos endpoints o cambios de contrato** → `docs/API_REFERENCE.md`
-- **cambios estructurales del backend** → `docs/ARCHITECTURE.md`
-- **nuevas entidades o relaciones** → `docs/DATA_MODEL.md`
-- **cambios de arranque o configuración** → `README.md`
+- Use una rama por cambio funcional.
+- Mantenga commits pequeños y descriptivos.
+- Explique en el PR si se han modificado contratos de API, seguridad o modelo de datos.
+- Anote los comandos de validación ejecutados.
+- Si cambia documentación por una decisión de código, enlace ambas cosas en la descripción del PR.
