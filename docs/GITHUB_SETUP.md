@@ -34,7 +34,7 @@ Cree la base de datos manualmente y asegúrese de tener credenciales válidas.
 La forma más clara es partir del ejemplo incluido:
 
 ```bash
-cp application-local.example.properties src/main/resources/application-local.properties
+copy "application-local.example.properties" "src/main/resources/application-local.properties"
 ```
 
 > Al usar Docker Compose o al generar su archivo a partir del `.example`, asegúrese de mantener también la propiedad `spring.jpa.hibernate.ddl-auto=update` para que Hibernate cree y actualice las tablas automáticamente en local.
@@ -48,23 +48,35 @@ export DB_USER='root'
 export DB_PASSWORD='root'
 export JWT_SECRET='change_this_secret_key_with_at_least_32_chars'
 export JWT_EXP_MINUTES='180'
-export spring.jpa.hibernate.ddl-auto=update
+export SPRING_JPA_HIBERNATE_DDL_AUTO=update
 ```
 
-Si quiere cambiar el usuario inicial o activar datos demo, puede añadir también:
+> Si lo configura en un archivo `.properties` use `spring.jpa.hibernate.ddl-auto`; si lo exporta como variable de entorno use `SPRING_JPA_HIBERNATE_DDL_AUTO`.
+
+También puede añadir los datos del usuario administrador de prueba:
 
 ```bash
+export APP_INITIAL_ADMIN_ENABLED='true'
+export APP_INITIAL_ADMIN_NAME='Administrador prueba'
+export APP_INITIAL_ADMIN_PHONE='600000000'
 export APP_INITIAL_ADMIN_USERNAME='admin'
 export APP_INITIAL_ADMIN_PASSWORD='admin123456'
 export APP_DEMO_DATA_ENABLED='true'
 ```
 
+> Si la base de datos está vacía, la aplicación crea automáticamente un administrador inicial. Si además activa `APP_DEMO_DATA_ENABLED=true`, también carga catálogos de ejemplo.
+
 ### 4. Ejecutar la aplicación
+Para ejecutar la aplicación con la configuración del archivo local `application-local.properties`, ejecute:
 ```bash
-./mvnw spring-boot:run
+.\mvnw spring-boot:run "-Dspring-boot.run.profiles=local"
 ```
 
-Si la base de datos está vacía, la aplicación crea automáticamente un administrador inicial. Si además activa `APP_DEMO_DATA_ENABLED=true`, también carga catálogos de ejemplo.
+En caso de no utilizar archivo local y utilizar solo `application.properties`, ejecute:
+```bash
+.\mvnw spring-boot:run
+```
+
 
 ### 5. Ejecutar verificaciones
 ```bash

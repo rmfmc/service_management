@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,10 +22,27 @@ import ruben.springboot.service_management.repositories.CommonFaultRepository;
 import ruben.springboot.service_management.repositories.UserRepository;
 
 @Configuration
-@EnableConfigurationProperties(AppStartupProperties.class)
 public class InitialDataConfig {
 
     private static final Logger log = LoggerFactory.getLogger(InitialDataConfig.class);
+
+    @Value("${APP_INITIAL_ADMIN_ENABLED:true}")
+    private boolean initialAdminEnabled;
+
+    @Value("${APP_INITIAL_ADMIN_NAME:Administrador prueba}")
+    private String initialAdminName;
+
+    @Value("${APP_INITIAL_ADMIN_PHONE:600000000}")
+    private String initialAdminPhone;
+
+    @Value("${APP_INITIAL_ADMIN_USERNAME:admin}")
+    private String initialAdminUsername;
+
+    @Value("${APP_INITIAL_ADMIN_PASSWORD:admin123456}")
+    private String initialAdminPassword;
+
+    @Value("${APP_DEMO_DATA_ENABLED:false}")
+    private boolean demoDataEnabled;
 
     @Bean
     ApplicationRunner initialDataRunner(
@@ -33,16 +50,14 @@ public class InitialDataConfig {
             BrandRepository brandRepository,
             ApplianceTypeRepository applianceTypeRepository,
             CommonFaultRepository commonFaultRepository,
-            PasswordEncoder passwordEncoder,
-            AppStartupProperties properties) {
+            PasswordEncoder passwordEncoder) {
 
         return args -> runInitialization(
                 userRepository,
                 brandRepository,
                 applianceTypeRepository,
                 commonFaultRepository,
-                passwordEncoder,
-                properties);
+                passwordEncoder);
     }
 
     @Transactional
@@ -51,19 +66,18 @@ public class InitialDataConfig {
             BrandRepository brandRepository,
             ApplianceTypeRepository applianceTypeRepository,
             CommonFaultRepository commonFaultRepository,
-            PasswordEncoder passwordEncoder,
-            AppStartupProperties properties) {
+            PasswordEncoder passwordEncoder) {
 
-        createInitialAdminIfNeeded(userRepository, passwordEncoder, properties.getInitialAdmin());
-        createDemoCatalogsIfEnabled(brandRepository, applianceTypeRepository, commonFaultRepository, properties.getDemoData());
+        createInitialAdminIfNeeded(userRepository, passwordEncoder);
+        createDemoCatalogsIfEnabled(brandRepository, applianceTypeRepository, commonFaultRepository);
+
     }
 
     private void createInitialAdminIfNeeded(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
-            AppStartupProperties.InitialAdmin initialAdmin) {
+            PasswordEncoder passwordEncoder) {
 
-        if (!initialAdmin.isEnabled()) {
+        if (!initialAdminEnabled) {
             log.info("Creación automática del admin inicial deshabilitada por configuración");
             return;
         }
@@ -74,10 +88,10 @@ public class InitialDataConfig {
         }
 
         User admin = new User();
-        admin.setName(initialAdmin.getName().trim());
-        admin.setPhone(initialAdmin.getPhone().trim());
-        admin.setUsername(initialAdmin.getUsername().trim());
-        admin.setPasswordHash(passwordEncoder.encode(initialAdmin.getPassword()));
+        admin.setName(initialAdminName.trim());
+        admin.setPhone(initialAdminPhone.trim());
+        admin.setUsername(initialAdminUsername.trim());
+        admin.setPasswordHash(passwordEncoder.encode(initialAdminPassword));
         admin.setRole(UserRole.ADMIN);
         admin.setActive(true);
 
@@ -89,10 +103,9 @@ public class InitialDataConfig {
     private void createDemoCatalogsIfEnabled(
             BrandRepository brandRepository,
             ApplianceTypeRepository applianceTypeRepository,
-            CommonFaultRepository commonFaultRepository,
-            AppStartupProperties.DemoData demoData) {
+            CommonFaultRepository commonFaultRepository) {
 
-        if (!demoData.isEnabled()) {
+        if (!demoDataEnabled) {
             return;
         }
 

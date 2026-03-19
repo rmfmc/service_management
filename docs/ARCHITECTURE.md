@@ -31,8 +31,7 @@ Contiene el flujo de autenticación:
 
 ### `config`
 - `SecurityConfig`: define política stateless, desactiva CSRF y configura permisos por endpoint.
-- `InitialDataConfig`: crea el primer usuario administrador cuando no existen usuarios y, opcionalmente, carga catálogos demo.
-- `AppStartupProperties`: concentra la configuración tipada de arranque (`initial-admin`, `demo-data`) y sus valores por defecto.
+- `InitialDataConfig`: crea el primer usuario administrador cuando no existen usuarios y, opcionalmente, carga catálogos demo leyendo propiedades simples (`APP_INITIAL_ADMIN_*`, `APP_DEMO_DATA_ENABLED`) con valores por defecto.
 
 ### `controllers`
 Capa de entrada HTTP para cada agregado de negocio:
@@ -153,9 +152,9 @@ La API centraliza errores en `GlobalExceptionHandler` para mantener respuestas c
 - método HTTP no permitido.
 
 ## Primer acceso y datos demo
-- Si la base de datos no contiene usuarios, el backend crea automáticamente un administrador inicial configurable mediante propiedades tipadas.
+- Si la base de datos no contiene usuarios, el backend crea automáticamente un administrador inicial configurable mediante `APP_INITIAL_ADMIN_*`.
 - Si ya hay usuarios o catálogos creados, no los duplica.
-- Puede cargar datos demo de catálogos mediante `app.demo-data.enabled`, útil para entornos de desarrollo.
+- Puede cargar datos demo de catálogos mediante `APP_DEMO_DATA_ENABLED`, útil para entornos de desarrollo.
 
 ## Decisiones de diseño visibles en el código
 - **Soft delete de aparatos**: `DELETE /api/appliances/{id}` desactiva el registro en lugar de eliminarlo físicamente.
