@@ -78,35 +78,40 @@ docs/
 - Docker + Docker Compose si prefiere usar el `docker-compose.yml` del repositorio.
 
 ## Arranque rápido
-1. Levantar MySQL
+### 1. Levantar MySQL
 ```bash
 docker compose up -d
 ```
 
-2. Crear su configuración local
+### 2. Crear su configuración local
 ```bash
 cp application-local.example.properties src/main/resources/application-local.properties
 ```
 
-3. Revisar los valores
-El archivo de ejemplo ya apunta a la base local creada por Docker Compose:
+### 3. Revisar los valores
+El archivo de ejemplo ya apunta a la base local creada por Docker Compose e incluye la creación automática de tablas para desarrollo:
 
 ```properties
-DB_URL=jdbc:mysql://localhost:3306/service_management?useSSL=false&serverTimezone=UTC
+DB_URL=jdbc:mysql://localhost:3306/service_management?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 DB_USER=root
 DB_PASSWORD=root
 JWT_SECRET=change_this_secret_key_with_at_least_32_chars
 JWT_EXP_MINUTES=180
+spring.jpa.hibernate.ddl-auto=update
 ```
 
-4. Arrancar la aplicación
+> Si va a trabajar con Docker Compose o si prepara su propio `application-local.properties` a partir del `.example`, asegúrese de conservar también `spring.jpa.hibernate.ddl-auto=update` para que Hibernate cree y actualice automáticamente las tablas de la base de datos en local.
+
+### 4. Arrancar la aplicación
 ```bash
-./mvnw spring-boot:run
+.\mvnw spring-boot:run "-Dspring-boot.run.profiles=local"
 ```
+
+> Si va a trabajar con `application-local.properties` debe ejecutar este comando, de esta forma podrá arrancar con el perfil local. En caso de trabajar solo con `application.properties` ejecute `.\mvnw spring-boot:run`.
 
 ### 5. Probar el login
 ```http
-POST /api/auth/login
+POST localhost:8080/api/auth/login
 Content-Type: application/json
 
 {
@@ -115,7 +120,7 @@ Content-Type: application/json
 }
 ```
 
-### 6. Detener MySQL cuando termine
+6. Detener MySQL cuando termine
 ```bash
 docker compose down
 ```
@@ -125,20 +130,22 @@ La aplicación lee dos grupos de propiedades:
 
 ### Conexión y seguridad
 Se resuelven desde variables o propiedades equivalentes:
-- `DB_URL`
-- `DB_USER`
-- `DB_PASSWORD`
-- `JWT_SECRET`
-- `JWT_EXP_MINUTES`
+
+- `DB_URL`: URL JDBC de MySQL que usará la aplicación para conectarse a la base de datos.
+- `DB_USER`: usuario de MySQL con permisos sobre la base de datos configurada.
+- `DB_PASSWORD`: contraseña del usuario de MySQL indicado en `DB_USER`.
+- `JWT_SECRET`: clave secreta con la que se firman y validan los tokens JWT.
+- `JWT_EXP_MINUTES`: tiempo de validez del JWT, expresado en minutos.
 
 ### Datos de arranque
 Variables opcionales para el primer acceso y los datos demo (solo si quiere cambiar los valores por defecto definidos en el backend):
-- `APP_INITIAL_ADMIN_ENABLED`
-- `APP_INITIAL_ADMIN_NAME`
-- `APP_INITIAL_ADMIN_PHONE`
-- `APP_INITIAL_ADMIN_USERNAME`
-- `APP_INITIAL_ADMIN_PASSWORD`
-- `APP_DEMO_DATA_ENABLED`
+
+- `APP_INITIAL_ADMIN_ENABLED`: permite activar o desactivar la creación automática del usuario administrador inicial.
+- `APP_INITIAL_ADMIN_NAME`: nombre visible del administrador inicial que se crea al arrancar sobre una base vacía.
+- `APP_INITIAL_ADMIN_PHONE`: teléfono asociado al administrador inicial.
+- `APP_INITIAL_ADMIN_USERNAME`: nombre de usuario con el que podrá iniciar sesión el administrador inicial.
+- `APP_INITIAL_ADMIN_PASSWORD`: contraseña inicial de ese administrador.
+- `APP_DEMO_DATA_ENABLED`: activa la carga de datos de demostración adicionales (marcas, tipos de aparato y averías de ejemplo).
 
 ### Opción recomendada: archivo local no versionado
 El flujo más cómodo para desarrollo es usar un archivo local no versionado:
@@ -146,21 +153,24 @@ El flujo más cómodo para desarrollo es usar un archivo local no versionado:
 cp application-local.example.properties src/main/resources/application-local.properties
 ```
 
-Ese archivo le permite mantener la configuración junto al proyecto sin exponer secretos reales al repositorio.
+Ese archivo le permite mantener la configuración junto al proyecto sin exponer secretos reales al repositorio. Además, es el lugar recomendado para dejar `spring.jpa.hibernate.ddl-auto=update` en entornos locales, especialmente si la base de datos se levanta con Docker Compose.
 
 ### Opción alternativa: variables de entorno
 También puede exportar los valores directamente:
 
 ```bash
-export DB_URL='jdbc:mysql://localhost:3306/service_management?useSSL=false&serverTimezone=UTC'
+export DB_URL='jdbc:mysql://localhost:3306/service_management?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC'
 export DB_USER='root'
 export DB_PASSWORD='root'
 export JWT_SECRET='change_this_secret_key_with_at_least_32_chars'
 export JWT_EXP_MINUTES='180'
+export spring.jpa.hibernate.ddl-auto=update
 export APP_INITIAL_ADMIN_USERNAME='admin'
 export APP_INITIAL_ADMIN_PASSWORD='admin123456'
 export APP_DEMO_DATA_ENABLED='false'
 ```
+
+> Si usa variables de entorno en lugar de `application-local.properties`, recuerde definir también `spring.jpa.hibernate.ddl-auto=update` para reproducir el mismo comportamiento de creación automática de tablas en local.
 
 
 ## Primer acceso y datos de prueba

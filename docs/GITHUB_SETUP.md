@@ -37,6 +37,9 @@ La forma más clara es partir del ejemplo incluido:
 cp application-local.example.properties src/main/resources/application-local.properties
 ```
 
+> Al usar Docker Compose o al generar su archivo a partir del `.example`, asegúrese de mantener también la propiedad `spring.jpa.hibernate.ddl-auto=update` para que Hibernate cree y actualice las tablas automáticamente en local.
+
+
 Si prefiere variables de entorno, defina:
 
 ```bash
@@ -45,6 +48,7 @@ export DB_USER='root'
 export DB_PASSWORD='root'
 export JWT_SECRET='change_this_secret_key_with_at_least_32_chars'
 export JWT_EXP_MINUTES='180'
+export spring.jpa.hibernate.ddl-auto=update
 ```
 
 Si quiere cambiar el usuario inicial o activar datos demo, puede añadir también:
