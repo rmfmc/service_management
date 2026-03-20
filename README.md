@@ -37,7 +37,7 @@ La API cubre el flujo completo de un servicio técnico:
 - Jakarta Validation.
 - MySQL 8.
 - JJWT 0.13.0.
-- Maven Wrapper (`./mvnw`).
+- Maven Wrapper.
 - Docker Compose para entorno local de base de datos.
 
 ## Módulos principales
@@ -73,24 +73,26 @@ docs/
 
 ## Requisitos
 - JDK 21.
-- Maven 3.9+ o uso de `./mvnw`.
 - MySQL 8+ si no usa contenedores.
 - Docker + Docker Compose si prefiere usar el `docker-compose.yml` del repositorio.
 
+> El proyecto incluye Maven Wrapper (`mvnw` / `mvnw.cmd`), por lo que no es necesario tener Maven instalado globalmente.
+
 ## Arranque rápido
 ### 1. Levantar MySQL
+Si quiere usar Docker Compose para la base de datos:
 ```bash
 docker compose up -d
 ```
 
 ### 2. Crear su configuración local
+Copie el archivo de ejemplo a la ruta usada por Spring para el perfil local.
 ```bash
 copy "application-local.example.properties" "src/main/resources/application-local.properties"
 ```
 
 ### 3. Revisar los valores
-El archivo de ejemplo ya apunta a la base local creada por Docker Compose e incluye la creación automática de tablas para desarrollo:
-
+El archivo de ejemplo ya apunta a la base local creada por Docker Compose y configura la creación/actualización automática de tablas en local.
 ```properties
 DB_URL=jdbc:mysql://localhost:3306/service_management?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 DB_USER=root
@@ -100,48 +102,44 @@ JWT_EXP_MINUTES=180
 spring.jpa.hibernate.ddl-auto=update
 ```
 
-> Si va a trabajar con Docker Compose o si prepara su propio `application-local.properties` a partir del `.example`, asegúrese de conservar también `spring.jpa.hibernate.ddl-auto=update` para que Hibernate cree y actualice automáticamente las tablas de la base de datos en local.
+> Asegúrese de conservar `spring.jpa.hibernate.ddl-auto=update` para que Hibernate cree y actualice automáticamente las tablas de la base de datos en local.
 
 ### 4. Arrancar la aplicación
-Si va a trabajar con `application-local.properties` debe ejecutar este comando, de esta forma podrá arrancar con el perfil local:
+Para trabajar con `application-local.properties` debe ejecutar:
 ```bash
 .\mvnw spring-boot:run "-Dspring-boot.run.profiles=local"
-```
-
-En caso de trabajar solo con `application.properties` ejecute:
-```bash
-.\mvnw spring-boot:run`.
 ```
 
 ### 5. Probar el login
 ```http
 POST localhost:8080/api/auth/login
 Content-Type: application/json
-
 {
   "username": "admin",
   "password": "admin123456"
 }
 ```
 
-6. Detener MySQL cuando termine
+### 6. Detener MySQL al terminar
 ```bash
 docker compose down
 ```
 
 ## Configuración
-La aplicación lee dos grupos de propiedades:
+La opción recomendada para desarrollo es usar un archivo local no versionado:
+`src/main/resources/application-local.properties`
 
-### Conexión y seguridad
-Se resuelven desde variables o propiedades equivalentes:
+Ese archivo no se sube al repositorio y permite mantener la configuración sensible o específica de cada entorno fuera de Git.
 
+### Propiedades principales
 - `DB_URL`: URL JDBC de MySQL que usará la aplicación para conectarse a la base de datos.
 - `DB_USER`: usuario de MySQL con permisos sobre la base de datos configurada.
 - `DB_PASSWORD`: contraseña del usuario de MySQL indicado en `DB_USER`.
-- `JWT_SECRET`: clave secreta con la que se firman y validan los tokens JWT.
+- `JWT_SECRET`: clave secreta con la que se firman y validan los tokens JWT. Debe tener al menos 32 caracteres.
 - `JWT_EXP_MINUTES`: tiempo de validez del JWT, expresado en minutos.
+- `spring.jpa.hibernate.ddl-auto`: creación/actualización automática de tablas en local
 
-### Datos de arranque
+### Datos de arranque opcionales
 Variables opcionales para el primer acceso y los datos demo (solo si quiere cambiar los valores por defecto definidos en el backend):
 
 - `APP_INITIAL_ADMIN_ENABLED`: indica si se debe crear automáticamente el admin inicial cuando no existe ningún usuario.
@@ -153,35 +151,9 @@ Variables opcionales para el primer acceso y los datos demo (solo si quiere camb
 
 Si no indica alguno de esos campos, la aplicación usa los valores por defecto definidos en el backend.
 
-### Opción recomendada: archivo local no versionado
-El flujo más cómodo para desarrollo es usar un archivo local no versionado:
-```bash
-copy "application-local.example.properties" "src/main/resources/application-local.properties"
-```
-
-Ese archivo le permite mantener la configuración junto al proyecto sin exponer secretos reales al repositorio.
-
-### Opción alternativa: variables de entorno
-También puede exportar los valores directamente:
-
-```bash
-export DB_URL='jdbc:mysql://localhost:3306/service_management?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC'
-export DB_USER='root'
-export DB_PASSWORD='root'
-export JWT_SECRET='change_this_secret_key_with_at_least_32_chars'
-export JWT_EXP_MINUTES='180'
-export SPRING_JPA_HIBERNATE_DDL_AUTO=update
-export APP_INITIAL_ADMIN_USERNAME='admin'
-export APP_INITIAL_ADMIN_PASSWORD='admin123456'
-export APP_DEMO_DATA_ENABLED='false'
-```
-
-> Si usa variables de entorno en lugar de `application-local.properties`, recuerde definir también `SPRING_JPA_HIBERNATE_DDL_AUTO=update` para reproducir el mismo comportamiento de creación automática de tablas en local.
-
-
 ## Primer acceso y datos de prueba
 ### Admin inicial
-La aplicación crea automáticamente un usuario administrador si la base de datos arranca vacía.
+La aplicación opcionales crear automáticamente un usuario administrador si la base de datos arranca vacía.
 
 ### Comportamiento por defecto
 - Si no existe ningún usuario, se crea un admin inicial.
